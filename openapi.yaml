@@ -1,0 +1,456 @@
+openapi: 3.0.1
+info:
+  title: Materials Resources Store APIs
+  description: APIs for the Materials Resources Store designed specifically for the accompanying web application
+  version: 1.0.0
+tags:
+  - name: orders
+    description: Order operations for customers
+  - name: products
+    description: Product operations related to finding and viewing products
+servers:
+  - url: /api/v1
+    description: Production Server
+  - url: http://localhost:8080
+    description: Local development server
+paths:
+
+  /account/branches:
+    get:
+      summary: Get available branches for customer
+      operationId: listCustomerBranches
+      parameters:
+        - name: contact_id
+          in: query
+          required: true
+          schema:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Branch'
+  /orders:
+    get:
+      summary: Get all orders for a customer branch
+      operationId: listBranchOrders
+      tags:
+        - orders
+      parameters:
+        - name: branch_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags:
+        - orders
+      summary: Get an order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                required:
+                  - details
+                  - items
+                type: object
+                properties:
+                  details:
+                    $ref: '#/components/schemas/Order'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrderItem'
+  /orders/{id}/invoices:
+    get:
+      tags:
+        - orders
+      summary: Get invoices for an order
+      operationId: listOrderInvoices
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvoiceSimplified'
+  /orders/{id}/shipments:
+    get:
+      tags:
+        - orders
+      summary: Get shipments for an order
+      operationId: listOrderShipments
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/ShipmentSimplified'
+  /products/{id}:
+    get:
+      summary: Get a product by ID
+      operationId: getProduct
+      tags:
+        - products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - details
+                properties:
+                  details:
+                    $ref: '#/components/schemas/Product'
+
+
+        '404':
+          description: Not Found
+  /search/products:
+    post:
+      tags:
+      - products
+      operationId: searchProducts
+      summary: Search for products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sort_by:
+                  type: string
+                filter:
+                  type: object
+                  additionalProperties:
+                    type: array
+                    items:
+                      type: string
+                page:
+                  type: integer
+                query:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ProductSearchResponse'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    ProductSearchResponse:
+      description: Search results for products
+      content:
+        application/json:
+          schema:
+            required:
+              - metadata
+              - products
+            type: object
+            properties:
+              metadata:
+                $ref: '#/components/schemas/SearchMetadata'
+              products:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+  schemas:
+    RecommendedProduct:
+      type: object
+      required:
+        - id
+        - name
+        - sn
+        - relevance_score
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        sn:
+          type: string
+        relevance_score:
+          type: number
+          format: float
+        customer_price:
+          type: number
+          format: float
+    ShipmentSimplified:
+      required:
+        - id
+        - order_id
+        - invoice_id
+        - carrier_name
+        - carrier_tracking
+      type: object
+      properties:
+        id:
+          type: string
+        order_id:
+          type: string
+        invoice_id:
+          type: string
+        carrier_name:
+          type: string
+        carrier_tracking:
+          type: string
+    InvoiceSimplified:
+      required:
+        - id
+        - order_id
+        - created_at
+        - total
+        - amount_paid
+      type: object
+      properties:
+        id:
+          type: string
+        order_id:
+            type: string
+        created_at:
+          type: string
+        total:
+          x-go-type: float64
+          type: number
+        amount_paid:
+          x-go-type: float64
+          type: number
+    Address:
+      required:
+        - id
+        - name
+        - line_one
+        - line_two
+        - city
+        - state
+        - postal_code
+        - country
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        line_one:
+          type: string
+        line_two:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postal_code:
+          type: string
+        country:
+          type: string
+    Branch:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+          id:
+              type: string
+          name:
+              type: string
+    SearchMetadata:
+      required:
+        - current_page
+        - total_pages
+        - total_results
+        - facets
+      type: object
+      properties:
+        current_page:
+          type: integer
+        total_pages:
+          type: integer
+        total_results:
+          type: integer
+        facets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchMetadataFacet'
+    SearchMetadataFacet:
+      required:
+        - attribute
+        - options
+      type: object
+      properties:
+          attribute:
+            type: string
+          options:
+            type: array
+            items:
+              $ref: '#/components/schemas/SearchMetadataFacetOption'
+    SearchMetadataFacetOption:
+      required:
+        - value
+        - count
+      type: object
+      properties:
+        value:
+          type: string
+        count:
+          type: integer
+    Order:
+      required:
+        - id
+        - order_date
+        - customer
+        - contact_id
+        - contact_name
+        - taker
+        - purchase_order
+        - delivery_instructions
+        - shipping_address
+        - items
+        - total
+      type: object
+      properties:
+        id:
+          type: string
+        order_date:
+          type: string
+        customer:
+          $ref: '#/components/schemas/Customer'
+        contact_id:
+          type: string
+        contact_name:
+          type: string
+        taker:
+          type: string
+        purchase_order:
+          type: string
+        delivery_instructions:
+          type: string
+        shipping_address:
+          $ref: '#/components/schemas/Address'
+        total:
+          x-go-type: float64
+          type: number
+    OrderItem:
+      required:
+        - product_sn
+        - product_name
+        - product_uid
+        - customer_product_sn
+        - order_quantity
+        - order_quantity_unit
+        - price_unit
+        - price
+        - total_price
+        - shipped_quantity
+        - back_ordered_quantity
+      type: object
+      properties:
+        product_sn:
+          type: string
+        product_name:
+          type: string
+        product_uid:
+          type: string
+        customer_product_sn:
+          type: string
+        order_quantity:
+          x-go-type: float64
+          type: number
+        order_quantity_unit:
+          type: string
+        price_unit:
+          type: string
+        price:
+          x-go-type: float64
+          type: number
+        total_price:
+          x-go-type: float64
+          type: number
+        shipped_quantity:
+          x-go-type: float64
+          type: number
+        back_ordered_quantity:
+          x-go-type: float64
+          type: number
+    Product:
+      required:
+        - id
+        - sn
+        - name
+      type: object
+      properties:
+          id:
+            type: string
+          sn:
+            type: string
+          name:
+            type: string
+          description:
+            type: string
+          image_url:
+            type: string
+    ProductSearchResult:
+      allOf:
+        - $ref: '#/components/schemas/Product'
+
+    Customer:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: "string"
+        name:
+          type: "string"
+

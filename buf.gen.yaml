@@ -1,0 +1,13 @@
+version: v2
+plugins:
+  - remote: buf.build/grpc/go:v1.5.1
+    out: client/microservices
+    opt:
+      - paths=source_relative
+  - local: protoc-gen-go
+    out: client/microservices
+    opt:
+      - paths=source_relative
+inputs:
+  - git_repo: https://github.com/Materials-Resources/microservices-proto.git
+    branch: main
