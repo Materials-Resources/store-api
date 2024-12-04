@@ -18,6 +18,16 @@ type Handler struct {
 	service service.Service
 }
 
+func (h Handler) NewError(ctx context.Context, err error) *oas.ErrorStatusCode {
+	return &oas.ErrorStatusCode{
+		StatusCode: 500,
+		Response: oas.Error{
+			Code:    501,
+			Message: "erorr occured",
+		},
+	}
+}
+
 func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (*oas.GetOrderOK, error) {
 
 	res, err := h.service.Order.Client.GetOrder(ctx, &order.GetOrderRequest{

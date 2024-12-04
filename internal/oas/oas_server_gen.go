@@ -50,6 +50,10 @@ type Handler interface {
 	//
 	// POST /search/products
 	SearchProducts(ctx context.Context, req *SearchProductsReq) (*ProductSearchResponse, error)
+	// NewError creates *ErrorStatusCode from error returned by handler.
+	//
+	// Used for common default response.
+	NewError(ctx context.Context, err error) *ErrorStatusCode
 }
 
 // Server implements http server based on OpenAPI v3 specification and

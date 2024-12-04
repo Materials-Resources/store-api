@@ -354,7 +354,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					// Leaf node.
 					switch method {
 					case "GET":
-						r.name = "ListCustomerBranches"
+						r.name = ListCustomerBranchesOperation
 						r.summary = "Get available branches for customer"
 						r.operationID = "listCustomerBranches"
 						r.pathPattern = "/account/branches"
@@ -378,7 +378,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						r.name = "ListBranchOrders"
+						r.name = ListBranchOrdersOperation
 						r.summary = "Get all orders for a customer branch"
 						r.operationID = "listBranchOrders"
 						r.pathPattern = "/orders"
@@ -410,7 +410,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					if len(elem) == 0 {
 						switch method {
 						case "GET":
-							r.name = "GetOrder"
+							r.name = GetOrderOperation
 							r.summary = "Get an order by ID"
 							r.operationID = "getOrder"
 							r.pathPattern = "/orders/{id}"
@@ -446,7 +446,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								// Leaf node.
 								switch method {
 								case "GET":
-									r.name = "ListOrderInvoices"
+									r.name = ListOrderInvoicesOperation
 									r.summary = "Get invoices for an order"
 									r.operationID = "listOrderInvoices"
 									r.pathPattern = "/orders/{id}/invoices"
@@ -471,7 +471,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								// Leaf node.
 								switch method {
 								case "GET":
-									r.name = "ListOrderShipments"
+									r.name = ListOrderShipmentsOperation
 									r.summary = "Get shipments for an order"
 									r.operationID = "listOrderShipments"
 									r.pathPattern = "/orders/{id}/shipments"
@@ -510,7 +510,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					// Leaf node.
 					switch method {
 					case "GET":
-						r.name = "GetProduct"
+						r.name = GetProductOperation
 						r.summary = "Get a product by ID"
 						r.operationID = "getProduct"
 						r.pathPattern = "/products/{id}"
@@ -535,7 +535,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					// Leaf node.
 					switch method {
 					case "POST":
-						r.name = "SearchProducts"
+						r.name = SearchProductsOperation
 						r.summary = "Search for products"
 						r.operationID = "searchProducts"
 						r.pathPattern = "/search/products"

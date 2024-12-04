@@ -2,6 +2,7 @@ package main
 
 import (
 	"customer-api/internal/handler"
+	"customer-api/internal/middleware"
 	"customer-api/internal/oas"
 	"customer-api/internal/service"
 	"log"
@@ -16,7 +17,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := http.ListenAndServe(":8080", srv); err != nil {
+	if err := http.ListenAndServe(":8080", middleware.AuthMiddleware(srv)); err != nil {
 		log.Fatal(err)
 	}
 }

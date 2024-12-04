@@ -34,6 +34,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Branch'
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /orders:
     get:
       summary: Get all orders for a customer branch
@@ -55,6 +61,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /orders/{id}:
     get:
       operationId: getOrder
@@ -84,6 +96,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/OrderItem'
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /orders/{id}/invoices:
     get:
       tags:
@@ -105,6 +123,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/InvoiceSimplified'
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /orders/{id}/shipments:
     get:
       tags:
@@ -126,6 +150,12 @@ paths:
                 type: array
                 items:
                     $ref: '#/components/schemas/ShipmentSimplified'
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /products/{id}:
     get:
       summary: Get a product by ID
@@ -150,7 +180,12 @@ paths:
                 properties:
                   details:
                     $ref: '#/components/schemas/Product'
-
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
         '404':
           description: Not Found
@@ -182,6 +217,12 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ProductSearchResponse'
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   securitySchemes:
     BearerAuth:
@@ -206,6 +247,18 @@ components:
                 items:
                   $ref: '#/components/schemas/Product'
   schemas:
+    Error:
+      description: Represents error object
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+        message:
+          type: string
+      required:
+        - code
+        - message
     RecommendedProduct:
       type: object
       required:
