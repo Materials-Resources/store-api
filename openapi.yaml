@@ -13,7 +13,57 @@ servers:
     description: Production Server
   - url: http://localhost:8080
     description: Local development server
+
+security:
+  - BearerAuth: []
 paths:
+  /account/branch:
+    put:
+      summary: Set active branch for current user
+      operationId: setActiveBranch
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - branch_id
+              properties:
+                branch_id:
+                  type: string
+                  description: ID of the branch to set as active
+      responses:
+        '200':
+          description: Branch successfully set
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Active branch updated successfully"
+        '400':
+          description: Invalid branch ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '403':
+          description: User does not have access to this branch
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /account/branches:
     get:

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"customer-api/internal/auth"
+	"customer-api/internal/session"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"strings"
@@ -21,7 +21,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		// Remove "Bearer " prefix
 		tokenString := strings.TrimPrefix(bearer, "Bearer: ")
 
-		_, err := auth.ParseJwt(tokenString)
+		_, err := session.ParseJwt(tokenString)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return

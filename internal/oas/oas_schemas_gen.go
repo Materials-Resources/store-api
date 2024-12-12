@@ -102,6 +102,20 @@ func (s *Address) SetCountry(val string) {
 	s.Country = val
 }
 
+type BearerAuth struct {
+	Token string
+}
+
+// GetToken returns the value of Token.
+func (s *BearerAuth) GetToken() string {
+	return s.Token
+}
+
+// SetToken sets the value of Token.
+func (s *BearerAuth) SetToken(val string) {
+	s.Token = val
+}
+
 // Ref: #/components/schemas/Branch
 type Branch struct {
 	ID   string `json:"id"`
@@ -929,6 +943,45 @@ func (s *SearchProductsReqFilter) init() SearchProductsReqFilter {
 		*s = m
 	}
 	return m
+}
+
+type SetActiveBranchBadRequest Error
+
+func (*SetActiveBranchBadRequest) setActiveBranchRes() {}
+
+type SetActiveBranchForbidden Error
+
+func (*SetActiveBranchForbidden) setActiveBranchRes() {}
+
+type SetActiveBranchOK struct {
+	Message OptString `json:"message"`
+}
+
+// GetMessage returns the value of Message.
+func (s *SetActiveBranchOK) GetMessage() OptString {
+	return s.Message
+}
+
+// SetMessage sets the value of Message.
+func (s *SetActiveBranchOK) SetMessage(val OptString) {
+	s.Message = val
+}
+
+func (*SetActiveBranchOK) setActiveBranchRes() {}
+
+type SetActiveBranchReq struct {
+	// ID of the branch to set as active.
+	BranchID string `json:"branch_id"`
+}
+
+// GetBranchID returns the value of BranchID.
+func (s *SetActiveBranchReq) GetBranchID() string {
+	return s.BranchID
+}
+
+// SetBranchID sets the value of BranchID.
+func (s *SetActiveBranchReq) SetBranchID(val string) {
+	s.BranchID = val
 }
 
 // Ref: #/components/schemas/ShipmentSimplified

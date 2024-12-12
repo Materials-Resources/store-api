@@ -4,3 +4,7 @@ package oas
 type GetProductRes interface {
 	getProductRes()
 }
+
+type SetActiveBranchRes interface {
+	setActiveBranchRes()
+}

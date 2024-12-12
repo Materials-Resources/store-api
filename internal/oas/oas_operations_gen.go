@@ -13,4 +13,5 @@ const (
 	ListOrderInvoicesOperation    OperationName = "ListOrderInvoices"
 	ListOrderShipmentsOperation   OperationName = "ListOrderShipments"
 	SearchProductsOperation       OperationName = "SearchProducts"
+	SetActiveBranchOperation      OperationName = "SetActiveBranch"
 )

@@ -76,6 +76,15 @@ func (UnimplementedHandler) SearchProducts(ctx context.Context, req *SearchProdu
 	return r, ht.ErrNotImplemented
 }
 
+// SetActiveBranch implements setActiveBranch operation.
+//
+// Set active branch for current user.
+//
+// PUT /account/branch
+func (UnimplementedHandler) SetActiveBranch(ctx context.Context, req *SetActiveBranchReq) (r SetActiveBranchRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // NewError creates *ErrorStatusCode from error returned by handler.
 //
 // Used for common default response.

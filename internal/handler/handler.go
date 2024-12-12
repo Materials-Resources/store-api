@@ -6,26 +6,36 @@ import (
 	"customer-api/client/microservices/proto/order/v1"
 	"customer-api/internal/oas"
 	"customer-api/internal/service"
+	"customer-api/internal/zitadel"
+	"fmt"
 )
 
 func NewHandler(service service.Service) Handler {
+	z, err := zitadel.NewZitadelClient()
+	if err != nil {
+		panic(err)
+	}
 	return Handler{
+		z:       z,
 		service: service,
 	}
 }
 
 type Handler struct {
 	service service.Service
+	z       *zitadel.Client
 }
 
-func (h Handler) NewError(ctx context.Context, err error) *oas.ErrorStatusCode {
-	return &oas.ErrorStatusCode{
-		StatusCode: 500,
-		Response: oas.Error{
-			Code:    501,
-			Message: "erorr occured",
-		},
-	}
+func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchReq) (oas.SetActiveBranchRes, error) {
+	fmt.Println("changed branch")
+	// check if user can access this branch
+	// get user id from token
+
+	// update the branch
+	h.z.ChangeUserBranchId(ctx, "295379791043934934", req.GetBranchID())
+	// return success
+
+	return &oas.SetActiveBranchOK{}, nil
 }
 
 func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (*oas.GetOrderOK, error) {
