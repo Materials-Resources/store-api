@@ -1,13 +1,26 @@
 version: v2
+clean: true
 plugins:
-  - remote: buf.build/grpc/go:v1.5.1
-    out: client/microservices
+  - remote: buf.build/connectrpc/go:v1.17.0
+    out: internal/grpc-client
     opt:
-      - paths=source_relative
-  - local: protoc-gen-go
-    out: client/microservices
+      - module=github.com/materials-resources/customer-api/internal/grpc-client
+      - Msearch.proto=github.com/materials-resources/customer-api/internal/grpc-client/search
+      - Mcatalog.proto=github.com/materials-resources/customer-api/internal/grpc-client/catalog
+      - Morder.proto=github.com/materials-resources/customer-api/internal/grpc-client/order
+  - remote: buf.build/protocolbuffers/go:v1.34.2
+    out: internal/grpc-client
     opt:
-      - paths=source_relative
+      - module=github.com/materials-resources/customer-api/internal/grpc-client
+      - Msearch.proto=github.com/materials-resources/customer-api/internal/grpc-client/search
+      - Mcatalog.proto=github.com/materials-resources/customer-api/internal/grpc-client/catalog
+      - Morder.proto=github.com/materials-resources/customer-api/internal/grpc-client/order
+
+
 inputs:
   - git_repo: https://github.com/Materials-Resources/microservices-proto.git
     branch: main
+    types:
+      - "search.v1.SearchService"
+      - "catalog.v1.CatalogService"
+      - "order.v1.OrderService"

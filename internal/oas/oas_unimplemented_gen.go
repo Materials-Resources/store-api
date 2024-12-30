@@ -72,7 +72,7 @@ func (UnimplementedHandler) ListOrderShipments(ctx context.Context, params ListO
 // Search for products.
 //
 // POST /search/products
-func (UnimplementedHandler) SearchProducts(ctx context.Context, req *SearchProductsReq) (r *ProductSearchResponse, _ error) {
+func (UnimplementedHandler) SearchProducts(ctx context.Context, req *SearchProductsReq) (r *SearchProductResponse, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

@@ -1,20 +1,19 @@
 package service
 
 import (
-	"customer-api/client/microservices/proto/catalog/v1"
-	"google.golang.org/grpc"
+	"connectrpc.com/connect"
+	"github.com/materials-resources/customer-api/internal/grpc-client/catalog/catalogconnect"
+	"net/http"
 )
 
 type Catalog struct {
-	Client catalog.CatalogServiceClient
+	Client catalogconnect.CatalogServiceClient
 }
 
 func NewCatalogService() *Catalog {
-	conn, err := grpc.Dial("localhost:50058", grpc.WithInsecure())
-	if err != nil {
-		panic(err)
-	}
 	return &Catalog{
-		Client: catalog.NewCatalogServiceClient(conn),
+		Client: catalogconnect.NewCatalogServiceClient(http.DefaultClient,
+			"http://localhost:50058",
+			connect.WithGRPC()),
 	}
 }

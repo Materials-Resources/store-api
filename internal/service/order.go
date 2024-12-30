@@ -1,20 +1,19 @@
 package service
 
 import (
-	"customer-api/client/microservices/proto/order/v1"
-	"google.golang.org/grpc"
+	"connectrpc.com/connect"
+	"github.com/materials-resources/customer-api/internal/grpc-client/order/orderconnect"
+	"net/http"
 )
 
 type Order struct {
-	Client order.OrderServiceClient
+	Client orderconnect.OrderServiceClient
 }
 
 func NewOrderService() *Order {
-	conn, err := grpc.Dial("localhost:50058", grpc.WithInsecure())
-	if err != nil {
-		panic(err)
-	}
 	return &Order{
-		Client: order.NewOrderServiceClient(conn),
+		Client: orderconnect.NewOrderServiceClient(http.DefaultClient,
+			"http://localhost:50058",
+			connect.WithGRPC()),
 	}
 }

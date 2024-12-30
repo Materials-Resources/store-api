@@ -10,6 +10,28 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
+func (s Aggregation) Validate() error {
+	var failures []validate.FieldError
+	for key, elem := range s {
+		if err := func() error {
+			if elem == nil {
+				return errors.New("nil is invalid value")
+			}
+			return nil
+		}(); err != nil {
+			failures = append(failures, validate.FieldError{
+				Name:  key,
+				Error: err,
+			})
+		}
+	}
+
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
 func (s *GetOrderOK) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -185,20 +207,37 @@ func (s *OrderItem) Validate() error {
 	return nil
 }
 
-func (s *ProductSearchResponse) Validate() error {
+func (s *SearchProductResponse) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
 	}
 
 	var failures []validate.FieldError
 	if err := func() error {
-		if err := s.Metadata.Validate(); err != nil {
-			return err
+		if s.Aggregations == nil {
+			return errors.New("nil is invalid value")
+		}
+		var failures []validate.FieldError
+		for i, elem := range s.Aggregations {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
 		}
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
-			Name:  "metadata",
+			Name:  "aggregations",
 			Error: err,
 		})
 	}
@@ -219,69 +258,6 @@ func (s *ProductSearchResponse) Validate() error {
 	return nil
 }
 
-func (s *SearchMetadata) Validate() error {
-	if s == nil {
-		return validate.ErrNilPointer
-	}
-
-	var failures []validate.FieldError
-	if err := func() error {
-		if s.Facets == nil {
-			return errors.New("nil is invalid value")
-		}
-		var failures []validate.FieldError
-		for i, elem := range s.Facets {
-			if err := func() error {
-				if err := elem.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				failures = append(failures, validate.FieldError{
-					Name:  fmt.Sprintf("[%d]", i),
-					Error: err,
-				})
-			}
-		}
-		if len(failures) > 0 {
-			return &validate.Error{Fields: failures}
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "facets",
-			Error: err,
-		})
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-	return nil
-}
-
-func (s *SearchMetadataFacet) Validate() error {
-	if s == nil {
-		return validate.ErrNilPointer
-	}
-
-	var failures []validate.FieldError
-	if err := func() error {
-		if s.Options == nil {
-			return errors.New("nil is invalid value")
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "options",
-			Error: err,
-		})
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-	return nil
-}
-
 func (s *SearchProductsReq) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -289,7 +265,7 @@ func (s *SearchProductsReq) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
-		if value, ok := s.Filter.Get(); ok {
+		if value, ok := s.Filters.Get(); ok {
 			if err := func() error {
 				if err := value.Validate(); err != nil {
 					return err
@@ -302,7 +278,7 @@ func (s *SearchProductsReq) Validate() error {
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
-			Name:  "filter",
+			Name:  "filters",
 			Error: err,
 		})
 	}
@@ -312,7 +288,7 @@ func (s *SearchProductsReq) Validate() error {
 	return nil
 }
 
-func (s SearchProductsReqFilter) Validate() error {
+func (s SearchProductsReqFilters) Validate() error {
 	var failures []validate.FieldError
 	for key, elem := range s {
 		if err := func() error {

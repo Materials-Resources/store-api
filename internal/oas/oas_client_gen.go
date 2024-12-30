@@ -65,7 +65,7 @@ type Invoker interface {
 	// Search for products.
 	//
 	// POST /search/products
-	SearchProducts(ctx context.Context, request *SearchProductsReq) (*ProductSearchResponse, error)
+	SearchProducts(ctx context.Context, request *SearchProductsReq) (*SearchProductResponse, error)
 	// SetActiveBranch invokes setActiveBranch operation.
 	//
 	// Set active branch for current user.
@@ -873,12 +873,12 @@ func (c *Client) sendListOrderShipments(ctx context.Context, params ListOrderShi
 // Search for products.
 //
 // POST /search/products
-func (c *Client) SearchProducts(ctx context.Context, request *SearchProductsReq) (*ProductSearchResponse, error) {
+func (c *Client) SearchProducts(ctx context.Context, request *SearchProductsReq) (*SearchProductResponse, error) {
 	res, err := c.sendSearchProducts(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendSearchProducts(ctx context.Context, request *SearchProductsReq) (res *ProductSearchResponse, err error) {
+func (c *Client) sendSearchProducts(ctx context.Context, request *SearchProductsReq) (res *SearchProductResponse, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchProducts"),
 		semconv.HTTPRequestMethodKey.String("POST"),
@@ -925,39 +925,6 @@ func (c *Client) sendSearchProducts(ctx context.Context, request *SearchProducts
 	}
 	if err := encodeSearchProductsRequest(request, r); err != nil {
 		return res, errors.Wrap(err, "encode request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, SearchProductsOperation, r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
 	}
 
 	stage = "SendRequest"

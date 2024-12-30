@@ -102,6 +102,18 @@ func (s *Address) SetCountry(val string) {
 	s.Country = val
 }
 
+// Ref: #/components/schemas/Aggregation
+type Aggregation map[string][]Bucket
+
+func (s *Aggregation) init() Aggregation {
+	m := *s
+	if m == nil {
+		m = map[string][]Bucket{}
+		*s = m
+	}
+	return m
+}
+
 type BearerAuth struct {
 	Token string
 }
@@ -140,6 +152,32 @@ func (s *Branch) SetID(val string) {
 // SetName sets the value of Name.
 func (s *Branch) SetName(val string) {
 	s.Name = val
+}
+
+// Ref: #/components/schemas/Bucket
+type Bucket struct {
+	Value string `json:"value"`
+	Count int    `json:"count"`
+}
+
+// GetValue returns the value of Value.
+func (s *Bucket) GetValue() string {
+	return s.Value
+}
+
+// GetCount returns the value of Count.
+func (s *Bucket) GetCount() int {
+	return s.Count
+}
+
+// SetValue sets the value of Value.
+func (s *Bucket) SetValue(val string) {
+	s.Value = val
+}
+
+// SetCount sets the value of Count.
+func (s *Bucket) SetCount(val int) {
+	s.Count = val
 }
 
 // Ref: #/components/schemas/Customer
@@ -372,38 +410,38 @@ func (o OptInt) Or(d int) int {
 	return d
 }
 
-// NewOptSearchProductsReqFilter returns new OptSearchProductsReqFilter with value set to v.
-func NewOptSearchProductsReqFilter(v SearchProductsReqFilter) OptSearchProductsReqFilter {
-	return OptSearchProductsReqFilter{
+// NewOptSearchProductsReqFilters returns new OptSearchProductsReqFilters with value set to v.
+func NewOptSearchProductsReqFilters(v SearchProductsReqFilters) OptSearchProductsReqFilters {
+	return OptSearchProductsReqFilters{
 		Value: v,
 		Set:   true,
 	}
 }
 
-// OptSearchProductsReqFilter is optional SearchProductsReqFilter.
-type OptSearchProductsReqFilter struct {
-	Value SearchProductsReqFilter
+// OptSearchProductsReqFilters is optional SearchProductsReqFilters.
+type OptSearchProductsReqFilters struct {
+	Value SearchProductsReqFilters
 	Set   bool
 }
 
-// IsSet returns true if OptSearchProductsReqFilter was set.
-func (o OptSearchProductsReqFilter) IsSet() bool { return o.Set }
+// IsSet returns true if OptSearchProductsReqFilters was set.
+func (o OptSearchProductsReqFilters) IsSet() bool { return o.Set }
 
 // Reset unsets value.
-func (o *OptSearchProductsReqFilter) Reset() {
-	var v SearchProductsReqFilter
+func (o *OptSearchProductsReqFilters) Reset() {
+	var v SearchProductsReqFilters
 	o.Value = v
 	o.Set = false
 }
 
 // SetTo sets value to v.
-func (o *OptSearchProductsReqFilter) SetTo(v SearchProductsReqFilter) {
+func (o *OptSearchProductsReqFilters) SetTo(v SearchProductsReqFilters) {
 	o.Set = true
 	o.Value = v
 }
 
 // Get returns value and boolean that denotes whether value was set.
-func (o OptSearchProductsReqFilter) Get() (v SearchProductsReqFilter, ok bool) {
+func (o OptSearchProductsReqFilters) Get() (v SearchProductsReqFilters, ok bool) {
 	if !o.Set {
 		return v, false
 	}
@@ -411,7 +449,7 @@ func (o OptSearchProductsReqFilter) Get() (v SearchProductsReqFilter, ok bool) {
 }
 
 // Or returns value if set, or given parameter if does not.
-func (o OptSearchProductsReqFilter) Or(d SearchProductsReqFilter) SearchProductsReqFilter {
+func (o OptSearchProductsReqFilters) Or(d SearchProductsReqFilters) SearchProductsReqFilters {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -703,6 +741,32 @@ func (s *OrderItem) SetBackOrderedQuantity(val float64) {
 	s.BackOrderedQuantity = val
 }
 
+// Ref: #/components/schemas/PageMetadata
+type PageMetadata struct {
+	TotalPages   int `json:"total_pages"`
+	TotalRecords int `json:"total_records"`
+}
+
+// GetTotalPages returns the value of TotalPages.
+func (s *PageMetadata) GetTotalPages() int {
+	return s.TotalPages
+}
+
+// GetTotalRecords returns the value of TotalRecords.
+func (s *PageMetadata) GetTotalRecords() int {
+	return s.TotalRecords
+}
+
+// SetTotalPages sets the value of TotalPages.
+func (s *PageMetadata) SetTotalPages(val int) {
+	s.TotalPages = val
+}
+
+// SetTotalRecords sets the value of TotalRecords.
+func (s *PageMetadata) SetTotalRecords(val int) {
+	s.TotalRecords = val
+}
+
 // Ref: #/components/schemas/Product
 type Product struct {
 	ID          string    `json:"id"`
@@ -762,136 +826,47 @@ func (s *Product) SetImageURL(val OptString) {
 	s.ImageURL = val
 }
 
-type ProductSearchResponse struct {
-	Metadata SearchMetadata `json:"metadata"`
-	Products []Product      `json:"products"`
+type SearchProductResponse struct {
+	Aggregations []Aggregation `json:"aggregations"`
+	Metadata     PageMetadata  `json:"metadata"`
+	Products     []Product     `json:"products"`
+}
+
+// GetAggregations returns the value of Aggregations.
+func (s *SearchProductResponse) GetAggregations() []Aggregation {
+	return s.Aggregations
 }
 
 // GetMetadata returns the value of Metadata.
-func (s *ProductSearchResponse) GetMetadata() SearchMetadata {
+func (s *SearchProductResponse) GetMetadata() PageMetadata {
 	return s.Metadata
 }
 
 // GetProducts returns the value of Products.
-func (s *ProductSearchResponse) GetProducts() []Product {
+func (s *SearchProductResponse) GetProducts() []Product {
 	return s.Products
 }
 
+// SetAggregations sets the value of Aggregations.
+func (s *SearchProductResponse) SetAggregations(val []Aggregation) {
+	s.Aggregations = val
+}
+
 // SetMetadata sets the value of Metadata.
-func (s *ProductSearchResponse) SetMetadata(val SearchMetadata) {
+func (s *SearchProductResponse) SetMetadata(val PageMetadata) {
 	s.Metadata = val
 }
 
 // SetProducts sets the value of Products.
-func (s *ProductSearchResponse) SetProducts(val []Product) {
+func (s *SearchProductResponse) SetProducts(val []Product) {
 	s.Products = val
 }
 
-// Ref: #/components/schemas/SearchMetadata
-type SearchMetadata struct {
-	CurrentPage  int                   `json:"current_page"`
-	TotalPages   int                   `json:"total_pages"`
-	TotalResults int                   `json:"total_results"`
-	Facets       []SearchMetadataFacet `json:"facets"`
-}
-
-// GetCurrentPage returns the value of CurrentPage.
-func (s *SearchMetadata) GetCurrentPage() int {
-	return s.CurrentPage
-}
-
-// GetTotalPages returns the value of TotalPages.
-func (s *SearchMetadata) GetTotalPages() int {
-	return s.TotalPages
-}
-
-// GetTotalResults returns the value of TotalResults.
-func (s *SearchMetadata) GetTotalResults() int {
-	return s.TotalResults
-}
-
-// GetFacets returns the value of Facets.
-func (s *SearchMetadata) GetFacets() []SearchMetadataFacet {
-	return s.Facets
-}
-
-// SetCurrentPage sets the value of CurrentPage.
-func (s *SearchMetadata) SetCurrentPage(val int) {
-	s.CurrentPage = val
-}
-
-// SetTotalPages sets the value of TotalPages.
-func (s *SearchMetadata) SetTotalPages(val int) {
-	s.TotalPages = val
-}
-
-// SetTotalResults sets the value of TotalResults.
-func (s *SearchMetadata) SetTotalResults(val int) {
-	s.TotalResults = val
-}
-
-// SetFacets sets the value of Facets.
-func (s *SearchMetadata) SetFacets(val []SearchMetadataFacet) {
-	s.Facets = val
-}
-
-// Ref: #/components/schemas/SearchMetadataFacet
-type SearchMetadataFacet struct {
-	Attribute string                      `json:"attribute"`
-	Options   []SearchMetadataFacetOption `json:"options"`
-}
-
-// GetAttribute returns the value of Attribute.
-func (s *SearchMetadataFacet) GetAttribute() string {
-	return s.Attribute
-}
-
-// GetOptions returns the value of Options.
-func (s *SearchMetadataFacet) GetOptions() []SearchMetadataFacetOption {
-	return s.Options
-}
-
-// SetAttribute sets the value of Attribute.
-func (s *SearchMetadataFacet) SetAttribute(val string) {
-	s.Attribute = val
-}
-
-// SetOptions sets the value of Options.
-func (s *SearchMetadataFacet) SetOptions(val []SearchMetadataFacetOption) {
-	s.Options = val
-}
-
-// Ref: #/components/schemas/SearchMetadataFacetOption
-type SearchMetadataFacetOption struct {
-	Value string `json:"value"`
-	Count int    `json:"count"`
-}
-
-// GetValue returns the value of Value.
-func (s *SearchMetadataFacetOption) GetValue() string {
-	return s.Value
-}
-
-// GetCount returns the value of Count.
-func (s *SearchMetadataFacetOption) GetCount() int {
-	return s.Count
-}
-
-// SetValue sets the value of Value.
-func (s *SearchMetadataFacetOption) SetValue(val string) {
-	s.Value = val
-}
-
-// SetCount sets the value of Count.
-func (s *SearchMetadataFacetOption) SetCount(val int) {
-	s.Count = val
-}
-
 type SearchProductsReq struct {
-	SortBy OptString                  `json:"sort_by"`
-	Filter OptSearchProductsReqFilter `json:"filter"`
-	Page   OptInt                     `json:"page"`
-	Query  OptString                  `json:"query"`
+	SortBy  OptString                   `json:"sort_by"`
+	Filters OptSearchProductsReqFilters `json:"filters"`
+	Page    OptInt                      `json:"page"`
+	Query   OptString                   `json:"query"`
 }
 
 // GetSortBy returns the value of SortBy.
@@ -899,9 +874,9 @@ func (s *SearchProductsReq) GetSortBy() OptString {
 	return s.SortBy
 }
 
-// GetFilter returns the value of Filter.
-func (s *SearchProductsReq) GetFilter() OptSearchProductsReqFilter {
-	return s.Filter
+// GetFilters returns the value of Filters.
+func (s *SearchProductsReq) GetFilters() OptSearchProductsReqFilters {
+	return s.Filters
 }
 
 // GetPage returns the value of Page.
@@ -919,9 +894,9 @@ func (s *SearchProductsReq) SetSortBy(val OptString) {
 	s.SortBy = val
 }
 
-// SetFilter sets the value of Filter.
-func (s *SearchProductsReq) SetFilter(val OptSearchProductsReqFilter) {
-	s.Filter = val
+// SetFilters sets the value of Filters.
+func (s *SearchProductsReq) SetFilters(val OptSearchProductsReqFilters) {
+	s.Filters = val
 }
 
 // SetPage sets the value of Page.
@@ -934,9 +909,9 @@ func (s *SearchProductsReq) SetQuery(val OptString) {
 	s.Query = val
 }
 
-type SearchProductsReqFilter map[string][]string
+type SearchProductsReqFilters map[string][]string
 
-func (s *SearchProductsReqFilter) init() SearchProductsReqFilter {
+func (s *SearchProductsReqFilters) init() SearchProductsReqFilters {
 	m := *s
 	if m == nil {
 		m = map[string][]string{}

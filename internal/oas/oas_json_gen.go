@@ -228,6 +228,72 @@ func (s *Address) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
+func (s Aggregation) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields implements json.Marshaler.
+func (s Aggregation) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
+
+		e.ArrStart()
+		for _, elem := range elem {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
+}
+
+// Decode decodes Aggregation from json.
+func (s *Aggregation) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode Aggregation to nil")
+	}
+	m := s.init()
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		var elem []Bucket
+		if err := func() error {
+			elem = make([]Bucket, 0)
+			if err := d.Arr(func(d *jx.Decoder) error {
+				var elemElem Bucket
+				if err := elemElem.Decode(d); err != nil {
+					return err
+				}
+				elem = append(elem, elemElem)
+				return nil
+			}); err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
+		}
+		m[string(k)] = elem
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode Aggregation")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s Aggregation) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *Aggregation) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s *Branch) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -336,6 +402,119 @@ func (s *Branch) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *Branch) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *Bucket) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *Bucket) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("value")
+		e.Str(s.Value)
+	}
+	{
+		e.FieldStart("count")
+		e.Int(s.Count)
+	}
+}
+
+var jsonFieldsNameOfBucket = [2]string{
+	0: "value",
+	1: "count",
+}
+
+// Decode decodes Bucket from json.
+func (s *Bucket) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode Bucket to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "value":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.Value = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"value\"")
+			}
+		case "count":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Int()
+				s.Count = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"count\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode Bucket")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000011,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfBucket) {
+					name = jsonFieldsNameOfBucket[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *Bucket) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *Bucket) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -980,21 +1159,21 @@ func (s *OptInt) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes SearchProductsReqFilter as json.
-func (o OptSearchProductsReqFilter) Encode(e *jx.Encoder) {
+// Encode encodes SearchProductsReqFilters as json.
+func (o OptSearchProductsReqFilters) Encode(e *jx.Encoder) {
 	if !o.Set {
 		return
 	}
 	o.Value.Encode(e)
 }
 
-// Decode decodes SearchProductsReqFilter from json.
-func (o *OptSearchProductsReqFilter) Decode(d *jx.Decoder) error {
+// Decode decodes SearchProductsReqFilters from json.
+func (o *OptSearchProductsReqFilters) Decode(d *jx.Decoder) error {
 	if o == nil {
-		return errors.New("invalid: unable to decode OptSearchProductsReqFilter to nil")
+		return errors.New("invalid: unable to decode OptSearchProductsReqFilters to nil")
 	}
 	o.Set = true
-	o.Value = make(SearchProductsReqFilter)
+	o.Value = make(SearchProductsReqFilters)
 	if err := o.Value.Decode(d); err != nil {
 		return err
 	}
@@ -1002,14 +1181,14 @@ func (o *OptSearchProductsReqFilter) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s OptSearchProductsReqFilter) MarshalJSON() ([]byte, error) {
+func (s OptSearchProductsReqFilters) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptSearchProductsReqFilter) UnmarshalJSON(data []byte) error {
+func (s *OptSearchProductsReqFilters) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -1563,6 +1742,119 @@ func (s *OrderItem) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
+func (s *PageMetadata) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *PageMetadata) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("total_pages")
+		e.Int(s.TotalPages)
+	}
+	{
+		e.FieldStart("total_records")
+		e.Int(s.TotalRecords)
+	}
+}
+
+var jsonFieldsNameOfPageMetadata = [2]string{
+	0: "total_pages",
+	1: "total_records",
+}
+
+// Decode decodes PageMetadata from json.
+func (s *PageMetadata) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode PageMetadata to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "total_pages":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Int()
+				s.TotalPages = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"total_pages\"")
+			}
+		case "total_records":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Int()
+				s.TotalRecords = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"total_records\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode PageMetadata")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000011,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfPageMetadata) {
+					name = jsonFieldsNameOfPageMetadata[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *PageMetadata) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *PageMetadata) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s *Product) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -1727,14 +2019,22 @@ func (s *Product) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *ProductSearchResponse) Encode(e *jx.Encoder) {
+func (s *SearchProductResponse) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *ProductSearchResponse) encodeFields(e *jx.Encoder) {
+func (s *SearchProductResponse) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("aggregations")
+		e.ArrStart()
+		for _, elem := range s.Aggregations {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
 	{
 		e.FieldStart("metadata")
 		s.Metadata.Encode(e)
@@ -1749,22 +2049,41 @@ func (s *ProductSearchResponse) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProductSearchResponse = [2]string{
-	0: "metadata",
-	1: "products",
+var jsonFieldsNameOfSearchProductResponse = [3]string{
+	0: "aggregations",
+	1: "metadata",
+	2: "products",
 }
 
-// Decode decodes ProductSearchResponse from json.
-func (s *ProductSearchResponse) Decode(d *jx.Decoder) error {
+// Decode decodes SearchProductResponse from json.
+func (s *SearchProductResponse) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode ProductSearchResponse to nil")
+		return errors.New("invalid: unable to decode SearchProductResponse to nil")
 	}
 	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "metadata":
+		case "aggregations":
 			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				s.Aggregations = make([]Aggregation, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem Aggregation
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Aggregations = append(s.Aggregations, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aggregations\"")
+			}
+		case "metadata":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
 				if err := s.Metadata.Decode(d); err != nil {
 					return err
@@ -1774,7 +2093,7 @@ func (s *ProductSearchResponse) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"metadata\"")
 			}
 		case "products":
-			requiredBitSet[0] |= 1 << 1
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
 				s.Products = make([]Product, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -1796,12 +2115,12 @@ func (s *ProductSearchResponse) Decode(d *jx.Decoder) error {
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode ProductSearchResponse")
+		return errors.Wrap(err, "decode SearchProductResponse")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000011,
+		0b00000111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -1813,8 +2132,8 @@ func (s *ProductSearchResponse) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfProductSearchResponse) {
-					name = jsonFieldsNameOfProductSearchResponse[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfSearchProductResponse) {
+					name = jsonFieldsNameOfSearchProductResponse[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -1835,407 +2154,14 @@ func (s *ProductSearchResponse) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *ProductSearchResponse) MarshalJSON() ([]byte, error) {
+func (s *SearchProductResponse) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *ProductSearchResponse) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s *SearchMetadata) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields encodes fields.
-func (s *SearchMetadata) encodeFields(e *jx.Encoder) {
-	{
-		e.FieldStart("current_page")
-		e.Int(s.CurrentPage)
-	}
-	{
-		e.FieldStart("total_pages")
-		e.Int(s.TotalPages)
-	}
-	{
-		e.FieldStart("total_results")
-		e.Int(s.TotalResults)
-	}
-	{
-		e.FieldStart("facets")
-		e.ArrStart()
-		for _, elem := range s.Facets {
-			elem.Encode(e)
-		}
-		e.ArrEnd()
-	}
-}
-
-var jsonFieldsNameOfSearchMetadata = [4]string{
-	0: "current_page",
-	1: "total_pages",
-	2: "total_results",
-	3: "facets",
-}
-
-// Decode decodes SearchMetadata from json.
-func (s *SearchMetadata) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode SearchMetadata to nil")
-	}
-	var requiredBitSet [1]uint8
-
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		case "current_page":
-			requiredBitSet[0] |= 1 << 0
-			if err := func() error {
-				v, err := d.Int()
-				s.CurrentPage = int(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"current_page\"")
-			}
-		case "total_pages":
-			requiredBitSet[0] |= 1 << 1
-			if err := func() error {
-				v, err := d.Int()
-				s.TotalPages = int(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"total_pages\"")
-			}
-		case "total_results":
-			requiredBitSet[0] |= 1 << 2
-			if err := func() error {
-				v, err := d.Int()
-				s.TotalResults = int(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"total_results\"")
-			}
-		case "facets":
-			requiredBitSet[0] |= 1 << 3
-			if err := func() error {
-				s.Facets = make([]SearchMetadataFacet, 0)
-				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem SearchMetadataFacet
-					if err := elem.Decode(d); err != nil {
-						return err
-					}
-					s.Facets = append(s.Facets, elem)
-					return nil
-				}); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"facets\"")
-			}
-		default:
-			return d.Skip()
-		}
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode SearchMetadata")
-	}
-	// Validate required fields.
-	var failures []validate.FieldError
-	for i, mask := range [1]uint8{
-		0b00001111,
-	} {
-		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
-			// Mask only required fields and check equality to mask using XOR.
-			//
-			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
-			// Bits of fields which would be set are actually bits of missed fields.
-			missed := bits.OnesCount8(result)
-			for bitN := 0; bitN < missed; bitN++ {
-				bitIdx := bits.TrailingZeros8(result)
-				fieldIdx := i*8 + bitIdx
-				var name string
-				if fieldIdx < len(jsonFieldsNameOfSearchMetadata) {
-					name = jsonFieldsNameOfSearchMetadata[fieldIdx]
-				} else {
-					name = strconv.Itoa(fieldIdx)
-				}
-				failures = append(failures, validate.FieldError{
-					Name:  name,
-					Error: validate.ErrFieldRequired,
-				})
-				// Reset bit.
-				result &^= 1 << bitIdx
-			}
-		}
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *SearchMetadata) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *SearchMetadata) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s *SearchMetadataFacet) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields encodes fields.
-func (s *SearchMetadataFacet) encodeFields(e *jx.Encoder) {
-	{
-		e.FieldStart("attribute")
-		e.Str(s.Attribute)
-	}
-	{
-		e.FieldStart("options")
-		e.ArrStart()
-		for _, elem := range s.Options {
-			elem.Encode(e)
-		}
-		e.ArrEnd()
-	}
-}
-
-var jsonFieldsNameOfSearchMetadataFacet = [2]string{
-	0: "attribute",
-	1: "options",
-}
-
-// Decode decodes SearchMetadataFacet from json.
-func (s *SearchMetadataFacet) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode SearchMetadataFacet to nil")
-	}
-	var requiredBitSet [1]uint8
-
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		case "attribute":
-			requiredBitSet[0] |= 1 << 0
-			if err := func() error {
-				v, err := d.Str()
-				s.Attribute = string(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"attribute\"")
-			}
-		case "options":
-			requiredBitSet[0] |= 1 << 1
-			if err := func() error {
-				s.Options = make([]SearchMetadataFacetOption, 0)
-				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem SearchMetadataFacetOption
-					if err := elem.Decode(d); err != nil {
-						return err
-					}
-					s.Options = append(s.Options, elem)
-					return nil
-				}); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"options\"")
-			}
-		default:
-			return d.Skip()
-		}
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode SearchMetadataFacet")
-	}
-	// Validate required fields.
-	var failures []validate.FieldError
-	for i, mask := range [1]uint8{
-		0b00000011,
-	} {
-		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
-			// Mask only required fields and check equality to mask using XOR.
-			//
-			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
-			// Bits of fields which would be set are actually bits of missed fields.
-			missed := bits.OnesCount8(result)
-			for bitN := 0; bitN < missed; bitN++ {
-				bitIdx := bits.TrailingZeros8(result)
-				fieldIdx := i*8 + bitIdx
-				var name string
-				if fieldIdx < len(jsonFieldsNameOfSearchMetadataFacet) {
-					name = jsonFieldsNameOfSearchMetadataFacet[fieldIdx]
-				} else {
-					name = strconv.Itoa(fieldIdx)
-				}
-				failures = append(failures, validate.FieldError{
-					Name:  name,
-					Error: validate.ErrFieldRequired,
-				})
-				// Reset bit.
-				result &^= 1 << bitIdx
-			}
-		}
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *SearchMetadataFacet) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *SearchMetadataFacet) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s *SearchMetadataFacetOption) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields encodes fields.
-func (s *SearchMetadataFacetOption) encodeFields(e *jx.Encoder) {
-	{
-		e.FieldStart("value")
-		e.Str(s.Value)
-	}
-	{
-		e.FieldStart("count")
-		e.Int(s.Count)
-	}
-}
-
-var jsonFieldsNameOfSearchMetadataFacetOption = [2]string{
-	0: "value",
-	1: "count",
-}
-
-// Decode decodes SearchMetadataFacetOption from json.
-func (s *SearchMetadataFacetOption) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode SearchMetadataFacetOption to nil")
-	}
-	var requiredBitSet [1]uint8
-
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		case "value":
-			requiredBitSet[0] |= 1 << 0
-			if err := func() error {
-				v, err := d.Str()
-				s.Value = string(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"value\"")
-			}
-		case "count":
-			requiredBitSet[0] |= 1 << 1
-			if err := func() error {
-				v, err := d.Int()
-				s.Count = int(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"count\"")
-			}
-		default:
-			return d.Skip()
-		}
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode SearchMetadataFacetOption")
-	}
-	// Validate required fields.
-	var failures []validate.FieldError
-	for i, mask := range [1]uint8{
-		0b00000011,
-	} {
-		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
-			// Mask only required fields and check equality to mask using XOR.
-			//
-			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
-			// Bits of fields which would be set are actually bits of missed fields.
-			missed := bits.OnesCount8(result)
-			for bitN := 0; bitN < missed; bitN++ {
-				bitIdx := bits.TrailingZeros8(result)
-				fieldIdx := i*8 + bitIdx
-				var name string
-				if fieldIdx < len(jsonFieldsNameOfSearchMetadataFacetOption) {
-					name = jsonFieldsNameOfSearchMetadataFacetOption[fieldIdx]
-				} else {
-					name = strconv.Itoa(fieldIdx)
-				}
-				failures = append(failures, validate.FieldError{
-					Name:  name,
-					Error: validate.ErrFieldRequired,
-				})
-				// Reset bit.
-				result &^= 1 << bitIdx
-			}
-		}
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *SearchMetadataFacetOption) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *SearchMetadataFacetOption) UnmarshalJSON(data []byte) error {
+func (s *SearchProductResponse) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -2256,9 +2182,9 @@ func (s *SearchProductsReq) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Filter.Set {
-			e.FieldStart("filter")
-			s.Filter.Encode(e)
+		if s.Filters.Set {
+			e.FieldStart("filters")
+			s.Filters.Encode(e)
 		}
 	}
 	{
@@ -2277,7 +2203,7 @@ func (s *SearchProductsReq) encodeFields(e *jx.Encoder) {
 
 var jsonFieldsNameOfSearchProductsReq = [4]string{
 	0: "sort_by",
-	1: "filter",
+	1: "filters",
 	2: "page",
 	3: "query",
 }
@@ -2300,15 +2226,15 @@ func (s *SearchProductsReq) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"sort_by\"")
 			}
-		case "filter":
+		case "filters":
 			if err := func() error {
-				s.Filter.Reset()
-				if err := s.Filter.Decode(d); err != nil {
+				s.Filters.Reset()
+				if err := s.Filters.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"filter\"")
+				return errors.Wrap(err, "decode field \"filters\"")
 			}
 		case "page":
 			if err := func() error {
@@ -2355,14 +2281,14 @@ func (s *SearchProductsReq) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s SearchProductsReqFilter) Encode(e *jx.Encoder) {
+func (s SearchProductsReqFilters) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields implements json.Marshaler.
-func (s SearchProductsReqFilter) encodeFields(e *jx.Encoder) {
+func (s SearchProductsReqFilters) encodeFields(e *jx.Encoder) {
 	for k, elem := range s {
 		e.FieldStart(k)
 
@@ -2374,10 +2300,10 @@ func (s SearchProductsReqFilter) encodeFields(e *jx.Encoder) {
 	}
 }
 
-// Decode decodes SearchProductsReqFilter from json.
-func (s *SearchProductsReqFilter) Decode(d *jx.Decoder) error {
+// Decode decodes SearchProductsReqFilters from json.
+func (s *SearchProductsReqFilters) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode SearchProductsReqFilter to nil")
+		return errors.New("invalid: unable to decode SearchProductsReqFilters to nil")
 	}
 	m := s.init()
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
@@ -2403,21 +2329,21 @@ func (s *SearchProductsReqFilter) Decode(d *jx.Decoder) error {
 		m[string(k)] = elem
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode SearchProductsReqFilter")
+		return errors.Wrap(err, "decode SearchProductsReqFilters")
 	}
 
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s SearchProductsReqFilter) MarshalJSON() ([]byte, error) {
+func (s SearchProductsReqFilters) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *SearchProductsReqFilter) UnmarshalJSON(data []byte) error {
+func (s *SearchProductsReqFilters) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

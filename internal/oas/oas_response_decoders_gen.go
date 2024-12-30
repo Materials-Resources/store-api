@@ -627,7 +627,7 @@ func decodeListOrderShipmentsResponse(resp *http.Response) (res []ShipmentSimpli
 	return res, errors.Wrap(defRes, "error")
 }
 
-func decodeSearchProductsResponse(resp *http.Response) (res *ProductSearchResponse, _ error) {
+func decodeSearchProductsResponse(resp *http.Response) (res *SearchProductResponse, _ error) {
 	switch resp.StatusCode {
 	case 200:
 		// Code 200.
@@ -643,7 +643,7 @@ func decodeSearchProductsResponse(resp *http.Response) (res *ProductSearchRespon
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response ProductSearchResponse
+			var response SearchProductResponse
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err

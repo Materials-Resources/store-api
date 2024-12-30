@@ -1,9 +1,9 @@
 package main
 
 import (
-	"customer-api/internal/handler"
-	"customer-api/internal/oas"
-	"customer-api/internal/service"
+	"github.com/materials-resources/customer-api/internal/handler"
+	"github.com/materials-resources/customer-api/internal/oas"
+	"github.com/materials-resources/customer-api/internal/service"
 	"log"
 	"net/http"
 )

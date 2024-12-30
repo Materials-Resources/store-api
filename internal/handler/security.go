@@ -2,10 +2,10 @@ package handler
 
 import (
 	"context"
-	"customer-api/internal/oas"
-	"customer-api/internal/session"
 	"fmt"
 	"github.com/go-faster/errors"
+	"github.com/materials-resources/customer-api/internal/oas"
+	"github.com/materials-resources/customer-api/internal/session"
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 
@@ -24,11 +24,14 @@ type SecurityHandler struct {
 
 func (s SecurityHandler) HandleBearerAuth(ctx context.Context, operationName oas.OperationName, t oas.BearerAuth) (context.Context, error) {
 
+	fmt.Println("handling bearer auth")
 	if t.Token == "" {
-		return nil, errors.New("token is empty")
+		fmt.Println("no token")
+		// Signal the server to skip security handling
+		return ctx, nil
 	}
 
-	claims, err := s.parser.ParseJwt(t.GetToken())
+	_, err := s.parser.ParseJwt(t.GetToken())
 
 	// TODO custom implementation of security error
 	if err != nil {
@@ -36,8 +39,6 @@ func (s SecurityHandler) HandleBearerAuth(ctx context.Context, operationName oas
 			Err: errors.New("Could not parse token"),
 		}
 	}
-
-	fmt.Println(claims.Metadata.BranchID)
 
 	return ctx, nil
 

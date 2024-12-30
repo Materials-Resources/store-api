@@ -125,7 +125,7 @@ func encodeListOrderShipmentsResponse(response []ShipmentSimplified, w http.Resp
 	return nil
 }
 
-func encodeSearchProductsResponse(response *ProductSearchResponse, w http.ResponseWriter, span trace.Span) error {
+func encodeSearchProductsResponse(response *SearchProductResponse, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
 	span.SetStatus(codes.Ok, http.StatusText(200))

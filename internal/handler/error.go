@@ -2,8 +2,8 @@ package handler
 
 import (
 	"context"
-	"customer-api/internal/oas"
 	"errors"
+	"github.com/materials-resources/customer-api/internal/oas"
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 
