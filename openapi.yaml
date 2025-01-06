@@ -291,9 +291,7 @@ components:
             type: object
             properties:
               aggregations:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Aggregation'
+                $ref: '#/components/schemas/Aggregation'
               metadata:
                 $ref: '#/components/schemas/PageMetadata'
               products:

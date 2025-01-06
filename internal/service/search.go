@@ -37,6 +37,18 @@ func (s *Search) SearchProducts(ctx context.Context, req *oas.SearchProductsReq)
 			TotalPages:   int(pbRes.Msg.GetPageMetadata().GetTotalPages()),
 			TotalRecords: int(pbRes.Msg.GetPageMetadata().GetTotalRecords()),
 		},
+		Aggregations: make(map[string][]oas.Bucket),
+	}
+
+	for fbName, pbFb := range pbRes.Msg.GetAggregations().GetFieldBuckets() {
+		var buckets []oas.Bucket
+		for _, pbBucket := range pbFb.Aggregations {
+			buckets = append(buckets, oas.Bucket{
+				Value: pbBucket.GetName(),
+				Count: int(pbBucket.GetCount()),
+			})
+		}
+		response.Aggregations[fbName] = buckets
 	}
 
 	for _, pbProduct := range pbRes.Msg.GetResults() {

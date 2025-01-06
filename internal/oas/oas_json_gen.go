@@ -2029,11 +2029,7 @@ func (s *SearchProductResponse) Encode(e *jx.Encoder) {
 func (s *SearchProductResponse) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("aggregations")
-		e.ArrStart()
-		for _, elem := range s.Aggregations {
-			elem.Encode(e)
-		}
-		e.ArrEnd()
+		s.Aggregations.Encode(e)
 	}
 	{
 		e.FieldStart("metadata")
@@ -2067,15 +2063,7 @@ func (s *SearchProductResponse) Decode(d *jx.Decoder) error {
 		case "aggregations":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.Aggregations = make([]Aggregation, 0)
-				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem Aggregation
-					if err := elem.Decode(d); err != nil {
-						return err
-					}
-					s.Aggregations = append(s.Aggregations, elem)
-					return nil
-				}); err != nil {
+				if err := s.Aggregations.Decode(d); err != nil {
 					return err
 				}
 				return nil

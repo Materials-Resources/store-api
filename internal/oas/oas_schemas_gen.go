@@ -827,13 +827,13 @@ func (s *Product) SetImageURL(val OptString) {
 }
 
 type SearchProductResponse struct {
-	Aggregations []Aggregation `json:"aggregations"`
-	Metadata     PageMetadata  `json:"metadata"`
-	Products     []Product     `json:"products"`
+	Aggregations Aggregation  `json:"aggregations"`
+	Metadata     PageMetadata `json:"metadata"`
+	Products     []Product    `json:"products"`
 }
 
 // GetAggregations returns the value of Aggregations.
-func (s *SearchProductResponse) GetAggregations() []Aggregation {
+func (s *SearchProductResponse) GetAggregations() Aggregation {
 	return s.Aggregations
 }
 
@@ -848,7 +848,7 @@ func (s *SearchProductResponse) GetProducts() []Product {
 }
 
 // SetAggregations sets the value of Aggregations.
-func (s *SearchProductResponse) SetAggregations(val []Aggregation) {
+func (s *SearchProductResponse) SetAggregations(val Aggregation) {
 	s.Aggregations = val
 }
 

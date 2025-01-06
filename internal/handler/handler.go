@@ -108,7 +108,6 @@ func (h Handler) ListOrderShipments(ctx context.Context, params oas.ListOrderShi
 }
 
 func (h Handler) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (*oas.SearchProductResponse, error) {
-	fmt.Println("searching products")
 	return h.service.Search.SearchProducts(ctx, req)
 }
 
