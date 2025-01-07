@@ -207,6 +207,7 @@ paths:
   /products/{id}:
     get:
       summary: Get a product by ID
+      security: []
       operationId: getProduct
       tags:
         - products

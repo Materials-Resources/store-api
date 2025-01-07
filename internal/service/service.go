@@ -2,7 +2,7 @@ package service
 
 type Service struct {
 	Order   *Order
-	Catalog *Catalog
+	Catalog *CatalogService
 	Search  *Search
 }
 

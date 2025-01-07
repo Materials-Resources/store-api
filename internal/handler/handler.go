@@ -4,7 +4,6 @@ import (
 	"connectrpc.com/connect"
 	"context"
 	"fmt"
-	catalogv1 "github.com/materials-resources/customer-api/internal/grpc-client/catalog"
 	orderv1 "github.com/materials-resources/customer-api/internal/grpc-client/order"
 	"github.com/materials-resources/customer-api/internal/oas"
 	"github.com/materials-resources/customer-api/internal/service"
@@ -68,23 +67,8 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (*oas.
 }
 
 func (h Handler) GetProduct(ctx context.Context, params oas.GetProductParams) (oas.GetProductRes, error) {
-	res, err := h.service.Catalog.Client.GetProduct(ctx, connect.NewRequest(&catalogv1.GetProductRequest{
-		ProductUid: params.ID,
-	}))
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &oas.GetProductOK{
-		Details: oas.Product{
-			ID:          res.Msg.GetProduct().GetUid(),
-			Sn:          res.Msg.GetProduct().GetSn(),
-			Name:        res.Msg.GetProduct().GetName(),
-			Description: oas.OptString{Value: res.Msg.GetProduct().GetDescription(), Set: true},
-			ImageURL:    oas.OptString{},
-		},
-	}, nil
+	res, err := h.service.Catalog.GetProduct(ctx, params)
+	return res, err
 }
 
 func (h Handler) ListBranchOrders(ctx context.Context, params oas.ListBranchOrdersParams) ([]oas.Order, error) {

@@ -22,8 +22,15 @@ func NewSearchService() *Search {
 
 func (s *Search) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (*oas.SearchProductResponse, error) {
 	pbReq := &searchv1.SearchProductsRequest{
-		Query: req.GetQuery().Or(""),
-		Page:  int32(req.GetPage().Or(1)),
+		Query:   req.GetQuery().Or(""),
+		Page:    int32(req.GetPage().Or(1)),
+		Filters: make(map[string]*searchv1.Filter),
+	}
+
+	for name, values := range req.GetFilters().Or(make(oas.SearchProductsReqFilters)) {
+		pbReq.Filters[name] = &searchv1.Filter{
+			Values: values,
+		}
 	}
 
 	pbRes, err := s.Client.SearchProducts(ctx, connect.NewRequest(pbReq))

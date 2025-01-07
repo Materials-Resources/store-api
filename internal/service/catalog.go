@@ -2,18 +2,44 @@ package service
 
 import (
 	"connectrpc.com/connect"
+	"context"
+	catalogv1 "github.com/materials-resources/customer-api/internal/grpc-client/catalog"
 	"github.com/materials-resources/customer-api/internal/grpc-client/catalog/catalogconnect"
+	"github.com/materials-resources/customer-api/internal/oas"
 	"net/http"
 )
 
-type Catalog struct {
+type CatalogService struct {
 	Client catalogconnect.CatalogServiceClient
 }
 
-func NewCatalogService() *Catalog {
-	return &Catalog{
+func NewCatalogService() *CatalogService {
+	return &CatalogService{
 		Client: catalogconnect.NewCatalogServiceClient(http.DefaultClient,
-			"http://localhost:50058",
+			"http://localhost:8082",
 			connect.WithGRPC()),
 	}
+}
+
+func (s *CatalogService) GetProduct(ctx context.Context, params oas.GetProductParams) (oas.GetProductRes, error) {
+	pbReq := &catalogv1.GetProductRequest{Id: params.ID}
+
+	pbRes, err := s.Client.GetProduct(ctx, connect.NewRequest(pbReq))
+
+	if err != nil {
+		return nil, err
+	}
+
+	response := oas.GetProductOK{
+		Details: oas.Product{
+			ID:          pbRes.Msg.GetProduct().GetId(),
+			Sn:          pbRes.Msg.GetProduct().GetSn(),
+			Name:        pbRes.Msg.GetProduct().GetName(),
+			Description: oas.OptString{Value: pbRes.Msg.GetProduct().GetDescription(), Set: true},
+			ImageURL:    oas.OptString{},
+		},
+	}
+
+	return &response, nil
+
 }
