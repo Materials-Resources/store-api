@@ -88,6 +88,69 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /account/quotes:
+    post:
+      summary: Create a new quote
+      operationId: createQuote
+      tags:
+        - quotes
+      description: |
+        Create a new quote. The `customer_id` and `contact_id` are extracted from the provided authentication token. Make sure to include a valid bearer token in the `Authorization` header.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - purchase_order
+                - delivery_instructions
+                - request_date
+                - items
+              properties:
+                purchase_order:
+                  type: string
+                delivery_instructions:
+                  type: string
+                request_date:
+                  type: string
+                  format: date
+                  description: Date of the request.  Should be in YYYY-MM-DD format (ISO 8601).
+                items:
+                  type: array
+                  description: List of items for the quote
+                  items:
+                    type: object
+                    required:
+                      - product_id
+                      - quantity
+                    properties:
+                      product_id:
+                        type: string
+                        description: ID of the product
+                      quantity:
+                        type: integer
+                        description: Quantity of the product
+      responses:
+        '201':
+          description: Quote successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quote_id:
+                    type: string
+                    description: ID of the created quote
+                  status:
+                    type: string
+                    description: Status of the quote creation
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /orders:
     get:
       summary: Get all orders for a customer branch

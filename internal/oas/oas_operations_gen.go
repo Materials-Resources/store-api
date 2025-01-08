@@ -6,6 +6,7 @@ package oas
 type OperationName = string
 
 const (
+	CreateQuoteOperation          OperationName = "CreateQuote"
 	GetOrderOperation             OperationName = "GetOrder"
 	GetProductOperation           OperationName = "GetProduct"
 	ListBranchOrdersOperation     OperationName = "ListBranchOrders"

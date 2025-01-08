@@ -38,6 +38,18 @@ func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchRe
 	return &oas.SetActiveBranchOK{}, nil
 }
 
+func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (*oas.CreateQuoteCreated, error) {
+	fmt.Println(req.GetRequestDate())
+	fmt.Println(req.GetItems())
+
+	response := oas.CreateQuoteCreated{
+		QuoteID: oas.OptString{Value: "1234567890", Set: true},
+		Status:  oas.OptString{Value: "PENDING", Set: true},
+	}
+
+	return &response, nil
+}
+
 func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (*oas.GetOrderOK, error) {
 
 	res, err := h.service.Order.Client.GetOrder(ctx, connect.NewRequest(&orderv1.GetOrderRequest{

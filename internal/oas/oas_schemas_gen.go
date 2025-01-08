@@ -4,6 +4,7 @@ package oas
 
 import (
 	"fmt"
+	"time"
 )
 
 func (s *ErrorStatusCode) Error() string {
@@ -178,6 +179,109 @@ func (s *Bucket) SetValue(val string) {
 // SetCount sets the value of Count.
 func (s *Bucket) SetCount(val int) {
 	s.Count = val
+}
+
+type CreateQuoteCreated struct {
+	// ID of the created quote.
+	QuoteID OptString `json:"quote_id"`
+	// Status of the quote creation.
+	Status OptString `json:"status"`
+}
+
+// GetQuoteID returns the value of QuoteID.
+func (s *CreateQuoteCreated) GetQuoteID() OptString {
+	return s.QuoteID
+}
+
+// GetStatus returns the value of Status.
+func (s *CreateQuoteCreated) GetStatus() OptString {
+	return s.Status
+}
+
+// SetQuoteID sets the value of QuoteID.
+func (s *CreateQuoteCreated) SetQuoteID(val OptString) {
+	s.QuoteID = val
+}
+
+// SetStatus sets the value of Status.
+func (s *CreateQuoteCreated) SetStatus(val OptString) {
+	s.Status = val
+}
+
+type CreateQuoteReq struct {
+	PurchaseOrder        string `json:"purchase_order"`
+	DeliveryInstructions string `json:"delivery_instructions"`
+	// Date of the request.  Should be in YYYY-MM-DD format (ISO 8601).
+	RequestDate time.Time `json:"request_date"`
+	// List of items for the quote.
+	Items []CreateQuoteReqItemsItem `json:"items"`
+}
+
+// GetPurchaseOrder returns the value of PurchaseOrder.
+func (s *CreateQuoteReq) GetPurchaseOrder() string {
+	return s.PurchaseOrder
+}
+
+// GetDeliveryInstructions returns the value of DeliveryInstructions.
+func (s *CreateQuoteReq) GetDeliveryInstructions() string {
+	return s.DeliveryInstructions
+}
+
+// GetRequestDate returns the value of RequestDate.
+func (s *CreateQuoteReq) GetRequestDate() time.Time {
+	return s.RequestDate
+}
+
+// GetItems returns the value of Items.
+func (s *CreateQuoteReq) GetItems() []CreateQuoteReqItemsItem {
+	return s.Items
+}
+
+// SetPurchaseOrder sets the value of PurchaseOrder.
+func (s *CreateQuoteReq) SetPurchaseOrder(val string) {
+	s.PurchaseOrder = val
+}
+
+// SetDeliveryInstructions sets the value of DeliveryInstructions.
+func (s *CreateQuoteReq) SetDeliveryInstructions(val string) {
+	s.DeliveryInstructions = val
+}
+
+// SetRequestDate sets the value of RequestDate.
+func (s *CreateQuoteReq) SetRequestDate(val time.Time) {
+	s.RequestDate = val
+}
+
+// SetItems sets the value of Items.
+func (s *CreateQuoteReq) SetItems(val []CreateQuoteReqItemsItem) {
+	s.Items = val
+}
+
+type CreateQuoteReqItemsItem struct {
+	// ID of the product.
+	ProductID string `json:"product_id"`
+	// Quantity of the product.
+	Quantity int `json:"quantity"`
+}
+
+// GetProductID returns the value of ProductID.
+func (s *CreateQuoteReqItemsItem) GetProductID() string {
+	return s.ProductID
+}
+
+// GetQuantity returns the value of Quantity.
+func (s *CreateQuoteReqItemsItem) GetQuantity() int {
+	return s.Quantity
+}
+
+// SetProductID sets the value of ProductID.
+func (s *CreateQuoteReqItemsItem) SetProductID(val string) {
+	s.ProductID = val
+}
+
+// SetQuantity sets the value of Quantity.
+func (s *CreateQuoteReqItemsItem) SetQuantity(val int) {
+	s.Quantity = val
 }
 
 // Ref: #/components/schemas/Customer

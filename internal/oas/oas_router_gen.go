@@ -61,28 +61,64 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "account/branch"
+			case 'a': // Prefix: "account/"
 				origElem := elem
-				if l := len("account/branch"); len(elem) >= l && elem[0:l] == "account/branch" {
+				if l := len("account/"); len(elem) >= l && elem[0:l] == "account/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					switch r.Method {
-					case "PUT":
-						s.handleSetActiveBranchRequest([0]string{}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, "PUT")
-					}
-
-					return
+					break
 				}
 				switch elem[0] {
-				case 'e': // Prefix: "es"
+				case 'b': // Prefix: "branch"
 					origElem := elem
-					if l := len("es"); len(elem) >= l && elem[0:l] == "es" {
+					if l := len("branch"); len(elem) >= l && elem[0:l] == "branch" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch r.Method {
+						case "PUT":
+							s.handleSetActiveBranchRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "PUT")
+						}
+
+						return
+					}
+					switch elem[0] {
+					case 'e': // Prefix: "es"
+						origElem := elem
+						if l := len("es"); len(elem) >= l && elem[0:l] == "es" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleListCustomerBranchesRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+
+						elem = origElem
+					}
+
+					elem = origElem
+				case 'q': // Prefix: "quotes"
+					origElem := elem
+					if l := len("quotes"); len(elem) >= l && elem[0:l] == "quotes" {
 						elem = elem[l:]
 					} else {
 						break
@@ -91,10 +127,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					if len(elem) == 0 {
 						// Leaf node.
 						switch r.Method {
-						case "GET":
-							s.handleListCustomerBranchesRequest([0]string{}, elemIsEscaped, w, r)
+						case "POST":
+							s.handleCreateQuoteRequest([0]string{}, elemIsEscaped, w, r)
 						default:
-							s.notAllowed(w, r, "GET")
+							s.notAllowed(w, r, "POST")
 						}
 
 						return
@@ -364,32 +400,72 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "account/branch"
+			case 'a': // Prefix: "account/"
 				origElem := elem
-				if l := len("account/branch"); len(elem) >= l && elem[0:l] == "account/branch" {
+				if l := len("account/"); len(elem) >= l && elem[0:l] == "account/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					switch method {
-					case "PUT":
-						r.name = SetActiveBranchOperation
-						r.summary = "Set active branch for current user"
-						r.operationID = "setActiveBranch"
-						r.pathPattern = "/account/branch"
-						r.args = args
-						r.count = 0
-						return r, true
-					default:
-						return
-					}
+					break
 				}
 				switch elem[0] {
-				case 'e': // Prefix: "es"
+				case 'b': // Prefix: "branch"
 					origElem := elem
-					if l := len("es"); len(elem) >= l && elem[0:l] == "es" {
+					if l := len("branch"); len(elem) >= l && elem[0:l] == "branch" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "PUT":
+							r.name = SetActiveBranchOperation
+							r.summary = "Set active branch for current user"
+							r.operationID = "setActiveBranch"
+							r.pathPattern = "/account/branch"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+					switch elem[0] {
+					case 'e': // Prefix: "es"
+						origElem := elem
+						if l := len("es"); len(elem) >= l && elem[0:l] == "es" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "GET":
+								r.name = ListCustomerBranchesOperation
+								r.summary = "Get available branches for customer"
+								r.operationID = "listCustomerBranches"
+								r.pathPattern = "/account/branches"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
+					}
+
+					elem = origElem
+				case 'q': // Prefix: "quotes"
+					origElem := elem
+					if l := len("quotes"); len(elem) >= l && elem[0:l] == "quotes" {
 						elem = elem[l:]
 					} else {
 						break
@@ -398,11 +474,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					if len(elem) == 0 {
 						// Leaf node.
 						switch method {
-						case "GET":
-							r.name = ListCustomerBranchesOperation
-							r.summary = "Get available branches for customer"
-							r.operationID = "listCustomerBranches"
-							r.pathPattern = "/account/branches"
+						case "POST":
+							r.name = CreateQuoteOperation
+							r.summary = "Create a new quote"
+							r.operationID = "createQuote"
+							r.pathPattern = "/account/quotes"
 							r.args = args
 							r.count = 0
 							return r, true

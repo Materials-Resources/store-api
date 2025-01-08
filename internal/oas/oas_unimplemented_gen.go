@@ -13,6 +13,16 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// CreateQuote implements createQuote operation.
+//
+// Create a new quote. The `customer_id` and `contact_id` are extracted from the provided
+// authentication token. Make sure to include a valid bearer token in the `Authorization` header.
+//
+// POST /account/quotes
+func (UnimplementedHandler) CreateQuote(ctx context.Context, req *CreateQuoteReq) (r *CreateQuoteCreated, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetOrder implements getOrder operation.
 //
 // Get an order by ID.

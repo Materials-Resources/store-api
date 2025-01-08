@@ -8,6 +8,13 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// CreateQuote implements createQuote operation.
+	//
+	// Create a new quote. The `customer_id` and `contact_id` are extracted from the provided
+	// authentication token. Make sure to include a valid bearer token in the `Authorization` header.
+	//
+	// POST /account/quotes
+	CreateQuote(ctx context.Context, req *CreateQuoteReq) (*CreateQuoteCreated, error)
 	// GetOrder implements getOrder operation.
 	//
 	// Get an order by ID.
