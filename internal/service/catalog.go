@@ -31,7 +31,7 @@ func (s *CatalogService) GetProduct(ctx context.Context, params oas.GetProductPa
 	}
 
 	response := oas.GetProductOK{
-		Details: oas.Product{
+		Product: oas.Product{
 			ID:          pbRes.Msg.GetProduct().GetId(),
 			Sn:          pbRes.Msg.GetProduct().GetSn(),
 			Name:        pbRes.Msg.GetProduct().GetName(),

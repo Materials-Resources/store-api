@@ -48,18 +48,3 @@ func (s *Server) securityBearerAuth(ctx context.Context, operationName Operation
 	}
 	return rctx, true, err
 }
-
-// SecuritySource is provider of security values (tokens, passwords, etc.).
-type SecuritySource interface {
-	// BearerAuth provides BearerAuth security value.
-	BearerAuth(ctx context.Context, operationName OperationName) (BearerAuth, error)
-}
-
-func (s *Client) securityBearerAuth(ctx context.Context, operationName OperationName, req *http.Request) error {
-	t, err := s.sec.BearerAuth(ctx, operationName)
-	if err != nil {
-		return errors.Wrap(err, "security source \"BearerAuth\"")
-	}
-	req.Header.Set("Authorization", "Bearer "+t.Token)
-	return nil
-}

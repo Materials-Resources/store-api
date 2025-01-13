@@ -24,9 +24,10 @@ type Handler struct {
 	z       *zitadel.Client
 }
 
-func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) ([]oas.OrderSummary, error) {
-	//TODO implement me
-	panic("implement me")
+func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (*oas.ListOrdersOK, error) {
+	res, err := h.service.Order.ListOrders(ctx, params)
+	return res, err
+
 }
 
 func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchReq) (oas.SetActiveBranchRes, error) {
@@ -41,7 +42,7 @@ func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchRe
 	return &oas.SetActiveBranchOK{}, nil
 }
 
-func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.CreateQuoteRes, error) {
+func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (*oas.CreateQuoteCreated, error) {
 	fmt.Println(req.GetDateRequested())
 	fmt.Println(req.GetItems())
 
@@ -65,22 +66,12 @@ func (h Handler) GetProduct(ctx context.Context, params oas.GetProductParams) (o
 	return res, err
 }
 
-func (h Handler) ListCustomerBranches(ctx context.Context, params oas.ListCustomerBranchesParams) (oas.ListCustomerBranchesRes, error) {
+func (h Handler) ListCustomerBranches(ctx context.Context, params oas.ListCustomerBranchesParams) (*oas.ListCustomerBranchesOK, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h Handler) ListOrderInvoices(ctx context.Context, params oas.ListOrderInvoicesParams) (oas.ListOrderInvoicesRes, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h Handler) ListOrderShipments(ctx context.Context, params oas.ListOrderShipmentsParams) (oas.ListOrderShipmentsRes, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h Handler) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (oas.SearchProductsRes, error) {
+func (h Handler) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (*oas.SearchProductsOK, error) {
 	return h.service.Search.SearchProducts(ctx, req)
 }
 

@@ -1,9 +1,11 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
   title: Materials Resources Store APIs
   description: APIs for the Materials Resources Store designed specifically for the accompanying web application
   version: 1.0.0
 tags:
+  - name: account
+    description: Account operations such as order and invoice management
   - name: orders
     description: Order operations for customers
   - name: products
@@ -79,9 +81,13 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Branch'
+                type: object
+                properties:
+                  branches:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Branch'
+
         default:
           description: General Error
           content:
@@ -91,6 +97,8 @@ paths:
   /account/orders:
     get:
       security: []
+      tags:
+        - account
       summary: Get a list of orders
       operationId: listOrders
       parameters:
@@ -106,19 +114,64 @@ paths:
             type: string
       responses:
         '200':
-          description: OK
+          description: "List of order summaries for account"
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OrderSummary'
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrderSummary'
+                required:
+                  - orders
+
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /account/orders/{id}:
+    get:
+      security: []
+      operationId: getOrder
+      tags:
+        - account
+      summary: Get an order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Order Details"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order:
+                    $ref: '#/components/schemas/Order'
+                required:
+                  - order
+        '404':
+          description: Not Found
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /account/quotes:
     post:
       summary: Create a new quote
       operationId: createQuote
       tags:
-        - quotes
+        - account
       security: []
       description: |
         Create a new quote. The `customer_id` and `contact_id` are extracted from the provided authentication token. Make sure to include a valid bearer token in the `Authorization` header.
@@ -131,7 +184,7 @@ paths:
               required:
                 - purchase_order
                 - delivery_instructions
-                - request_date
+                - date_requested
                 - items
               properties:
                 purchase_order:
@@ -177,93 +230,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /orders/{id}:
-    get:
-      security: []
-      operationId: getOrder
-      tags:
-        - orders
-      summary: Get an order by ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                required:
-                  - order
-                type: object
-                properties:
-                  order:
-                    $ref: '#/components/schemas/Order'
-        '404':
-          description: Not Found
-        default:
-          description: General Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /orders/{id}/invoices:
-    get:
-      tags:
-        - orders
-      summary: Get invoices for an order
-      operationId: listOrderInvoices
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InvoiceSimplified'
-        default:
-          description: General Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /orders/{id}/shipments:
-    get:
-      tags:
-        - orders
-      summary: Get shipments for an order
-      operationId: listOrderShipments
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                    $ref: '#/components/schemas/ShipmentSimplified'
-        default:
-          description: General Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
   /products/{id}:
     get:
       summary: Get a product by ID
@@ -284,11 +250,13 @@ paths:
             application/json:
               schema:
                 type: object
-                required:
-                  - details
                 properties:
-                  details:
+                  product:
                     $ref: '#/components/schemas/Product'
+                required:
+                  - product
+        '404':
+          description: Not Found
         default:
           description: General Error
           content:
@@ -296,8 +264,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-        '404':
-          description: Not Found
+
   /search/products:
     post:
       security: []
@@ -326,7 +293,24 @@ paths:
                   type: string
       responses:
         '200':
-          $ref: '#/components/responses/SearchProductResponse'
+          description: "Search results"
+          content:
+            application/json:
+              schema:
+                required:
+                  - metadata
+                  - products
+                  - aggregations
+                type: object
+                properties:
+                  aggregations:
+                    $ref: '#/components/schemas/Aggregation'
+                  metadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
         default:
           description: General Error
           content:
@@ -339,39 +323,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-  responses:
-    SearchProductResponse:
-      description: Search results for products
-      content:
-        application/json:
-          schema:
-            required:
-              - metadata
-              - products
-              - aggregations
-            type: object
-            properties:
-              aggregations:
-                $ref: '#/components/schemas/Aggregation'
-              metadata:
-                $ref: '#/components/schemas/PageMetadata'
-              products:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Product'
   schemas:
-    Error:
-      description: Represents error object
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int64
-        message:
-          type: string
-      required:
-        - code
-        - message
     RecommendedProduct:
       type: object
       required:
@@ -569,6 +521,10 @@ components:
         total:
           x-go-type: float64
           type: number
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
     OrderItem:
       required:
         - product_sn
@@ -634,10 +590,10 @@ components:
           $ref: '#/components/schemas/OrderStatus'
         date_created:
           type: string
-          format: datetime
+          format: date-time
         date_requested:
           type: string
-          format: datetime
+          format: date-time
     Product:
       required:
         - id
@@ -669,4 +625,16 @@ components:
           type: "string"
         name:
           type: "string"
+    Error:
+      description: Represents error object
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+        message:
+          type: string
+      required:
+        - code
+        - message
 

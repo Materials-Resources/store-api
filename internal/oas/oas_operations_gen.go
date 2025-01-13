@@ -10,8 +10,6 @@ const (
 	GetOrderOperation             OperationName = "GetOrder"
 	GetProductOperation           OperationName = "GetProduct"
 	ListCustomerBranchesOperation OperationName = "ListCustomerBranches"
-	ListOrderInvoicesOperation    OperationName = "ListOrderInvoices"
-	ListOrderShipmentsOperation   OperationName = "ListOrderShipments"
 	ListOrdersOperation           OperationName = "ListOrders"
 	SearchProductsOperation       OperationName = "SearchProducts"
 	SetActiveBranchOperation      OperationName = "SetActiveBranch"

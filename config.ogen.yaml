@@ -1,0 +1,11 @@
+generator:
+  convenient_errors: "auto"
+  features:
+    enable:
+      # Enables paths server generation
+      - "paths/server"
+      # Enables validation of server responses
+      - "server/response/validation"
+      # Enables OpenTelemetry integration
+      - "ogen/otel"
+    disable_all: true

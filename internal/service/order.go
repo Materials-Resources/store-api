@@ -38,13 +38,58 @@ func (s *Order) GetOrder(ctx context.Context, req oas.GetOrderParams) (oas.GetOr
 			Status:               convertOrderStatus(pbRes.Msg.GetOrder().GetStatus()),
 			DateCreated:          pbRes.Msg.GetOrder().GetDateCreated().AsTime(),
 			DateRequested:        pbRes.Msg.GetOrder().GetDateRequested().AsTime(),
-			Taker:                oas.OptString{},
+			Taker:                oas.NewOptString(""),
 			DeliveryInstructions: "",
 			ShippingAddress:      oas.Address{},
 			Total:                0,
 		},
 	}
 
+	for _, item := range pbRes.Msg.GetOrder().GetOrderItems() {
+		response.Order.Items = append(response.Order.Items, oas.OrderItem{
+			ProductSn:           item.GetProductSn(),
+			ProductName:         item.GetProductName(),
+			ProductID:           item.GetProductId(),
+			CustomerProductSn:   item.GetCustomerProductSn(),
+			OrderQuantity:       0,
+			OrderQuantityUnit:   item.GetQuantityUnit(),
+			PriceUnit:           "",
+			Price:               0,
+			TotalPrice:          0,
+			ShippedQuantity:     0,
+			BackOrderedQuantity: 0,
+		})
+	}
+
+	return &response, nil
+}
+
+func (s *Order) ListOrders(ctx context.Context, req oas.ListOrdersParams) (*oas.ListOrdersOK, error) {
+	pbReq := &orderv1.ListOrdersRequest{
+		Page:     1,
+		PageSize: 50,
+		BranchId: "100039",
+	}
+
+	pbRes, err := s.Client.ListOrders(ctx, connect.NewRequest(pbReq))
+
+	if err != nil {
+		return nil, err
+	}
+
+	response := oas.ListOrdersOK{}
+
+	for _, pbOrder := range pbRes.Msg.GetOrders() {
+		response.Orders = append(response.Orders, oas.OrderSummary{
+			ID:            pbOrder.GetId(),
+			ContactID:     pbOrder.GetContactId(),
+			BranchID:      pbOrder.GetBranchId(),
+			PurchaseOrder: pbOrder.GetPurchaseOrder(),
+			Status:        convertOrderStatus(pbOrder.GetStatus()),
+			DateCreated:   pbOrder.GetDateCreated().AsTime(),
+			DateRequested: pbOrder.GetDateRequested().AsTime(),
+		})
+	}
 	return &response, nil
 }
 

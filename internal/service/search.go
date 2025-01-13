@@ -20,7 +20,7 @@ func NewSearchService() *Search {
 	}
 }
 
-func (s *Search) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (*oas.SearchProductResponse, error) {
+func (s *Search) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (*oas.SearchProductsOK, error) {
 	pbReq := &searchv1.SearchProductsRequest{
 		Query:   req.GetQuery().Or(""),
 		Page:    int32(req.GetPage().Or(1)),
@@ -39,7 +39,7 @@ func (s *Search) SearchProducts(ctx context.Context, req *oas.SearchProductsReq)
 		return nil, err
 	}
 
-	response := oas.SearchProductResponse{
+	response := oas.SearchProductsOK{
 		Products: make([]oas.Product, 0), Metadata: oas.PageMetadata{
 			TotalPages:   int(pbRes.Msg.GetPageMetadata().GetTotalPages()),
 			TotalRecords: int(pbRes.Msg.GetPageMetadata().GetTotalRecords()),
