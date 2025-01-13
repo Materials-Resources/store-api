@@ -204,8 +204,8 @@ func decodeListCustomerBranchesParams(args [0]string, argsEscaped bool, r *http.
 
 // ListOrdersParams is parameters of listOrders operation.
 type ListOrdersParams struct {
-	Page    string
-	PerPage string
+	Page     int
+	PageSize int
 }
 
 func unpackListOrdersParams(packed middleware.Parameters) (params ListOrdersParams) {
@@ -214,14 +214,14 @@ func unpackListOrdersParams(packed middleware.Parameters) (params ListOrdersPara
 			Name: "page",
 			In:   "query",
 		}
-		params.Page = packed[key].(string)
+		params.Page = packed[key].(int)
 	}
 	{
 		key := middleware.ParameterKey{
-			Name: "per_page",
+			Name: "page_size",
 			In:   "query",
 		}
-		params.PerPage = packed[key].(string)
+		params.PageSize = packed[key].(int)
 	}
 	return params
 }
@@ -243,7 +243,7 @@ func decodeListOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (
 					return err
 				}
 
-				c, err := conv.ToString(val)
+				c, err := conv.ToInt(val)
 				if err != nil {
 					return err
 				}
@@ -264,10 +264,10 @@ func decodeListOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (
 			Err:  err,
 		}
 	}
-	// Decode query: per_page.
+	// Decode query: page_size.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "per_page",
+			Name:    "page_size",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
@@ -279,12 +279,12 @@ func decodeListOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (
 					return err
 				}
 
-				c, err := conv.ToString(val)
+				c, err := conv.ToInt(val)
 				if err != nil {
 					return err
 				}
 
-				params.PerPage = c
+				params.PageSize = c
 				return nil
 			}); err != nil {
 				return err
@@ -295,7 +295,7 @@ func decodeListOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "per_page",
+			Name: "page_size",
 			In:   "query",
 			Err:  err,
 		}

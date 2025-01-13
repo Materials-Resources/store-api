@@ -66,8 +66,8 @@ func (s *Order) GetOrder(ctx context.Context, req oas.GetOrderParams) (oas.GetOr
 
 func (s *Order) ListOrders(ctx context.Context, req oas.ListOrdersParams) (*oas.ListOrdersOK, error) {
 	pbReq := &orderv1.ListOrdersRequest{
-		Page:     1,
-		PageSize: 50,
+		Page:     int32(req.Page),
+		PageSize: int32(req.PageSize),
 		BranchId: "100039",
 	}
 

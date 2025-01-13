@@ -106,12 +106,12 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-        - name: per_page
+            type: integer
+        - name: page_size
           in: query
           required: true
           schema:
-            type: string
+            type: integer
       responses:
         '200':
           description: "List of order summaries for account"

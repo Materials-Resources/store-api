@@ -772,9 +772,9 @@ func (s *Server) handleListOrdersRequest(args [0]string, argsEscaped bool, w htt
 					In:   "query",
 				}: params.Page,
 				{
-					Name: "per_page",
+					Name: "page_size",
 					In:   "query",
-				}: params.PerPage,
+				}: params.PageSize,
 			},
 			Raw: r,
 		}
