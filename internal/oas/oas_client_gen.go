@@ -30,49 +30,49 @@ type Invoker interface {
 	// authentication token. Make sure to include a valid bearer token in the `Authorization` header.
 	//
 	// POST /account/quotes
-	CreateQuote(ctx context.Context, request *CreateQuoteReq) (*CreateQuoteCreated, error)
+	CreateQuote(ctx context.Context, request *CreateQuoteReq) (CreateQuoteRes, error)
 	// GetOrder invokes getOrder operation.
 	//
 	// Get an order by ID.
 	//
 	// GET /orders/{id}
-	GetOrder(ctx context.Context, params GetOrderParams) (*GetOrderOK, error)
+	GetOrder(ctx context.Context, params GetOrderParams) (GetOrderRes, error)
 	// GetProduct invokes getProduct operation.
 	//
 	// Get a product by ID.
 	//
 	// GET /products/{id}
 	GetProduct(ctx context.Context, params GetProductParams) (GetProductRes, error)
-	// ListBranchOrders invokes listBranchOrders operation.
-	//
-	// Get all orders for a customer branch.
-	//
-	// GET /orders
-	ListBranchOrders(ctx context.Context, params ListBranchOrdersParams) ([]Order, error)
 	// ListCustomerBranches invokes listCustomerBranches operation.
 	//
 	// Get available branches for customer.
 	//
 	// GET /account/branches
-	ListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) ([]Branch, error)
+	ListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) (ListCustomerBranchesRes, error)
 	// ListOrderInvoices invokes listOrderInvoices operation.
 	//
 	// Get invoices for an order.
 	//
 	// GET /orders/{id}/invoices
-	ListOrderInvoices(ctx context.Context, params ListOrderInvoicesParams) ([]InvoiceSimplified, error)
+	ListOrderInvoices(ctx context.Context, params ListOrderInvoicesParams) (ListOrderInvoicesRes, error)
 	// ListOrderShipments invokes listOrderShipments operation.
 	//
 	// Get shipments for an order.
 	//
 	// GET /orders/{id}/shipments
-	ListOrderShipments(ctx context.Context, params ListOrderShipmentsParams) ([]ShipmentSimplified, error)
+	ListOrderShipments(ctx context.Context, params ListOrderShipmentsParams) (ListOrderShipmentsRes, error)
+	// ListOrders invokes listOrders operation.
+	//
+	// Get a list of orders.
+	//
+	// GET /account/orders
+	ListOrders(ctx context.Context, params ListOrdersParams) ([]OrderSummary, error)
 	// SearchProducts invokes searchProducts operation.
 	//
 	// Search for products.
 	//
 	// POST /search/products
-	SearchProducts(ctx context.Context, request *SearchProductsReq) (*SearchProductResponse, error)
+	SearchProducts(ctx context.Context, request *SearchProductsReq) (SearchProductsRes, error)
 	// SetActiveBranch invokes setActiveBranch operation.
 	//
 	// Set active branch for current user.
@@ -87,12 +87,8 @@ type Client struct {
 	sec       SecuritySource
 	baseClient
 }
-type errorHandler interface {
-	NewError(ctx context.Context, err error) *ErrorStatusCode
-}
 
 var _ Handler = struct {
-	errorHandler
 	*Client
 }{}
 
@@ -141,12 +137,12 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 // authentication token. Make sure to include a valid bearer token in the `Authorization` header.
 //
 // POST /account/quotes
-func (c *Client) CreateQuote(ctx context.Context, request *CreateQuoteReq) (*CreateQuoteCreated, error) {
+func (c *Client) CreateQuote(ctx context.Context, request *CreateQuoteReq) (CreateQuoteRes, error) {
 	res, err := c.sendCreateQuote(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendCreateQuote(ctx context.Context, request *CreateQuoteReq) (res *CreateQuoteCreated, err error) {
+func (c *Client) sendCreateQuote(ctx context.Context, request *CreateQuoteReq) (res CreateQuoteRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createQuote"),
 		semconv.HTTPRequestMethodKey.String("POST"),
@@ -195,39 +191,6 @@ func (c *Client) sendCreateQuote(ctx context.Context, request *CreateQuoteReq) (
 		return res, errors.Wrap(err, "encode request")
 	}
 
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, CreateQuoteOperation, r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
 	stage = "SendRequest"
 	resp, err := c.cfg.Client.Do(r)
 	if err != nil {
@@ -249,12 +212,12 @@ func (c *Client) sendCreateQuote(ctx context.Context, request *CreateQuoteReq) (
 // Get an order by ID.
 //
 // GET /orders/{id}
-func (c *Client) GetOrder(ctx context.Context, params GetOrderParams) (*GetOrderOK, error) {
+func (c *Client) GetOrder(ctx context.Context, params GetOrderParams) (GetOrderRes, error) {
 	res, err := c.sendGetOrder(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendGetOrder(ctx context.Context, params GetOrderParams) (res *GetOrderOK, err error) {
+func (c *Client) sendGetOrder(ctx context.Context, params GetOrderParams) (res GetOrderRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getOrder"),
 		semconv.HTTPRequestMethodKey.String("GET"),
@@ -316,39 +279,6 @@ func (c *Client) sendGetOrder(ctx context.Context, params GetOrderParams) (res *
 	r, err := ht.NewRequest(ctx, "GET", u)
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, GetOrderOperation, r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
 	}
 
 	stage = "SendRequest"
@@ -457,140 +387,17 @@ func (c *Client) sendGetProduct(ctx context.Context, params GetProductParams) (r
 	return result, nil
 }
 
-// ListBranchOrders invokes listBranchOrders operation.
-//
-// Get all orders for a customer branch.
-//
-// GET /orders
-func (c *Client) ListBranchOrders(ctx context.Context, params ListBranchOrdersParams) ([]Order, error) {
-	res, err := c.sendListBranchOrders(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendListBranchOrders(ctx context.Context, params ListBranchOrdersParams) (res []Order, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("listBranchOrders"),
-		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/orders"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, ListBranchOrdersOperation,
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [1]string
-	pathParts[0] = "/orders"
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeQueryParams"
-	q := uri.NewQueryEncoder()
-	{
-		// Encode "branch_id" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "branch_id",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.StringToString(params.BranchID))
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	u.RawQuery = q.Values().Encode()
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, ListBranchOrdersOperation, r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeListBranchOrdersResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
 // ListCustomerBranches invokes listCustomerBranches operation.
 //
 // Get available branches for customer.
 //
 // GET /account/branches
-func (c *Client) ListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) ([]Branch, error) {
+func (c *Client) ListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) (ListCustomerBranchesRes, error) {
 	res, err := c.sendListCustomerBranches(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) (res []Branch, err error) {
+func (c *Client) sendListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) (res ListCustomerBranchesRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listCustomerBranches"),
 		semconv.HTTPRequestMethodKey.String("GET"),
@@ -708,12 +515,12 @@ func (c *Client) sendListCustomerBranches(ctx context.Context, params ListCustom
 // Get invoices for an order.
 //
 // GET /orders/{id}/invoices
-func (c *Client) ListOrderInvoices(ctx context.Context, params ListOrderInvoicesParams) ([]InvoiceSimplified, error) {
+func (c *Client) ListOrderInvoices(ctx context.Context, params ListOrderInvoicesParams) (ListOrderInvoicesRes, error) {
 	res, err := c.sendListOrderInvoices(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendListOrderInvoices(ctx context.Context, params ListOrderInvoicesParams) (res []InvoiceSimplified, err error) {
+func (c *Client) sendListOrderInvoices(ctx context.Context, params ListOrderInvoicesParams) (res ListOrderInvoicesRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listOrderInvoices"),
 		semconv.HTTPRequestMethodKey.String("GET"),
@@ -832,12 +639,12 @@ func (c *Client) sendListOrderInvoices(ctx context.Context, params ListOrderInvo
 // Get shipments for an order.
 //
 // GET /orders/{id}/shipments
-func (c *Client) ListOrderShipments(ctx context.Context, params ListOrderShipmentsParams) ([]ShipmentSimplified, error) {
+func (c *Client) ListOrderShipments(ctx context.Context, params ListOrderShipmentsParams) (ListOrderShipmentsRes, error) {
 	res, err := c.sendListOrderShipments(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendListOrderShipments(ctx context.Context, params ListOrderShipmentsParams) (res []ShipmentSimplified, err error) {
+func (c *Client) sendListOrderShipments(ctx context.Context, params ListOrderShipmentsParams) (res ListOrderShipmentsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listOrderShipments"),
 		semconv.HTTPRequestMethodKey.String("GET"),
@@ -951,17 +758,121 @@ func (c *Client) sendListOrderShipments(ctx context.Context, params ListOrderShi
 	return result, nil
 }
 
+// ListOrders invokes listOrders operation.
+//
+// Get a list of orders.
+//
+// GET /account/orders
+func (c *Client) ListOrders(ctx context.Context, params ListOrdersParams) ([]OrderSummary, error) {
+	res, err := c.sendListOrders(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendListOrders(ctx context.Context, params ListOrdersParams) (res []OrderSummary, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("listOrders"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/account/orders"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, ListOrdersOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/account/orders"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "page" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeValue(conv.StringToString(params.Page))
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "per_page" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "per_page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeValue(conv.StringToString(params.PerPage))
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeListOrdersResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // SearchProducts invokes searchProducts operation.
 //
 // Search for products.
 //
 // POST /search/products
-func (c *Client) SearchProducts(ctx context.Context, request *SearchProductsReq) (*SearchProductResponse, error) {
+func (c *Client) SearchProducts(ctx context.Context, request *SearchProductsReq) (SearchProductsRes, error) {
 	res, err := c.sendSearchProducts(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendSearchProducts(ctx context.Context, request *SearchProductsReq) (res *SearchProductResponse, err error) {
+func (c *Client) sendSearchProducts(ctx context.Context, request *SearchProductsReq) (res SearchProductsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchProducts"),
 		semconv.HTTPRequestMethodKey.String("POST"),

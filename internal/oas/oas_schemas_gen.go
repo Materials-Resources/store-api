@@ -3,13 +3,10 @@
 package oas
 
 import (
-	"fmt"
 	"time"
-)
 
-func (s *ErrorStatusCode) Error() string {
-	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
-}
+	"github.com/go-faster/errors"
+)
 
 // Ref: #/components/schemas/Address
 type Address struct {
@@ -208,11 +205,13 @@ func (s *CreateQuoteCreated) SetStatus(val OptString) {
 	s.Status = val
 }
 
+func (*CreateQuoteCreated) createQuoteRes() {}
+
 type CreateQuoteReq struct {
 	PurchaseOrder        string `json:"purchase_order"`
 	DeliveryInstructions string `json:"delivery_instructions"`
 	// Date of the request.  Should be in YYYY-MM-DD format (ISO 8601).
-	RequestDate time.Time `json:"request_date"`
+	DateRequested OptDateTime `json:"date_requested"`
 	// List of items for the quote.
 	Items []CreateQuoteReqItemsItem `json:"items"`
 }
@@ -227,9 +226,9 @@ func (s *CreateQuoteReq) GetDeliveryInstructions() string {
 	return s.DeliveryInstructions
 }
 
-// GetRequestDate returns the value of RequestDate.
-func (s *CreateQuoteReq) GetRequestDate() time.Time {
-	return s.RequestDate
+// GetDateRequested returns the value of DateRequested.
+func (s *CreateQuoteReq) GetDateRequested() OptDateTime {
+	return s.DateRequested
 }
 
 // GetItems returns the value of Items.
@@ -247,9 +246,9 @@ func (s *CreateQuoteReq) SetDeliveryInstructions(val string) {
 	s.DeliveryInstructions = val
 }
 
-// SetRequestDate sets the value of RequestDate.
-func (s *CreateQuoteReq) SetRequestDate(val time.Time) {
-	s.RequestDate = val
+// SetDateRequested sets the value of DateRequested.
+func (s *CreateQuoteReq) SetDateRequested(val OptDateTime) {
+	s.DateRequested = val
 }
 
 // SetItems sets the value of Items.
@@ -282,32 +281,6 @@ func (s *CreateQuoteReqItemsItem) SetProductID(val string) {
 // SetQuantity sets the value of Quantity.
 func (s *CreateQuoteReqItemsItem) SetQuantity(val int) {
 	s.Quantity = val
-}
-
-// Ref: #/components/schemas/Customer
-type Customer struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
-// GetID returns the value of ID.
-func (s *Customer) GetID() string {
-	return s.ID
-}
-
-// GetName returns the value of Name.
-func (s *Customer) GetName() string {
-	return s.Name
-}
-
-// SetID sets the value of ID.
-func (s *Customer) SetID(val string) {
-	s.ID = val
-}
-
-// SetName sets the value of Name.
-func (s *Customer) SetName(val string) {
-	s.Name = val
 }
 
 // Represents error object.
@@ -363,30 +336,35 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
 }
 
+func (*ErrorStatusCode) createQuoteRes()          {}
+func (*ErrorStatusCode) getOrderRes()             {}
+func (*ErrorStatusCode) getProductRes()           {}
+func (*ErrorStatusCode) listCustomerBranchesRes() {}
+func (*ErrorStatusCode) listOrderInvoicesRes()    {}
+func (*ErrorStatusCode) listOrderShipmentsRes()   {}
+func (*ErrorStatusCode) searchProductsRes()       {}
+func (*ErrorStatusCode) setActiveBranchRes()      {}
+
+// GetOrderNotFound is response for GetOrder operation.
+type GetOrderNotFound struct{}
+
+func (*GetOrderNotFound) getOrderRes() {}
+
 type GetOrderOK struct {
-	Details Order       `json:"details"`
-	Items   []OrderItem `json:"items"`
+	Order Order `json:"order"`
 }
 
-// GetDetails returns the value of Details.
-func (s *GetOrderOK) GetDetails() Order {
-	return s.Details
+// GetOrder returns the value of Order.
+func (s *GetOrderOK) GetOrder() Order {
+	return s.Order
 }
 
-// GetItems returns the value of Items.
-func (s *GetOrderOK) GetItems() []OrderItem {
-	return s.Items
+// SetOrder sets the value of Order.
+func (s *GetOrderOK) SetOrder(val Order) {
+	s.Order = val
 }
 
-// SetDetails sets the value of Details.
-func (s *GetOrderOK) SetDetails(val Order) {
-	s.Details = val
-}
-
-// SetItems sets the value of Items.
-func (s *GetOrderOK) SetItems(val []OrderItem) {
-	s.Items = val
-}
+func (*GetOrderOK) getOrderRes() {}
 
 // GetProductNotFound is response for GetProduct operation.
 type GetProductNotFound struct{}
@@ -466,6 +444,64 @@ func (s *InvoiceSimplified) SetTotal(val float64) {
 // SetAmountPaid sets the value of AmountPaid.
 func (s *InvoiceSimplified) SetAmountPaid(val float64) {
 	s.AmountPaid = val
+}
+
+type ListCustomerBranchesOKApplicationJSON []Branch
+
+func (*ListCustomerBranchesOKApplicationJSON) listCustomerBranchesRes() {}
+
+type ListOrderInvoicesOKApplicationJSON []InvoiceSimplified
+
+func (*ListOrderInvoicesOKApplicationJSON) listOrderInvoicesRes() {}
+
+type ListOrderShipmentsOKApplicationJSON []ShipmentSimplified
+
+func (*ListOrderShipmentsOKApplicationJSON) listOrderShipmentsRes() {}
+
+// NewOptDateTime returns new OptDateTime with value set to v.
+func NewOptDateTime(v time.Time) OptDateTime {
+	return OptDateTime{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDateTime is optional time.Time.
+type OptDateTime struct {
+	Value time.Time
+	Set   bool
+}
+
+// IsSet returns true if OptDateTime was set.
+func (o OptDateTime) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDateTime) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDateTime) SetTo(v time.Time) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDateTime) Get() (v time.Time, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDateTime) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
 }
 
 // NewOptInt returns new OptInt with value set to v.
@@ -608,16 +644,17 @@ func (o OptString) Or(d string) string {
 
 // Ref: #/components/schemas/Order
 type Order struct {
-	ID                   string   `json:"id"`
-	OrderDate            string   `json:"order_date"`
-	Customer             Customer `json:"customer"`
-	ContactID            string   `json:"contact_id"`
-	ContactName          string   `json:"contact_name"`
-	Taker                string   `json:"taker"`
-	PurchaseOrder        string   `json:"purchase_order"`
-	DeliveryInstructions string   `json:"delivery_instructions"`
-	ShippingAddress      Address  `json:"shipping_address"`
-	Total                float64  `json:"total"`
+	ID                   string      `json:"id"`
+	ContactID            string      `json:"contact_id"`
+	BranchID             string      `json:"branch_id"`
+	PurchaseOrder        string      `json:"purchase_order"`
+	Status               OrderStatus `json:"status"`
+	DateCreated          time.Time   `json:"date_created"`
+	DateRequested        time.Time   `json:"date_requested"`
+	Taker                OptString   `json:"taker"`
+	DeliveryInstructions string      `json:"delivery_instructions"`
+	ShippingAddress      Address     `json:"shipping_address"`
+	Total                float64     `json:"total"`
 }
 
 // GetID returns the value of ID.
@@ -625,34 +662,39 @@ func (s *Order) GetID() string {
 	return s.ID
 }
 
-// GetOrderDate returns the value of OrderDate.
-func (s *Order) GetOrderDate() string {
-	return s.OrderDate
-}
-
-// GetCustomer returns the value of Customer.
-func (s *Order) GetCustomer() Customer {
-	return s.Customer
-}
-
 // GetContactID returns the value of ContactID.
 func (s *Order) GetContactID() string {
 	return s.ContactID
 }
 
-// GetContactName returns the value of ContactName.
-func (s *Order) GetContactName() string {
-	return s.ContactName
-}
-
-// GetTaker returns the value of Taker.
-func (s *Order) GetTaker() string {
-	return s.Taker
+// GetBranchID returns the value of BranchID.
+func (s *Order) GetBranchID() string {
+	return s.BranchID
 }
 
 // GetPurchaseOrder returns the value of PurchaseOrder.
 func (s *Order) GetPurchaseOrder() string {
 	return s.PurchaseOrder
+}
+
+// GetStatus returns the value of Status.
+func (s *Order) GetStatus() OrderStatus {
+	return s.Status
+}
+
+// GetDateCreated returns the value of DateCreated.
+func (s *Order) GetDateCreated() time.Time {
+	return s.DateCreated
+}
+
+// GetDateRequested returns the value of DateRequested.
+func (s *Order) GetDateRequested() time.Time {
+	return s.DateRequested
+}
+
+// GetTaker returns the value of Taker.
+func (s *Order) GetTaker() OptString {
+	return s.Taker
 }
 
 // GetDeliveryInstructions returns the value of DeliveryInstructions.
@@ -675,34 +717,39 @@ func (s *Order) SetID(val string) {
 	s.ID = val
 }
 
-// SetOrderDate sets the value of OrderDate.
-func (s *Order) SetOrderDate(val string) {
-	s.OrderDate = val
-}
-
-// SetCustomer sets the value of Customer.
-func (s *Order) SetCustomer(val Customer) {
-	s.Customer = val
-}
-
 // SetContactID sets the value of ContactID.
 func (s *Order) SetContactID(val string) {
 	s.ContactID = val
 }
 
-// SetContactName sets the value of ContactName.
-func (s *Order) SetContactName(val string) {
-	s.ContactName = val
-}
-
-// SetTaker sets the value of Taker.
-func (s *Order) SetTaker(val string) {
-	s.Taker = val
+// SetBranchID sets the value of BranchID.
+func (s *Order) SetBranchID(val string) {
+	s.BranchID = val
 }
 
 // SetPurchaseOrder sets the value of PurchaseOrder.
 func (s *Order) SetPurchaseOrder(val string) {
 	s.PurchaseOrder = val
+}
+
+// SetStatus sets the value of Status.
+func (s *Order) SetStatus(val OrderStatus) {
+	s.Status = val
+}
+
+// SetDateCreated sets the value of DateCreated.
+func (s *Order) SetDateCreated(val time.Time) {
+	s.DateCreated = val
+}
+
+// SetDateRequested sets the value of DateRequested.
+func (s *Order) SetDateRequested(val time.Time) {
+	s.DateRequested = val
+}
+
+// SetTaker sets the value of Taker.
+func (s *Order) SetTaker(val OptString) {
+	s.Taker = val
 }
 
 // SetDeliveryInstructions sets the value of DeliveryInstructions.
@@ -720,129 +767,148 @@ func (s *Order) SetTotal(val float64) {
 	s.Total = val
 }
 
-// Ref: #/components/schemas/OrderItem
-type OrderItem struct {
-	ProductSn           string  `json:"product_sn"`
-	ProductName         string  `json:"product_name"`
-	ProductUID          string  `json:"product_uid"`
-	CustomerProductSn   string  `json:"customer_product_sn"`
-	OrderQuantity       float64 `json:"order_quantity"`
-	OrderQuantityUnit   string  `json:"order_quantity_unit"`
-	PriceUnit           string  `json:"price_unit"`
-	Price               float64 `json:"price"`
-	TotalPrice          float64 `json:"total_price"`
-	ShippedQuantity     float64 `json:"shipped_quantity"`
-	BackOrderedQuantity float64 `json:"back_ordered_quantity"`
+// Ref: #/components/schemas/OrderStatus
+type OrderStatus string
+
+const (
+	OrderStatusUnspecified     OrderStatus = "unspecified"
+	OrderStatusApproved        OrderStatus = "approved"
+	OrderStatusCompleted       OrderStatus = "completed"
+	OrderStatusCancelled       OrderStatus = "cancelled"
+	OrderStatusPendingApproval OrderStatus = "pending_approval"
+)
+
+// AllValues returns all OrderStatus values.
+func (OrderStatus) AllValues() []OrderStatus {
+	return []OrderStatus{
+		OrderStatusUnspecified,
+		OrderStatusApproved,
+		OrderStatusCompleted,
+		OrderStatusCancelled,
+		OrderStatusPendingApproval,
+	}
 }
 
-// GetProductSn returns the value of ProductSn.
-func (s *OrderItem) GetProductSn() string {
-	return s.ProductSn
+// MarshalText implements encoding.TextMarshaler.
+func (s OrderStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case OrderStatusUnspecified:
+		return []byte(s), nil
+	case OrderStatusApproved:
+		return []byte(s), nil
+	case OrderStatusCompleted:
+		return []byte(s), nil
+	case OrderStatusCancelled:
+		return []byte(s), nil
+	case OrderStatusPendingApproval:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
 }
 
-// GetProductName returns the value of ProductName.
-func (s *OrderItem) GetProductName() string {
-	return s.ProductName
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *OrderStatus) UnmarshalText(data []byte) error {
+	switch OrderStatus(data) {
+	case OrderStatusUnspecified:
+		*s = OrderStatusUnspecified
+		return nil
+	case OrderStatusApproved:
+		*s = OrderStatusApproved
+		return nil
+	case OrderStatusCompleted:
+		*s = OrderStatusCompleted
+		return nil
+	case OrderStatusCancelled:
+		*s = OrderStatusCancelled
+		return nil
+	case OrderStatusPendingApproval:
+		*s = OrderStatusPendingApproval
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
-// GetProductUID returns the value of ProductUID.
-func (s *OrderItem) GetProductUID() string {
-	return s.ProductUID
+// Ref: #/components/schemas/OrderSummary
+type OrderSummary struct {
+	ID            string      `json:"id"`
+	ContactID     string      `json:"contact_id"`
+	BranchID      string      `json:"branch_id"`
+	PurchaseOrder string      `json:"purchase_order"`
+	Status        OrderStatus `json:"status"`
+	DateCreated   string      `json:"date_created"`
+	DateRequested string      `json:"date_requested"`
 }
 
-// GetCustomerProductSn returns the value of CustomerProductSn.
-func (s *OrderItem) GetCustomerProductSn() string {
-	return s.CustomerProductSn
+// GetID returns the value of ID.
+func (s *OrderSummary) GetID() string {
+	return s.ID
 }
 
-// GetOrderQuantity returns the value of OrderQuantity.
-func (s *OrderItem) GetOrderQuantity() float64 {
-	return s.OrderQuantity
+// GetContactID returns the value of ContactID.
+func (s *OrderSummary) GetContactID() string {
+	return s.ContactID
 }
 
-// GetOrderQuantityUnit returns the value of OrderQuantityUnit.
-func (s *OrderItem) GetOrderQuantityUnit() string {
-	return s.OrderQuantityUnit
+// GetBranchID returns the value of BranchID.
+func (s *OrderSummary) GetBranchID() string {
+	return s.BranchID
 }
 
-// GetPriceUnit returns the value of PriceUnit.
-func (s *OrderItem) GetPriceUnit() string {
-	return s.PriceUnit
+// GetPurchaseOrder returns the value of PurchaseOrder.
+func (s *OrderSummary) GetPurchaseOrder() string {
+	return s.PurchaseOrder
 }
 
-// GetPrice returns the value of Price.
-func (s *OrderItem) GetPrice() float64 {
-	return s.Price
+// GetStatus returns the value of Status.
+func (s *OrderSummary) GetStatus() OrderStatus {
+	return s.Status
 }
 
-// GetTotalPrice returns the value of TotalPrice.
-func (s *OrderItem) GetTotalPrice() float64 {
-	return s.TotalPrice
+// GetDateCreated returns the value of DateCreated.
+func (s *OrderSummary) GetDateCreated() string {
+	return s.DateCreated
 }
 
-// GetShippedQuantity returns the value of ShippedQuantity.
-func (s *OrderItem) GetShippedQuantity() float64 {
-	return s.ShippedQuantity
+// GetDateRequested returns the value of DateRequested.
+func (s *OrderSummary) GetDateRequested() string {
+	return s.DateRequested
 }
 
-// GetBackOrderedQuantity returns the value of BackOrderedQuantity.
-func (s *OrderItem) GetBackOrderedQuantity() float64 {
-	return s.BackOrderedQuantity
+// SetID sets the value of ID.
+func (s *OrderSummary) SetID(val string) {
+	s.ID = val
 }
 
-// SetProductSn sets the value of ProductSn.
-func (s *OrderItem) SetProductSn(val string) {
-	s.ProductSn = val
+// SetContactID sets the value of ContactID.
+func (s *OrderSummary) SetContactID(val string) {
+	s.ContactID = val
 }
 
-// SetProductName sets the value of ProductName.
-func (s *OrderItem) SetProductName(val string) {
-	s.ProductName = val
+// SetBranchID sets the value of BranchID.
+func (s *OrderSummary) SetBranchID(val string) {
+	s.BranchID = val
 }
 
-// SetProductUID sets the value of ProductUID.
-func (s *OrderItem) SetProductUID(val string) {
-	s.ProductUID = val
+// SetPurchaseOrder sets the value of PurchaseOrder.
+func (s *OrderSummary) SetPurchaseOrder(val string) {
+	s.PurchaseOrder = val
 }
 
-// SetCustomerProductSn sets the value of CustomerProductSn.
-func (s *OrderItem) SetCustomerProductSn(val string) {
-	s.CustomerProductSn = val
+// SetStatus sets the value of Status.
+func (s *OrderSummary) SetStatus(val OrderStatus) {
+	s.Status = val
 }
 
-// SetOrderQuantity sets the value of OrderQuantity.
-func (s *OrderItem) SetOrderQuantity(val float64) {
-	s.OrderQuantity = val
+// SetDateCreated sets the value of DateCreated.
+func (s *OrderSummary) SetDateCreated(val string) {
+	s.DateCreated = val
 }
 
-// SetOrderQuantityUnit sets the value of OrderQuantityUnit.
-func (s *OrderItem) SetOrderQuantityUnit(val string) {
-	s.OrderQuantityUnit = val
-}
-
-// SetPriceUnit sets the value of PriceUnit.
-func (s *OrderItem) SetPriceUnit(val string) {
-	s.PriceUnit = val
-}
-
-// SetPrice sets the value of Price.
-func (s *OrderItem) SetPrice(val float64) {
-	s.Price = val
-}
-
-// SetTotalPrice sets the value of TotalPrice.
-func (s *OrderItem) SetTotalPrice(val float64) {
-	s.TotalPrice = val
-}
-
-// SetShippedQuantity sets the value of ShippedQuantity.
-func (s *OrderItem) SetShippedQuantity(val float64) {
-	s.ShippedQuantity = val
-}
-
-// SetBackOrderedQuantity sets the value of BackOrderedQuantity.
-func (s *OrderItem) SetBackOrderedQuantity(val float64) {
-	s.BackOrderedQuantity = val
+// SetDateRequested sets the value of DateRequested.
+func (s *OrderSummary) SetDateRequested(val string) {
+	s.DateRequested = val
 }
 
 // Ref: #/components/schemas/PageMetadata
@@ -965,6 +1031,8 @@ func (s *SearchProductResponse) SetMetadata(val PageMetadata) {
 func (s *SearchProductResponse) SetProducts(val []Product) {
 	s.Products = val
 }
+
+func (*SearchProductResponse) searchProductsRes() {}
 
 type SearchProductsReq struct {
 	SortBy  OptString                   `json:"sort_by"`

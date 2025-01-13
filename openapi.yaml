@@ -88,12 +88,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /account/orders:
+    get:
+      security: []
+      summary: Get a list of orders
+      operationId: listOrders
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: per_page
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderSummary'
   /account/quotes:
     post:
       summary: Create a new quote
       operationId: createQuote
       tags:
         - quotes
+      security: []
       description: |
         Create a new quote. The `customer_id` and `contact_id` are extracted from the provided authentication token. Make sure to include a valid bearer token in the `Authorization` header.
       requestBody:
@@ -112,9 +138,9 @@ paths:
                   type: string
                 delivery_instructions:
                   type: string
-                request_date:
+                date_requested:
                   type: string
-                  format: date
+                  format: date-time
                   description: Date of the request.  Should be in YYYY-MM-DD format (ISO 8601).
                 items:
                   type: array
@@ -151,35 +177,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /orders:
-    get:
-      summary: Get all orders for a customer branch
-      operationId: listBranchOrders
-      tags:
-        - orders
-      parameters:
-        - name: branch_id
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Order'
-        default:
-          description: General Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
   /orders/{id}:
     get:
+      security: []
       operationId: getOrder
       tags:
         - orders
@@ -197,16 +197,13 @@ paths:
             application/json:
               schema:
                 required:
-                  - details
-                  - items
+                  - order
                 type: object
                 properties:
-                  details:
+                  order:
                     $ref: '#/components/schemas/Order'
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/OrderItem'
+        '404':
+          description: Not Found
         default:
           description: General Error
           content:
@@ -524,15 +521,23 @@ components:
           type: string
         count:
           type: integer
+    OrderStatus:
+      type: string
+      enum:
+        - unspecified
+        - approved
+        - completed
+        - cancelled
+        - pending_approval
     Order:
       required:
         - id
-        - order_date
-        - customer
         - contact_id
-        - contact_name
-        - taker
+        - branch_id
         - purchase_order
+        - status
+        - date_created
+        - date_requested
         - delivery_instructions
         - shipping_address
         - items
@@ -541,17 +546,21 @@ components:
       properties:
         id:
           type: string
-        order_date:
-          type: string
-        customer:
-          $ref: '#/components/schemas/Customer'
         contact_id:
           type: string
-        contact_name:
-          type: string
-        taker:
+        branch_id:
           type: string
         purchase_order:
+          type: string
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        date_created:
+          type: string
+          format: date-time
+        date_requested:
+          type: string
+          format: date-time
+        taker:
           type: string
         delivery_instructions:
           type: string
@@ -564,7 +573,7 @@ components:
       required:
         - product_sn
         - product_name
-        - product_uid
+        - product_id
         - customer_product_sn
         - order_quantity
         - order_quantity_unit
@@ -579,7 +588,7 @@ components:
           type: string
         product_name:
           type: string
-        product_uid:
+        product_id:
           type: string
         customer_product_sn:
           type: string
@@ -602,6 +611,33 @@ components:
         back_ordered_quantity:
           x-go-type: float64
           type: number
+    OrderSummary:
+      required:
+        - id
+        - contact_id
+        - branch_id
+        - purchase_order
+        - status
+        - date_created
+        - date_requested
+      type: object
+      properties:
+        id:
+          type: string
+        contact_id:
+          type: string
+        branch_id:
+          type: string
+        purchase_order:
+          type: string
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        date_created:
+          type: string
+          format: datetime
+        date_requested:
+          type: string
+          format: datetime
     Product:
       required:
         - id

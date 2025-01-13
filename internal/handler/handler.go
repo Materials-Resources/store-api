@@ -1,10 +1,8 @@
 package handler
 
 import (
-	"connectrpc.com/connect"
 	"context"
 	"fmt"
-	orderv1 "github.com/materials-resources/customer-api/internal/grpc-client/order"
 	"github.com/materials-resources/customer-api/internal/oas"
 	"github.com/materials-resources/customer-api/internal/service"
 	"github.com/materials-resources/customer-api/internal/zitadel"
@@ -26,6 +24,11 @@ type Handler struct {
 	z       *zitadel.Client
 }
 
+func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) ([]oas.OrderSummary, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchReq) (oas.SetActiveBranchRes, error) {
 	fmt.Println("changed branch")
 	// check if user can access this branch
@@ -38,8 +41,8 @@ func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchRe
 	return &oas.SetActiveBranchOK{}, nil
 }
 
-func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (*oas.CreateQuoteCreated, error) {
-	fmt.Println(req.GetRequestDate())
+func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.CreateQuoteRes, error) {
+	fmt.Println(req.GetDateRequested())
 	fmt.Println(req.GetItems())
 
 	response := oas.CreateQuoteCreated{
@@ -50,32 +53,11 @@ func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (*oas
 	return &response, nil
 }
 
-func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (*oas.GetOrderOK, error) {
+func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.GetOrderRes, error) {
 
-	res, err := h.service.Order.Client.GetOrder(ctx, connect.NewRequest(&orderv1.GetOrderRequest{
-		Id: params.ID,
-	}))
+	res, err := h.service.Order.GetOrder(ctx, params)
 
-	if err != nil {
-		return nil, err
-	}
-	return &oas.GetOrderOK{
-		Details: oas.Order{
-			ID:        res.Msg.GetOrder().GetId(),
-			OrderDate: res.Msg.GetOrder().GetDateCreated().AsTime().String(),
-			Customer: oas.Customer{
-				ID:   res.Msg.GetOrder().GetCustomer().GetId(),
-				Name: res.Msg.GetOrder().GetCustomer().GetName(),
-			},
-			ContactID:            res.Msg.GetOrder().GetOrderDetails().GetContact().GetId(),
-			ContactName:          res.Msg.GetOrder().GetOrderDetails().GetContact().GetFullName(),
-			Taker:                res.Msg.GetOrder().GetOrderDetails().GetTaker(),
-			PurchaseOrder:        res.Msg.GetOrder().GetPurchaseOrder(),
-			DeliveryInstructions: res.Msg.GetOrder().GetOrderDetails().GetDeliveryInstructions(),
-			ShippingAddress:      oas.Address{},
-			Total:                0,
-		},
-	}, nil
+	return res, err
 }
 
 func (h Handler) GetProduct(ctx context.Context, params oas.GetProductParams) (oas.GetProductRes, error) {
@@ -83,27 +65,22 @@ func (h Handler) GetProduct(ctx context.Context, params oas.GetProductParams) (o
 	return res, err
 }
 
-func (h Handler) ListBranchOrders(ctx context.Context, params oas.ListBranchOrdersParams) ([]oas.Order, error) {
+func (h Handler) ListCustomerBranches(ctx context.Context, params oas.ListCustomerBranchesParams) (oas.ListCustomerBranchesRes, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h Handler) ListCustomerBranches(ctx context.Context, params oas.ListCustomerBranchesParams) ([]oas.Branch, error) {
+func (h Handler) ListOrderInvoices(ctx context.Context, params oas.ListOrderInvoicesParams) (oas.ListOrderInvoicesRes, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h Handler) ListOrderInvoices(ctx context.Context, params oas.ListOrderInvoicesParams) ([]oas.InvoiceSimplified, error) {
+func (h Handler) ListOrderShipments(ctx context.Context, params oas.ListOrderShipmentsParams) (oas.ListOrderShipmentsRes, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h Handler) ListOrderShipments(ctx context.Context, params oas.ListOrderShipmentsParams) ([]oas.ShipmentSimplified, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h Handler) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (*oas.SearchProductResponse, error) {
+func (h Handler) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (oas.SearchProductsRes, error) {
 	return h.service.Search.SearchProducts(ctx, req)
 }
 

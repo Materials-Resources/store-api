@@ -19,7 +19,7 @@ var _ Handler = UnimplementedHandler{}
 // authentication token. Make sure to include a valid bearer token in the `Authorization` header.
 //
 // POST /account/quotes
-func (UnimplementedHandler) CreateQuote(ctx context.Context, req *CreateQuoteReq) (r *CreateQuoteCreated, _ error) {
+func (UnimplementedHandler) CreateQuote(ctx context.Context, req *CreateQuoteReq) (r CreateQuoteRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -28,7 +28,7 @@ func (UnimplementedHandler) CreateQuote(ctx context.Context, req *CreateQuoteReq
 // Get an order by ID.
 //
 // GET /orders/{id}
-func (UnimplementedHandler) GetOrder(ctx context.Context, params GetOrderParams) (r *GetOrderOK, _ error) {
+func (UnimplementedHandler) GetOrder(ctx context.Context, params GetOrderParams) (r GetOrderRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -41,21 +41,12 @@ func (UnimplementedHandler) GetProduct(ctx context.Context, params GetProductPar
 	return r, ht.ErrNotImplemented
 }
 
-// ListBranchOrders implements listBranchOrders operation.
-//
-// Get all orders for a customer branch.
-//
-// GET /orders
-func (UnimplementedHandler) ListBranchOrders(ctx context.Context, params ListBranchOrdersParams) (r []Order, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // ListCustomerBranches implements listCustomerBranches operation.
 //
 // Get available branches for customer.
 //
 // GET /account/branches
-func (UnimplementedHandler) ListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) (r []Branch, _ error) {
+func (UnimplementedHandler) ListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) (r ListCustomerBranchesRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -64,7 +55,7 @@ func (UnimplementedHandler) ListCustomerBranches(ctx context.Context, params Lis
 // Get invoices for an order.
 //
 // GET /orders/{id}/invoices
-func (UnimplementedHandler) ListOrderInvoices(ctx context.Context, params ListOrderInvoicesParams) (r []InvoiceSimplified, _ error) {
+func (UnimplementedHandler) ListOrderInvoices(ctx context.Context, params ListOrderInvoicesParams) (r ListOrderInvoicesRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -73,7 +64,16 @@ func (UnimplementedHandler) ListOrderInvoices(ctx context.Context, params ListOr
 // Get shipments for an order.
 //
 // GET /orders/{id}/shipments
-func (UnimplementedHandler) ListOrderShipments(ctx context.Context, params ListOrderShipmentsParams) (r []ShipmentSimplified, _ error) {
+func (UnimplementedHandler) ListOrderShipments(ctx context.Context, params ListOrderShipmentsParams) (r ListOrderShipmentsRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ListOrders implements listOrders operation.
+//
+// Get a list of orders.
+//
+// GET /account/orders
+func (UnimplementedHandler) ListOrders(ctx context.Context, params ListOrdersParams) (r []OrderSummary, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -82,7 +82,7 @@ func (UnimplementedHandler) ListOrderShipments(ctx context.Context, params ListO
 // Search for products.
 //
 // POST /search/products
-func (UnimplementedHandler) SearchProducts(ctx context.Context, req *SearchProductsReq) (r *SearchProductResponse, _ error) {
+func (UnimplementedHandler) SearchProducts(ctx context.Context, req *SearchProductsReq) (r SearchProductsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -93,12 +93,4 @@ func (UnimplementedHandler) SearchProducts(ctx context.Context, req *SearchProdu
 // PUT /account/branch
 func (UnimplementedHandler) SetActiveBranch(ctx context.Context, req *SetActiveBranchReq) (r SetActiveBranchRes, _ error) {
 	return r, ht.ErrNotImplemented
-}
-
-// NewError creates *ErrorStatusCode from error returned by handler.
-//
-// Used for common default response.
-func (UnimplementedHandler) NewError(ctx context.Context, err error) (r *ErrorStatusCode) {
-	r = new(ErrorStatusCode)
-	return r
 }

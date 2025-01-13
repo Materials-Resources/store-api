@@ -116,6 +116,27 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					elem = origElem
+				case 'o': // Prefix: "orders"
+					origElem := elem
+					if l := len("orders"); len(elem) >= l && elem[0:l] == "orders" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleListOrdersRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
+
+					elem = origElem
 				case 'q': // Prefix: "quotes"
 					origElem := elem
 					if l := len("quotes"); len(elem) >= l && elem[0:l] == "quotes" {
@@ -140,18 +161,29 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
-			case 'o': // Prefix: "orders"
+			case 'o': // Prefix: "orders/"
 				origElem := elem
-				if l := len("orders"); len(elem) >= l && elem[0:l] == "orders" {
+				if l := len("orders/"); len(elem) >= l && elem[0:l] == "orders/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
+				// Param: "id"
+				// Match until "/"
+				idx := strings.IndexByte(elem, '/')
+				if idx < 0 {
+					idx = len(elem)
+				}
+				args[0] = elem[:idx]
+				elem = elem[idx:]
+
 				if len(elem) == 0 {
 					switch r.Method {
 					case "GET":
-						s.handleListBranchOrdersRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleGetOrderRequest([1]string{
+							args[0],
+						}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "GET")
 					}
@@ -167,86 +199,53 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 
-					// Param: "id"
-					// Match until "/"
-					idx := strings.IndexByte(elem, '/')
-					if idx < 0 {
-						idx = len(elem)
-					}
-					args[0] = elem[:idx]
-					elem = elem[idx:]
-
 					if len(elem) == 0 {
-						switch r.Method {
-						case "GET":
-							s.handleGetOrderRequest([1]string{
-								args[0],
-							}, elemIsEscaped, w, r)
-						default:
-							s.notAllowed(w, r, "GET")
-						}
-
-						return
+						break
 					}
 					switch elem[0] {
-					case '/': // Prefix: "/"
+					case 'i': // Prefix: "invoices"
 						origElem := elem
-						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						if l := len("invoices"); len(elem) >= l && elem[0:l] == "invoices" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleListOrderInvoicesRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+
+						elem = origElem
+					case 's': // Prefix: "shipments"
+						origElem := elem
+						if l := len("shipments"); len(elem) >= l && elem[0:l] == "shipments" {
+							elem = elem[l:]
+						} else {
 							break
 						}
-						switch elem[0] {
-						case 'i': // Prefix: "invoices"
-							origElem := elem
-							if l := len("invoices"); len(elem) >= l && elem[0:l] == "invoices" {
-								elem = elem[l:]
-							} else {
-								break
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleListOrderShipmentsRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
 							}
 
-							if len(elem) == 0 {
-								// Leaf node.
-								switch r.Method {
-								case "GET":
-									s.handleListOrderInvoicesRequest([1]string{
-										args[0],
-									}, elemIsEscaped, w, r)
-								default:
-									s.notAllowed(w, r, "GET")
-								}
-
-								return
-							}
-
-							elem = origElem
-						case 's': // Prefix: "shipments"
-							origElem := elem
-							if l := len("shipments"); len(elem) >= l && elem[0:l] == "shipments" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							if len(elem) == 0 {
-								// Leaf node.
-								switch r.Method {
-								case "GET":
-									s.handleListOrderShipmentsRequest([1]string{
-										args[0],
-									}, elemIsEscaped, w, r)
-								default:
-									s.notAllowed(w, r, "GET")
-								}
-
-								return
-							}
-
-							elem = origElem
+							return
 						}
 
 						elem = origElem
@@ -463,6 +462,31 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 
 					elem = origElem
+				case 'o': // Prefix: "orders"
+					origElem := elem
+					if l := len("orders"); len(elem) >= l && elem[0:l] == "orders" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "GET":
+							r.name = ListOrdersOperation
+							r.summary = "Get a list of orders"
+							r.operationID = "listOrders"
+							r.pathPattern = "/account/orders"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+					elem = origElem
 				case 'q': // Prefix: "quotes"
 					origElem := elem
 					if l := len("quotes"); len(elem) >= l && elem[0:l] == "quotes" {
@@ -491,23 +515,32 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 
 				elem = origElem
-			case 'o': // Prefix: "orders"
+			case 'o': // Prefix: "orders/"
 				origElem := elem
-				if l := len("orders"); len(elem) >= l && elem[0:l] == "orders" {
+				if l := len("orders/"); len(elem) >= l && elem[0:l] == "orders/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
+				// Param: "id"
+				// Match until "/"
+				idx := strings.IndexByte(elem, '/')
+				if idx < 0 {
+					idx = len(elem)
+				}
+				args[0] = elem[:idx]
+				elem = elem[idx:]
+
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						r.name = ListBranchOrdersOperation
-						r.summary = "Get all orders for a customer branch"
-						r.operationID = "listBranchOrders"
-						r.pathPattern = "/orders"
+						r.name = GetOrderOperation
+						r.summary = "Get an order by ID"
+						r.operationID = "getOrder"
+						r.pathPattern = "/orders/{id}"
 						r.args = args
-						r.count = 0
+						r.count = 1
 						return r, true
 					default:
 						return
@@ -522,92 +555,57 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						break
 					}
 
-					// Param: "id"
-					// Match until "/"
-					idx := strings.IndexByte(elem, '/')
-					if idx < 0 {
-						idx = len(elem)
-					}
-					args[0] = elem[:idx]
-					elem = elem[idx:]
-
 					if len(elem) == 0 {
-						switch method {
-						case "GET":
-							r.name = GetOrderOperation
-							r.summary = "Get an order by ID"
-							r.operationID = "getOrder"
-							r.pathPattern = "/orders/{id}"
-							r.args = args
-							r.count = 1
-							return r, true
-						default:
-							return
-						}
+						break
 					}
 					switch elem[0] {
-					case '/': // Prefix: "/"
+					case 'i': // Prefix: "invoices"
 						origElem := elem
-						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						if l := len("invoices"); len(elem) >= l && elem[0:l] == "invoices" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "GET":
+								r.name = ListOrderInvoicesOperation
+								r.summary = "Get invoices for an order"
+								r.operationID = "listOrderInvoices"
+								r.pathPattern = "/orders/{id}/invoices"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
+					case 's': // Prefix: "shipments"
+						origElem := elem
+						if l := len("shipments"); len(elem) >= l && elem[0:l] == "shipments" {
+							elem = elem[l:]
+						} else {
 							break
 						}
-						switch elem[0] {
-						case 'i': // Prefix: "invoices"
-							origElem := elem
-							if l := len("invoices"); len(elem) >= l && elem[0:l] == "invoices" {
-								elem = elem[l:]
-							} else {
-								break
-							}
 
-							if len(elem) == 0 {
-								// Leaf node.
-								switch method {
-								case "GET":
-									r.name = ListOrderInvoicesOperation
-									r.summary = "Get invoices for an order"
-									r.operationID = "listOrderInvoices"
-									r.pathPattern = "/orders/{id}/invoices"
-									r.args = args
-									r.count = 1
-									return r, true
-								default:
-									return
-								}
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "GET":
+								r.name = ListOrderShipmentsOperation
+								r.summary = "Get shipments for an order"
+								r.operationID = "listOrderShipments"
+								r.pathPattern = "/orders/{id}/shipments"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
 							}
-
-							elem = origElem
-						case 's': // Prefix: "shipments"
-							origElem := elem
-							if l := len("shipments"); len(elem) >= l && elem[0:l] == "shipments" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							if len(elem) == 0 {
-								// Leaf node.
-								switch method {
-								case "GET":
-									r.name = ListOrderShipmentsOperation
-									r.summary = "Get shipments for an order"
-									r.operationID = "listOrderShipments"
-									r.pathPattern = "/orders/{id}/shipments"
-									r.args = args
-									r.count = 1
-									return r, true
-								default:
-									return
-								}
-							}
-
-							elem = origElem
 						}
 
 						elem = origElem

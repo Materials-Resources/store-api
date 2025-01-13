@@ -145,63 +145,6 @@ func decodeGetProductParams(args [1]string, argsEscaped bool, r *http.Request) (
 	return params, nil
 }
 
-// ListBranchOrdersParams is parameters of listBranchOrders operation.
-type ListBranchOrdersParams struct {
-	BranchID string
-}
-
-func unpackListBranchOrdersParams(packed middleware.Parameters) (params ListBranchOrdersParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "branch_id",
-			In:   "query",
-		}
-		params.BranchID = packed[key].(string)
-	}
-	return params
-}
-
-func decodeListBranchOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (params ListBranchOrdersParams, _ error) {
-	q := uri.NewQueryDecoder(r.URL.Query())
-	// Decode query: branch_id.
-	if err := func() error {
-		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "branch_id",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.HasParam(cfg); err == nil {
-			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.BranchID = c
-				return nil
-			}); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "branch_id",
-			In:   "query",
-			Err:  err,
-		}
-	}
-	return params, nil
-}
-
 // ListCustomerBranchesParams is parameters of listCustomerBranches operation.
 type ListCustomerBranchesParams struct {
 	ContactID string
@@ -383,6 +326,107 @@ func decodeListOrderShipmentsParams(args [1]string, argsEscaped bool, r *http.Re
 		return params, &ogenerrors.DecodeParamError{
 			Name: "id",
 			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// ListOrdersParams is parameters of listOrders operation.
+type ListOrdersParams struct {
+	Page    string
+	PerPage string
+}
+
+func unpackListOrdersParams(packed middleware.Parameters) (params ListOrdersParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "page",
+			In:   "query",
+		}
+		params.Page = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "per_page",
+			In:   "query",
+		}
+		params.PerPage = packed[key].(string)
+	}
+	return params
+}
+
+func decodeListOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (params ListOrdersParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode query: page.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Page = c
+				return nil
+			}); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "page",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: per_page.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "per_page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.PerPage = c
+				return nil
+			}); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "per_page",
+			In:   "query",
 			Err:  err,
 		}
 	}
