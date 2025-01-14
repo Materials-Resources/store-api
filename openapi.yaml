@@ -531,12 +531,11 @@ components:
         - product_name
         - product_id
         - customer_product_sn
-        - order_quantity
-        - order_quantity_unit
-        - price_unit
-        - price
-        - total_price
+        - ordered_quantity
         - shipped_quantity
+        - unit_type
+        - unit_price
+        - total_price
         - back_ordered_quantity
       type: object
       properties:
@@ -548,22 +547,21 @@ components:
           type: string
         customer_product_sn:
           type: string
-        order_quantity:
-          x-go-type: float64
-          type: number
-        order_quantity_unit:
-          type: string
-        price_unit:
-          type: string
-        price:
-          x-go-type: float64
-          type: number
-        total_price:
+        ordered_quantity:
           x-go-type: float64
           type: number
         shipped_quantity:
           x-go-type: float64
           type: number
+        unit_type:
+          type: string
+        unit_price:
+          x-go-type: float64
+          type: number
+        total_price:
+          x-go-type: float64
+          type: number
+
         back_ordered_quantity:
           x-go-type: float64
           type: number

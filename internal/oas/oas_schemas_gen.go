@@ -689,12 +689,11 @@ type OrderItem struct {
 	ProductName         string  `json:"product_name"`
 	ProductID           string  `json:"product_id"`
 	CustomerProductSn   string  `json:"customer_product_sn"`
-	OrderQuantity       float64 `json:"order_quantity"`
-	OrderQuantityUnit   string  `json:"order_quantity_unit"`
-	PriceUnit           string  `json:"price_unit"`
-	Price               float64 `json:"price"`
-	TotalPrice          float64 `json:"total_price"`
+	OrderedQuantity     float64 `json:"ordered_quantity"`
 	ShippedQuantity     float64 `json:"shipped_quantity"`
+	UnitType            string  `json:"unit_type"`
+	UnitPrice           float64 `json:"unit_price"`
+	TotalPrice          float64 `json:"total_price"`
 	BackOrderedQuantity float64 `json:"back_ordered_quantity"`
 }
 
@@ -718,34 +717,29 @@ func (s *OrderItem) GetCustomerProductSn() string {
 	return s.CustomerProductSn
 }
 
-// GetOrderQuantity returns the value of OrderQuantity.
-func (s *OrderItem) GetOrderQuantity() float64 {
-	return s.OrderQuantity
-}
-
-// GetOrderQuantityUnit returns the value of OrderQuantityUnit.
-func (s *OrderItem) GetOrderQuantityUnit() string {
-	return s.OrderQuantityUnit
-}
-
-// GetPriceUnit returns the value of PriceUnit.
-func (s *OrderItem) GetPriceUnit() string {
-	return s.PriceUnit
-}
-
-// GetPrice returns the value of Price.
-func (s *OrderItem) GetPrice() float64 {
-	return s.Price
-}
-
-// GetTotalPrice returns the value of TotalPrice.
-func (s *OrderItem) GetTotalPrice() float64 {
-	return s.TotalPrice
+// GetOrderedQuantity returns the value of OrderedQuantity.
+func (s *OrderItem) GetOrderedQuantity() float64 {
+	return s.OrderedQuantity
 }
 
 // GetShippedQuantity returns the value of ShippedQuantity.
 func (s *OrderItem) GetShippedQuantity() float64 {
 	return s.ShippedQuantity
+}
+
+// GetUnitType returns the value of UnitType.
+func (s *OrderItem) GetUnitType() string {
+	return s.UnitType
+}
+
+// GetUnitPrice returns the value of UnitPrice.
+func (s *OrderItem) GetUnitPrice() float64 {
+	return s.UnitPrice
+}
+
+// GetTotalPrice returns the value of TotalPrice.
+func (s *OrderItem) GetTotalPrice() float64 {
+	return s.TotalPrice
 }
 
 // GetBackOrderedQuantity returns the value of BackOrderedQuantity.
@@ -773,34 +767,29 @@ func (s *OrderItem) SetCustomerProductSn(val string) {
 	s.CustomerProductSn = val
 }
 
-// SetOrderQuantity sets the value of OrderQuantity.
-func (s *OrderItem) SetOrderQuantity(val float64) {
-	s.OrderQuantity = val
-}
-
-// SetOrderQuantityUnit sets the value of OrderQuantityUnit.
-func (s *OrderItem) SetOrderQuantityUnit(val string) {
-	s.OrderQuantityUnit = val
-}
-
-// SetPriceUnit sets the value of PriceUnit.
-func (s *OrderItem) SetPriceUnit(val string) {
-	s.PriceUnit = val
-}
-
-// SetPrice sets the value of Price.
-func (s *OrderItem) SetPrice(val float64) {
-	s.Price = val
-}
-
-// SetTotalPrice sets the value of TotalPrice.
-func (s *OrderItem) SetTotalPrice(val float64) {
-	s.TotalPrice = val
+// SetOrderedQuantity sets the value of OrderedQuantity.
+func (s *OrderItem) SetOrderedQuantity(val float64) {
+	s.OrderedQuantity = val
 }
 
 // SetShippedQuantity sets the value of ShippedQuantity.
 func (s *OrderItem) SetShippedQuantity(val float64) {
 	s.ShippedQuantity = val
+}
+
+// SetUnitType sets the value of UnitType.
+func (s *OrderItem) SetUnitType(val string) {
+	s.UnitType = val
+}
+
+// SetUnitPrice sets the value of UnitPrice.
+func (s *OrderItem) SetUnitPrice(val float64) {
+	s.UnitPrice = val
+}
+
+// SetTotalPrice sets the value of TotalPrice.
+func (s *OrderItem) SetTotalPrice(val float64) {
+	s.TotalPrice = val
 }
 
 // SetBackOrderedQuantity sets the value of BackOrderedQuantity.

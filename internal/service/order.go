@@ -31,19 +31,29 @@ func (s *Order) GetOrder(ctx context.Context, req oas.GetOrderParams) (oas.GetOr
 
 	response := oas.GetOrderOK{
 		Order: oas.Order{
-			ID:                   pbRes.Msg.GetOrder().GetId(),
-			ContactID:            pbRes.Msg.GetOrder().GetContactId(),
-			BranchID:             pbRes.Msg.GetOrder().GetBranchId(),
-			PurchaseOrder:        pbRes.Msg.GetOrder().GetPurchaseOrder(),
-			Status:               convertOrderStatus(pbRes.Msg.GetOrder().GetStatus()),
-			DateCreated:          pbRes.Msg.GetOrder().GetDateCreated().AsTime(),
-			DateRequested:        pbRes.Msg.GetOrder().GetDateRequested().AsTime(),
-			Taker:                oas.NewOptString(""),
-			DeliveryInstructions: "",
-			ShippingAddress:      oas.Address{},
-			Total:                0,
+			ID:              pbRes.Msg.GetOrder().GetId(),
+			ContactID:       pbRes.Msg.GetOrder().GetContactId(),
+			BranchID:        pbRes.Msg.GetOrder().GetBranchId(),
+			PurchaseOrder:   pbRes.Msg.GetOrder().GetPurchaseOrder(),
+			Status:          convertOrderStatus(pbRes.Msg.GetOrder().GetStatus()),
+			DateCreated:     pbRes.Msg.GetOrder().GetDateCreated().AsTime(),
+			DateRequested:   pbRes.Msg.GetOrder().GetDateRequested().AsTime(),
+			Taker:           oas.NewOptString(""),
+			ShippingAddress: oas.Address{},
+			Total:           0,
 		},
 	}
+
+	response.Order.SetShippingAddress(oas.Address{
+		ID:         "",
+		Name:       pbRes.Msg.GetOrder().GetShippingAddress().GetName(),
+		LineOne:    pbRes.Msg.GetOrder().GetShippingAddress().GetLineOne(),
+		LineTwo:    pbRes.Msg.GetOrder().GetShippingAddress().GetLineTwo(),
+		City:       pbRes.Msg.GetOrder().GetShippingAddress().GetCity(),
+		State:      pbRes.Msg.GetOrder().GetShippingAddress().GetState(),
+		PostalCode: pbRes.Msg.GetOrder().GetShippingAddress().GetPostalCode(),
+		Country:    pbRes.Msg.GetOrder().GetShippingAddress().GetCountry(),
+	})
 
 	for _, item := range pbRes.Msg.GetOrder().GetOrderItems() {
 		response.Order.Items = append(response.Order.Items, oas.OrderItem{
@@ -51,13 +61,12 @@ func (s *Order) GetOrder(ctx context.Context, req oas.GetOrderParams) (oas.GetOr
 			ProductName:         item.GetProductName(),
 			ProductID:           item.GetProductId(),
 			CustomerProductSn:   item.GetCustomerProductSn(),
-			OrderQuantity:       0,
-			OrderQuantityUnit:   item.GetQuantityUnit(),
-			PriceUnit:           "",
-			Price:               0,
-			TotalPrice:          0,
-			ShippedQuantity:     0,
-			BackOrderedQuantity: 0,
+			OrderedQuantity:     item.GetOrderedQuantity(),
+			ShippedQuantity:     item.GetShippedQuantity(),
+			BackOrderedQuantity: item.GetBackOrderedQuantity(),
+			UnitType:            item.GetUnitType(),
+			UnitPrice:           item.GetUnitPrice(),
+			TotalPrice:          item.GetTotalPrice(),
 		})
 	}
 
@@ -68,7 +77,7 @@ func (s *Order) ListOrders(ctx context.Context, req oas.ListOrdersParams) (*oas.
 	pbReq := &orderv1.ListOrdersRequest{
 		Page:     int32(req.Page),
 		PageSize: int32(req.PageSize),
-		BranchId: "100039",
+		BranchId: "102544",
 	}
 
 	pbRes, err := s.Client.ListOrders(ctx, connect.NewRequest(pbReq))
