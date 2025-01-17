@@ -6,6 +6,7 @@ import (
 	orderv1 "github.com/materials-resources/customer-api/internal/grpc-client/order"
 	"github.com/materials-resources/customer-api/internal/grpc-client/order/orderconnect"
 	"github.com/materials-resources/customer-api/internal/oas"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"net/http"
 )
 
@@ -19,6 +20,34 @@ func NewOrderService() *Order {
 			"http://localhost:8082",
 			connect.WithGRPC()),
 	}
+}
+
+func (s *Order) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.CreateQuoteRes, error) {
+	branchId := "100039" //TODO get from auth
+	contactId := "1041"  //TODO get from auth
+	pbReq := &orderv1.CreateQuoteRequest{
+		BranchId:             branchId,
+		ContactId:            contactId,
+		PurchaseOrder:        req.PurchaseOrder,
+		RequestedDate:        timestamppb.New(req.GetDateRequested()),
+		DeliveryInstructions: req.DeliveryInstructions,
+	}
+
+	for _, item := range req.Items {
+		pbReq.Items = append(pbReq.Items, &orderv1.CreateQuoteRequest_Item{
+			ProductId: item.GetProductID(),
+			Quantity:  item.GetQuantity(),
+		})
+	}
+
+	pbRes, err := s.Client.CreateQuote(ctx, connect.NewRequest(pbReq))
+	if err != nil {
+		return nil, err
+	}
+
+	return &oas.CreateQuoteCreated{
+		QuoteID: pbRes.Msg.GetId(),
+	}, nil
 }
 
 func (s *Order) GetOrder(ctx context.Context, req oas.GetOrderParams) (oas.GetOrderRes, error) {
@@ -77,7 +106,7 @@ func (s *Order) ListOrders(ctx context.Context, req oas.ListOrdersParams) (*oas.
 	pbReq := &orderv1.ListOrdersRequest{
 		Page:     int32(req.Page),
 		PageSize: int32(req.PageSize),
-		BranchId: "102544",
+		BranchId: "100039",
 	}
 
 	pbRes, err := s.Client.ListOrders(ctx, connect.NewRequest(pbReq))
@@ -102,17 +131,65 @@ func (s *Order) ListOrders(ctx context.Context, req oas.ListOrdersParams) (*oas.
 	return &response, nil
 }
 
+func (s *Order) ListQuotes(ctx context.Context, req oas.ListQuotesParams) (*oas.ListQuotesOK, error) {
+	pbReq := &orderv1.ListQuotesRequest{
+		Page:     int32(req.Page),
+		PageSize: int32(req.PageSize),
+		BranchId: "100039",
+	}
+
+	pbRes, err := s.Client.ListQuotes(ctx, connect.NewRequest(pbReq))
+	if err != nil {
+		return nil, err
+	}
+
+	response := oas.ListQuotesOK{}
+
+	for _, pbQuote := range pbRes.Msg.GetQuotes() {
+		response.Quotes = append(response.Quotes, oas.QuoteSummary{
+			ID:            pbQuote.GetId(),
+			BranchID:      pbQuote.GetBranch().GetId(),
+			ContactID:     pbQuote.GetContact().GetId(),
+			PurchaseOrder: pbQuote.GetPurchaseOrder(),
+			Status:        convertQuoteStatus(pbQuote.GetStatus()),
+			DateCreated:   pbQuote.GetDateCreated().AsTime(),
+			DateExpires:   pbQuote.GetDateExpires().AsTime(),
+		})
+	}
+
+	return &response, nil
+}
+
 func convertOrderStatus(status orderv1.OrderStatus) oas.OrderStatus {
 	switch status {
-	case orderv1.OrderStatus_STATUS_COMPLETED:
+	case orderv1.OrderStatus_ORDER_STATUS_COMPLETED:
 		return oas.OrderStatusCompleted
-	case orderv1.OrderStatus_STATUS_PENDING_APPROVAL:
+	case orderv1.OrderStatus_ORDER_STATUS_PENDING_APPROVAL:
 		return oas.OrderStatusPendingApproval
-	case orderv1.OrderStatus_STATUS_APPROVED:
+	case orderv1.OrderStatus_ORDER_STATUS_APPROVED:
 		return oas.OrderStatusApproved
-	case orderv1.OrderStatus_STATUS_CANCELLED:
+	case orderv1.OrderStatus_ORDER_STATUS_CANCELLED:
 		return oas.OrderStatusCancelled
+	case orderv1.OrderStatus_ORDER_STATUS_UNSPECIFIED:
+		return oas.OrderStatusUnspecified
 	default:
 		return oas.OrderStatusUnspecified
+	}
+}
+
+func convertQuoteStatus(status orderv1.QuoteStatus) oas.QuoteStatus {
+	switch status {
+	case orderv1.QuoteStatus_QUOTE_STATUS_APPROVED:
+		return oas.QuoteStatusApproved
+	case orderv1.QuoteStatus_QUOTE_STATUS_CANCELLED:
+		return oas.QuoteStatusCancelled
+	case orderv1.QuoteStatus_QUOTE_STATUS_PENDING_APPROVAL:
+		return oas.QuoteStatusPendingApproval
+	case orderv1.QuoteStatus_QUOTE_STATUS_EXPIRED:
+		return oas.QuoteStatusExpired
+	case orderv1.QuoteStatus_QUOTE_STATUS_UNSPECIFIED:
+		return oas.QuoteStatusUnspecified
+	default:
+		return oas.QuoteStatusUnspecified
 	}
 }

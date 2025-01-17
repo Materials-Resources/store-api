@@ -40,6 +40,8 @@ const (
 	// OrderServiceCreateOrderProcedure is the fully-qualified name of the OrderService's CreateOrder
 	// RPC.
 	OrderServiceCreateOrderProcedure = "/order.v1.OrderService/CreateOrder"
+	// OrderServiceListQuotesProcedure is the fully-qualified name of the OrderService's ListQuotes RPC.
+	OrderServiceListQuotesProcedure = "/order.v1.OrderService/ListQuotes"
 	// OrderServiceGetQuoteProcedure is the fully-qualified name of the OrderService's GetQuote RPC.
 	OrderServiceGetQuoteProcedure = "/order.v1.OrderService/GetQuote"
 	// OrderServiceCreateQuoteProcedure is the fully-qualified name of the OrderService's CreateQuote
@@ -59,6 +61,7 @@ var (
 	orderServiceListOrdersMethodDescriptor           = orderServiceServiceDescriptor.Methods().ByName("ListOrders")
 	orderServiceGetOrderMethodDescriptor             = orderServiceServiceDescriptor.Methods().ByName("GetOrder")
 	orderServiceCreateOrderMethodDescriptor          = orderServiceServiceDescriptor.Methods().ByName("CreateOrder")
+	orderServiceListQuotesMethodDescriptor           = orderServiceServiceDescriptor.Methods().ByName("ListQuotes")
 	orderServiceGetQuoteMethodDescriptor             = orderServiceServiceDescriptor.Methods().ByName("GetQuote")
 	orderServiceCreateQuoteMethodDescriptor          = orderServiceServiceDescriptor.Methods().ByName("CreateQuote")
 	orderServiceListShipmentsByOrderMethodDescriptor = orderServiceServiceDescriptor.Methods().ByName("ListShipmentsByOrder")
@@ -73,6 +76,7 @@ type OrderServiceClient interface {
 	GetOrder(context.Context, *connect.Request[order.GetOrderRequest]) (*connect.Response[order.GetOrderResponse], error)
 	// CreateOrder creates a new order
 	CreateOrder(context.Context, *connect.Request[order.CreateOrderRequest]) (*connect.Response[order.CreateOrderResponse], error)
+	ListQuotes(context.Context, *connect.Request[order.ListQuotesRequest]) (*connect.Response[order.ListQuotesResponse], error)
 	// GetQuote returns the quote details for a given quote
 	GetQuote(context.Context, *connect.Request[order.GetQuoteRequest]) (*connect.Response[order.GetQuoteResponse], error)
 	// CreateQuote creates a new quote
@@ -111,6 +115,12 @@ func NewOrderServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(orderServiceCreateOrderMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		listQuotes: connect.NewClient[order.ListQuotesRequest, order.ListQuotesResponse](
+			httpClient,
+			baseURL+OrderServiceListQuotesProcedure,
+			connect.WithSchema(orderServiceListQuotesMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 		getQuote: connect.NewClient[order.GetQuoteRequest, order.GetQuoteResponse](
 			httpClient,
 			baseURL+OrderServiceGetQuoteProcedure,
@@ -143,6 +153,7 @@ type orderServiceClient struct {
 	listOrders           *connect.Client[order.ListOrdersRequest, order.ListOrdersResponse]
 	getOrder             *connect.Client[order.GetOrderRequest, order.GetOrderResponse]
 	createOrder          *connect.Client[order.CreateOrderRequest, order.CreateOrderResponse]
+	listQuotes           *connect.Client[order.ListQuotesRequest, order.ListQuotesResponse]
 	getQuote             *connect.Client[order.GetQuoteRequest, order.GetQuoteResponse]
 	createQuote          *connect.Client[order.CreateQuoteRequest, order.CreateQuoteResponse]
 	listShipmentsByOrder *connect.Client[order.ListShipmentsByOrderRequest, order.ListShipmentsByOrderResponse]
@@ -162,6 +173,11 @@ func (c *orderServiceClient) GetOrder(ctx context.Context, req *connect.Request[
 // CreateOrder calls order.v1.OrderService.CreateOrder.
 func (c *orderServiceClient) CreateOrder(ctx context.Context, req *connect.Request[order.CreateOrderRequest]) (*connect.Response[order.CreateOrderResponse], error) {
 	return c.createOrder.CallUnary(ctx, req)
+}
+
+// ListQuotes calls order.v1.OrderService.ListQuotes.
+func (c *orderServiceClient) ListQuotes(ctx context.Context, req *connect.Request[order.ListQuotesRequest]) (*connect.Response[order.ListQuotesResponse], error) {
+	return c.listQuotes.CallUnary(ctx, req)
 }
 
 // GetQuote calls order.v1.OrderService.GetQuote.
@@ -192,6 +208,7 @@ type OrderServiceHandler interface {
 	GetOrder(context.Context, *connect.Request[order.GetOrderRequest]) (*connect.Response[order.GetOrderResponse], error)
 	// CreateOrder creates a new order
 	CreateOrder(context.Context, *connect.Request[order.CreateOrderRequest]) (*connect.Response[order.CreateOrderResponse], error)
+	ListQuotes(context.Context, *connect.Request[order.ListQuotesRequest]) (*connect.Response[order.ListQuotesResponse], error)
 	// GetQuote returns the quote details for a given quote
 	GetQuote(context.Context, *connect.Request[order.GetQuoteRequest]) (*connect.Response[order.GetQuoteResponse], error)
 	// CreateQuote creates a new quote
@@ -226,6 +243,12 @@ func NewOrderServiceHandler(svc OrderServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(orderServiceCreateOrderMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	orderServiceListQuotesHandler := connect.NewUnaryHandler(
+		OrderServiceListQuotesProcedure,
+		svc.ListQuotes,
+		connect.WithSchema(orderServiceListQuotesMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	orderServiceGetQuoteHandler := connect.NewUnaryHandler(
 		OrderServiceGetQuoteProcedure,
 		svc.GetQuote,
@@ -258,6 +281,8 @@ func NewOrderServiceHandler(svc OrderServiceHandler, opts ...connect.HandlerOpti
 			orderServiceGetOrderHandler.ServeHTTP(w, r)
 		case OrderServiceCreateOrderProcedure:
 			orderServiceCreateOrderHandler.ServeHTTP(w, r)
+		case OrderServiceListQuotesProcedure:
+			orderServiceListQuotesHandler.ServeHTTP(w, r)
 		case OrderServiceGetQuoteProcedure:
 			orderServiceGetQuoteHandler.ServeHTTP(w, r)
 		case OrderServiceCreateQuoteProcedure:
@@ -285,6 +310,10 @@ func (UnimplementedOrderServiceHandler) GetOrder(context.Context, *connect.Reque
 
 func (UnimplementedOrderServiceHandler) CreateOrder(context.Context, *connect.Request[order.CreateOrderRequest]) (*connect.Response[order.CreateOrderResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("order.v1.OrderService.CreateOrder is not implemented"))
+}
+
+func (UnimplementedOrderServiceHandler) ListQuotes(context.Context, *connect.Request[order.ListQuotesRequest]) (*connect.Response[order.ListQuotesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("order.v1.OrderService.ListQuotes is not implemented"))
 }
 
 func (UnimplementedOrderServiceHandler) GetQuote(context.Context, *connect.Request[order.GetQuoteRequest]) (*connect.Response[order.GetQuoteResponse], error) {

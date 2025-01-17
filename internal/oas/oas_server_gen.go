@@ -14,7 +14,7 @@ type Handler interface {
 	// authentication token. Make sure to include a valid bearer token in the `Authorization` header.
 	//
 	// POST /account/quotes
-	CreateQuote(ctx context.Context, req *CreateQuoteReq) (*CreateQuoteCreated, error)
+	CreateQuote(ctx context.Context, req *CreateQuoteReq) (CreateQuoteRes, error)
 	// GetOrder implements getOrder operation.
 	//
 	// Get an order by ID.
@@ -39,6 +39,12 @@ type Handler interface {
 	//
 	// GET /account/orders
 	ListOrders(ctx context.Context, params ListOrdersParams) (*ListOrdersOK, error)
+	// ListQuotes implements listQuotes operation.
+	//
+	// Get a list of quotes.
+	//
+	// GET /account/quotes
+	ListQuotes(ctx context.Context, params ListQuotesParams) (*ListQuotesOK, error)
 	// SearchProducts implements searchProducts operation.
 	//
 	// Search for products.

@@ -177,10 +177,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					if len(elem) == 0 {
 						// Leaf node.
 						switch r.Method {
+						case "GET":
+							s.handleListQuotesRequest([0]string{}, elemIsEscaped, w, r)
 						case "POST":
 							s.handleCreateQuoteRequest([0]string{}, elemIsEscaped, w, r)
 						default:
-							s.notAllowed(w, r, "POST")
+							s.notAllowed(w, r, "GET,POST")
 						}
 
 						return
@@ -464,6 +466,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					if len(elem) == 0 {
 						// Leaf node.
 						switch method {
+						case "GET":
+							r.name = ListQuotesOperation
+							r.summary = "Get a list of quotes"
+							r.operationID = "listQuotes"
+							r.pathPattern = "/account/quotes"
+							r.args = args
+							r.count = 0
+							return r, true
 						case "POST":
 							r.name = CreateQuoteOperation
 							r.summary = "Create a new quote"

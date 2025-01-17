@@ -185,13 +185,13 @@ func (s *Bucket) SetCount(val int) {
 
 type CreateQuoteCreated struct {
 	// ID of the created quote.
-	QuoteID OptString `json:"quote_id"`
+	QuoteID string `json:"quote_id"`
 	// Status of the quote creation.
 	Status OptString `json:"status"`
 }
 
 // GetQuoteID returns the value of QuoteID.
-func (s *CreateQuoteCreated) GetQuoteID() OptString {
+func (s *CreateQuoteCreated) GetQuoteID() string {
 	return s.QuoteID
 }
 
@@ -201,7 +201,7 @@ func (s *CreateQuoteCreated) GetStatus() OptString {
 }
 
 // SetQuoteID sets the value of QuoteID.
-func (s *CreateQuoteCreated) SetQuoteID(val OptString) {
+func (s *CreateQuoteCreated) SetQuoteID(val string) {
 	s.QuoteID = val
 }
 
@@ -209,6 +209,8 @@ func (s *CreateQuoteCreated) SetQuoteID(val OptString) {
 func (s *CreateQuoteCreated) SetStatus(val OptString) {
 	s.Status = val
 }
+
+func (*CreateQuoteCreated) createQuoteRes() {}
 
 type CreateQuoteReq struct {
 	PurchaseOrder        string `json:"purchase_order"`
@@ -263,7 +265,7 @@ type CreateQuoteReqItemsItem struct {
 	// ID of the product.
 	ProductID string `json:"product_id"`
 	// Quantity of the product.
-	Quantity int `json:"quantity"`
+	Quantity float64 `json:"quantity"`
 }
 
 // GetProductID returns the value of ProductID.
@@ -272,7 +274,7 @@ func (s *CreateQuoteReqItemsItem) GetProductID() string {
 }
 
 // GetQuantity returns the value of Quantity.
-func (s *CreateQuoteReqItemsItem) GetQuantity() int {
+func (s *CreateQuoteReqItemsItem) GetQuantity() float64 {
 	return s.Quantity
 }
 
@@ -282,8 +284,52 @@ func (s *CreateQuoteReqItemsItem) SetProductID(val string) {
 }
 
 // SetQuantity sets the value of Quantity.
-func (s *CreateQuoteReqItemsItem) SetQuantity(val int) {
+func (s *CreateQuoteReqItemsItem) SetQuantity(val float64) {
 	s.Quantity = val
+}
+
+type CreateQuoteUnprocessableEntity struct {
+	// List of validation errors.
+	Errors []CreateQuoteUnprocessableEntityErrorsItem `json:"errors"`
+}
+
+// GetErrors returns the value of Errors.
+func (s *CreateQuoteUnprocessableEntity) GetErrors() []CreateQuoteUnprocessableEntityErrorsItem {
+	return s.Errors
+}
+
+// SetErrors sets the value of Errors.
+func (s *CreateQuoteUnprocessableEntity) SetErrors(val []CreateQuoteUnprocessableEntityErrorsItem) {
+	s.Errors = val
+}
+
+func (*CreateQuoteUnprocessableEntity) createQuoteRes() {}
+
+type CreateQuoteUnprocessableEntityErrorsItem struct {
+	// The field where the validation error occurred.
+	Field OptString `json:"field"`
+	// A descriptive error message.
+	Message OptString `json:"message"`
+}
+
+// GetField returns the value of Field.
+func (s *CreateQuoteUnprocessableEntityErrorsItem) GetField() OptString {
+	return s.Field
+}
+
+// GetMessage returns the value of Message.
+func (s *CreateQuoteUnprocessableEntityErrorsItem) GetMessage() OptString {
+	return s.Message
+}
+
+// SetField sets the value of Field.
+func (s *CreateQuoteUnprocessableEntityErrorsItem) SetField(val OptString) {
+	s.Field = val
+}
+
+// SetMessage sets the value of Message.
+func (s *CreateQuoteUnprocessableEntityErrorsItem) SetMessage(val OptString) {
+	s.Message = val
 }
 
 // Represents error object.
@@ -407,6 +453,20 @@ func (s *ListOrdersOK) GetOrders() []OrderSummary {
 // SetOrders sets the value of Orders.
 func (s *ListOrdersOK) SetOrders(val []OrderSummary) {
 	s.Orders = val
+}
+
+type ListQuotesOK struct {
+	Quotes []QuoteSummary `json:"quotes"`
+}
+
+// GetQuotes returns the value of Quotes.
+func (s *ListQuotesOK) GetQuotes() []QuoteSummary {
+	return s.Quotes
+}
+
+// SetQuotes sets the value of Quotes.
+func (s *ListQuotesOK) SetQuotes(val []QuoteSummary) {
+	s.Quotes = val
 }
 
 // NewOptInt returns new OptInt with value set to v.
@@ -1024,6 +1084,150 @@ func (s *Product) SetDescription(val OptString) {
 // SetImageURL sets the value of ImageURL.
 func (s *Product) SetImageURL(val OptString) {
 	s.ImageURL = val
+}
+
+// Ref: #/components/schemas/QuoteStatus
+type QuoteStatus string
+
+const (
+	QuoteStatusUnspecified     QuoteStatus = "unspecified"
+	QuoteStatusPendingApproval QuoteStatus = "pending_approval"
+	QuoteStatusApproved        QuoteStatus = "approved"
+	QuoteStatusCancelled       QuoteStatus = "cancelled"
+	QuoteStatusExpired         QuoteStatus = "expired"
+)
+
+// AllValues returns all QuoteStatus values.
+func (QuoteStatus) AllValues() []QuoteStatus {
+	return []QuoteStatus{
+		QuoteStatusUnspecified,
+		QuoteStatusPendingApproval,
+		QuoteStatusApproved,
+		QuoteStatusCancelled,
+		QuoteStatusExpired,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s QuoteStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case QuoteStatusUnspecified:
+		return []byte(s), nil
+	case QuoteStatusPendingApproval:
+		return []byte(s), nil
+	case QuoteStatusApproved:
+		return []byte(s), nil
+	case QuoteStatusCancelled:
+		return []byte(s), nil
+	case QuoteStatusExpired:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *QuoteStatus) UnmarshalText(data []byte) error {
+	switch QuoteStatus(data) {
+	case QuoteStatusUnspecified:
+		*s = QuoteStatusUnspecified
+		return nil
+	case QuoteStatusPendingApproval:
+		*s = QuoteStatusPendingApproval
+		return nil
+	case QuoteStatusApproved:
+		*s = QuoteStatusApproved
+		return nil
+	case QuoteStatusCancelled:
+		*s = QuoteStatusCancelled
+		return nil
+	case QuoteStatusExpired:
+		*s = QuoteStatusExpired
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// Ref: #/components/schemas/QuoteSummary
+type QuoteSummary struct {
+	ID            string      `json:"id"`
+	ContactID     string      `json:"contact_id"`
+	BranchID      string      `json:"branch_id"`
+	PurchaseOrder string      `json:"purchase_order"`
+	Status        QuoteStatus `json:"status"`
+	DateCreated   time.Time   `json:"date_created"`
+	DateExpires   time.Time   `json:"date_expires"`
+}
+
+// GetID returns the value of ID.
+func (s *QuoteSummary) GetID() string {
+	return s.ID
+}
+
+// GetContactID returns the value of ContactID.
+func (s *QuoteSummary) GetContactID() string {
+	return s.ContactID
+}
+
+// GetBranchID returns the value of BranchID.
+func (s *QuoteSummary) GetBranchID() string {
+	return s.BranchID
+}
+
+// GetPurchaseOrder returns the value of PurchaseOrder.
+func (s *QuoteSummary) GetPurchaseOrder() string {
+	return s.PurchaseOrder
+}
+
+// GetStatus returns the value of Status.
+func (s *QuoteSummary) GetStatus() QuoteStatus {
+	return s.Status
+}
+
+// GetDateCreated returns the value of DateCreated.
+func (s *QuoteSummary) GetDateCreated() time.Time {
+	return s.DateCreated
+}
+
+// GetDateExpires returns the value of DateExpires.
+func (s *QuoteSummary) GetDateExpires() time.Time {
+	return s.DateExpires
+}
+
+// SetID sets the value of ID.
+func (s *QuoteSummary) SetID(val string) {
+	s.ID = val
+}
+
+// SetContactID sets the value of ContactID.
+func (s *QuoteSummary) SetContactID(val string) {
+	s.ContactID = val
+}
+
+// SetBranchID sets the value of BranchID.
+func (s *QuoteSummary) SetBranchID(val string) {
+	s.BranchID = val
+}
+
+// SetPurchaseOrder sets the value of PurchaseOrder.
+func (s *QuoteSummary) SetPurchaseOrder(val string) {
+	s.PurchaseOrder = val
+}
+
+// SetStatus sets the value of Status.
+func (s *QuoteSummary) SetStatus(val QuoteStatus) {
+	s.Status = val
+}
+
+// SetDateCreated sets the value of DateCreated.
+func (s *QuoteSummary) SetDateCreated(val time.Time) {
+	s.DateCreated = val
+}
+
+// SetDateExpires sets the value of DateExpires.
+func (s *QuoteSummary) SetDateExpires(val time.Time) {
+	s.DateExpires = val
 }
 
 type SearchProductsOK struct {

@@ -24,6 +24,11 @@ type Handler struct {
 	z       *zitadel.Client
 }
 
+func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (*oas.ListQuotesOK, error) {
+	res, err := h.service.Order.ListQuotes(ctx, params)
+	return res, err
+}
+
 func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (*oas.ListOrdersOK, error) {
 	res, err := h.service.Order.ListOrders(ctx, params)
 	return res, err
@@ -42,16 +47,8 @@ func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchRe
 	return &oas.SetActiveBranchOK{}, nil
 }
 
-func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (*oas.CreateQuoteCreated, error) {
-	fmt.Println(req.GetDateRequested())
-	fmt.Println(req.GetItems())
-
-	response := oas.CreateQuoteCreated{
-		QuoteID: oas.OptString{Value: "1234567890", Set: true},
-		Status:  oas.OptString{Value: "PENDING", Set: true},
-	}
-
-	return &response, nil
+func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.CreateQuoteRes, error) {
+	return h.service.Order.CreateQuote(ctx, req)
 }
 
 func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.GetOrderRes, error) {

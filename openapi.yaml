@@ -208,7 +208,8 @@ paths:
                         type: string
                         description: ID of the product
                       quantity:
-                        type: integer
+                        type: number
+                        x-go-type: float64
                         description: Quantity of the product
       responses:
         '201':
@@ -216,6 +217,8 @@ paths:
           content:
             application/json:
               schema:
+                required:
+                  - quote_id
                 type: object
                 properties:
                   quote_id:
@@ -224,12 +227,68 @@ paths:
                   status:
                     type: string
                     description: Status of the quote creation
+
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    description: List of validation errors
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          description: The field where the validation error occurred
+                        message:
+                          type: string
+                          description: A descriptive error message
         default:
           description: General Error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+    get:
+      security: [ ]
+      tags:
+        - account
+      summary: Get a list of quotes
+      operationId: listQuotes
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: page_size
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "List of quote summaries for account"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quotes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/QuoteSummary'
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /products/{id}:
     get:
       summary: Get a product by ID
@@ -590,6 +649,41 @@ components:
           type: string
           format: date-time
         date_requested:
+          type: string
+          format: date-time
+    QuoteStatus:
+      type: string
+      enum:
+        - unspecified
+        - pending_approval
+        - approved
+        - cancelled
+        - expired
+    QuoteSummary:
+      required:
+        - id
+        - contact_id
+        - branch_id
+        - purchase_order
+        - status
+        - date_created
+        - date_expires
+      type: object
+      properties:
+        id:
+          type: string
+        contact_id:
+          type: string
+        branch_id:
+          type: string
+        purchase_order:
+          type: string
+        status:
+          $ref: '#/components/schemas/QuoteStatus'
+        date_created:
+          type: string
+          format: date-time
+        date_expires:
           type: string
           format: date-time
     Product:

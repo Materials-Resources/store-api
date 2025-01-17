@@ -530,10 +530,8 @@ func (s *CreateQuoteCreated) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *CreateQuoteCreated) encodeFields(e *jx.Encoder) {
 	{
-		if s.QuoteID.Set {
-			e.FieldStart("quote_id")
-			s.QuoteID.Encode(e)
-		}
+		e.FieldStart("quote_id")
+		e.Str(s.QuoteID)
 	}
 	{
 		if s.Status.Set {
@@ -553,13 +551,16 @@ func (s *CreateQuoteCreated) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateQuoteCreated to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "quote_id":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.QuoteID.Reset()
-				if err := s.QuoteID.Decode(d); err != nil {
+				v, err := d.Str()
+				s.QuoteID = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -582,6 +583,38 @@ func (s *CreateQuoteCreated) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode CreateQuoteCreated")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfCreateQuoteCreated) {
+					name = jsonFieldsNameOfCreateQuoteCreated[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -772,7 +805,7 @@ func (s *CreateQuoteReqItemsItem) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("quantity")
-		e.Int(s.Quantity)
+		e.Float64(s.Quantity)
 	}
 }
 
@@ -805,8 +838,8 @@ func (s *CreateQuoteReqItemsItem) Decode(d *jx.Decoder) error {
 		case "quantity":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := d.Int()
-				s.Quantity = int(v)
+				v, err := d.Float64()
+				s.Quantity = float64(v)
 				if err != nil {
 					return err
 				}
@@ -866,6 +899,160 @@ func (s *CreateQuoteReqItemsItem) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *CreateQuoteReqItemsItem) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *CreateQuoteUnprocessableEntity) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *CreateQuoteUnprocessableEntity) encodeFields(e *jx.Encoder) {
+	{
+		if s.Errors != nil {
+			e.FieldStart("errors")
+			e.ArrStart()
+			for _, elem := range s.Errors {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
+		}
+	}
+}
+
+var jsonFieldsNameOfCreateQuoteUnprocessableEntity = [1]string{
+	0: "errors",
+}
+
+// Decode decodes CreateQuoteUnprocessableEntity from json.
+func (s *CreateQuoteUnprocessableEntity) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode CreateQuoteUnprocessableEntity to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "errors":
+			if err := func() error {
+				s.Errors = make([]CreateQuoteUnprocessableEntityErrorsItem, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem CreateQuoteUnprocessableEntityErrorsItem
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Errors = append(s.Errors, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"errors\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode CreateQuoteUnprocessableEntity")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *CreateQuoteUnprocessableEntity) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *CreateQuoteUnprocessableEntity) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *CreateQuoteUnprocessableEntityErrorsItem) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *CreateQuoteUnprocessableEntityErrorsItem) encodeFields(e *jx.Encoder) {
+	{
+		if s.Field.Set {
+			e.FieldStart("field")
+			s.Field.Encode(e)
+		}
+	}
+	{
+		if s.Message.Set {
+			e.FieldStart("message")
+			s.Message.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfCreateQuoteUnprocessableEntityErrorsItem = [2]string{
+	0: "field",
+	1: "message",
+}
+
+// Decode decodes CreateQuoteUnprocessableEntityErrorsItem from json.
+func (s *CreateQuoteUnprocessableEntityErrorsItem) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode CreateQuoteUnprocessableEntityErrorsItem to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "field":
+			if err := func() error {
+				s.Field.Reset()
+				if err := s.Field.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"field\"")
+			}
+		case "message":
+			if err := func() error {
+				s.Message.Reset()
+				if err := s.Message.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"message\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode CreateQuoteUnprocessableEntityErrorsItem")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *CreateQuoteUnprocessableEntityErrorsItem) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *CreateQuoteUnprocessableEntityErrorsItem) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -1347,6 +1534,80 @@ func (s *ListOrdersOK) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *ListOrdersOK) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *ListQuotesOK) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *ListQuotesOK) encodeFields(e *jx.Encoder) {
+	{
+		if s.Quotes != nil {
+			e.FieldStart("quotes")
+			e.ArrStart()
+			for _, elem := range s.Quotes {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
+		}
+	}
+}
+
+var jsonFieldsNameOfListQuotesOK = [1]string{
+	0: "quotes",
+}
+
+// Decode decodes ListQuotesOK from json.
+func (s *ListQuotesOK) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode ListQuotesOK to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "quotes":
+			if err := func() error {
+				s.Quotes = make([]QuoteSummary, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem QuoteSummary
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Quotes = append(s.Quotes, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"quotes\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode ListQuotesOK")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *ListQuotesOK) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *ListQuotesOK) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -2510,6 +2771,248 @@ func (s *Product) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *Product) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes QuoteStatus as json.
+func (s QuoteStatus) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes QuoteStatus from json.
+func (s *QuoteStatus) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode QuoteStatus to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch QuoteStatus(v) {
+	case QuoteStatusUnspecified:
+		*s = QuoteStatusUnspecified
+	case QuoteStatusPendingApproval:
+		*s = QuoteStatusPendingApproval
+	case QuoteStatusApproved:
+		*s = QuoteStatusApproved
+	case QuoteStatusCancelled:
+		*s = QuoteStatusCancelled
+	case QuoteStatusExpired:
+		*s = QuoteStatusExpired
+	default:
+		*s = QuoteStatus(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s QuoteStatus) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *QuoteStatus) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *QuoteSummary) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *QuoteSummary) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("id")
+		e.Str(s.ID)
+	}
+	{
+		e.FieldStart("contact_id")
+		e.Str(s.ContactID)
+	}
+	{
+		e.FieldStart("branch_id")
+		e.Str(s.BranchID)
+	}
+	{
+		e.FieldStart("purchase_order")
+		e.Str(s.PurchaseOrder)
+	}
+	{
+		e.FieldStart("status")
+		s.Status.Encode(e)
+	}
+	{
+		e.FieldStart("date_created")
+		json.EncodeDateTime(e, s.DateCreated)
+	}
+	{
+		e.FieldStart("date_expires")
+		json.EncodeDateTime(e, s.DateExpires)
+	}
+}
+
+var jsonFieldsNameOfQuoteSummary = [7]string{
+	0: "id",
+	1: "contact_id",
+	2: "branch_id",
+	3: "purchase_order",
+	4: "status",
+	5: "date_created",
+	6: "date_expires",
+}
+
+// Decode decodes QuoteSummary from json.
+func (s *QuoteSummary) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode QuoteSummary to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "id":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.ID = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"id\"")
+			}
+		case "contact_id":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.ContactID = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"contact_id\"")
+			}
+		case "branch_id":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Str()
+				s.BranchID = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"branch_id\"")
+			}
+		case "purchase_order":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Str()
+				s.PurchaseOrder = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"purchase_order\"")
+			}
+		case "status":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				if err := s.Status.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"status\"")
+			}
+		case "date_created":
+			requiredBitSet[0] |= 1 << 5
+			if err := func() error {
+				v, err := json.DecodeDateTime(d)
+				s.DateCreated = v
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"date_created\"")
+			}
+		case "date_expires":
+			requiredBitSet[0] |= 1 << 6
+			if err := func() error {
+				v, err := json.DecodeDateTime(d)
+				s.DateExpires = v
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"date_expires\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode QuoteSummary")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b01111111,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfQuoteSummary) {
+					name = jsonFieldsNameOfQuoteSummary[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *QuoteSummary) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *QuoteSummary) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
