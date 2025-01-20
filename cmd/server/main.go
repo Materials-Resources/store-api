@@ -1,17 +1,22 @@
 package main
 
 import (
-	"github.com/materials-resources/customer-api/internal/handler"
 	"github.com/materials-resources/customer-api/internal/oas"
 	"github.com/materials-resources/customer-api/internal/service"
+	"github.com/materials-resources/customer-api/internal/session"
 	"log"
 	"net/http"
 )
 
-func main() {
-	h := handler.NewHandler(service.NewService())
+type application struct {
+}
 
-	srv, err := oas.NewServer(h, handler.NewSecurityHandler())
+func main() {
+	sm := session.NewManager("https://auth.materials-resources.com/oauth/v2/keys")
+
+	h := NewHandler(service.NewService(), sm)
+
+	srv, err := oas.NewServer(h, NewSecurityHandler(sm))
 	if err != nil {
 		log.Fatal(err)
 	}

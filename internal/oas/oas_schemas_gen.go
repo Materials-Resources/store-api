@@ -406,6 +406,11 @@ func (s *GetOrderOK) SetOrder(val Order) {
 
 func (*GetOrderOK) getOrderRes() {}
 
+// GetOrderUnauthorized is response for GetOrder operation.
+type GetOrderUnauthorized struct{}
+
+func (*GetOrderUnauthorized) getOrderRes() {}
+
 // GetProductNotFound is response for GetProduct operation.
 type GetProductNotFound struct{}
 
@@ -470,12 +475,23 @@ func (s *ListOrdersOK) SetOrders(val []OrderSummary) {
 }
 
 type ListQuotesOK struct {
-	Quotes []QuoteSummary `json:"quotes"`
+	TotalRecords int            `json:"total_records"`
+	Quotes       []QuoteSummary `json:"quotes"`
+}
+
+// GetTotalRecords returns the value of TotalRecords.
+func (s *ListQuotesOK) GetTotalRecords() int {
+	return s.TotalRecords
 }
 
 // GetQuotes returns the value of Quotes.
 func (s *ListQuotesOK) GetQuotes() []QuoteSummary {
 	return s.Quotes
+}
+
+// SetTotalRecords sets the value of TotalRecords.
+func (s *ListQuotesOK) SetTotalRecords(val int) {
+	s.TotalRecords = val
 }
 
 // SetQuotes sets the value of Quotes.

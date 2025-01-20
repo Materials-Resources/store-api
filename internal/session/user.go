@@ -11,3 +11,10 @@ type Profile struct {
 	ContactID string
 	BranchID  string
 }
+
+var AnonymousUserSession = &UserSession{}
+
+// IsAnonymous checks if user is anonymous
+func (u *UserSession) IsAnonymous() bool {
+	return u == AnonymousUserSession
+}

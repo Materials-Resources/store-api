@@ -1,24 +1,11 @@
 package session
 
 import (
-	"github.com/MicahParks/keyfunc/v3"
+	"encoding/base64"
+	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"log"
 )
-
-type Parser struct {
-	keyFunc jwt.Keyfunc
-}
-
-func NewParser(jwksUrl string) *Parser {
-	jwks, err := keyfunc.NewDefault([]string{jwksUrl})
-	if err != nil {
-		log.Fatal(err)
-	}
-	return &Parser{
-		keyFunc: jwks.Keyfunc,
-	}
-}
 
 type JWTClaims struct {
 	Metadata struct {
@@ -28,8 +15,9 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-func (p *Parser) ParseJwt(tokenString string) (*JWTClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, p.keyFunc)
+func (m *Manager) ParseJwt(tokenString string) (*JWTClaims, error) {
+	claims := &JWTClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, m.keyFunc)
 	if err != nil {
 		return nil, err
 	}
@@ -37,5 +25,32 @@ func (p *Parser) ParseJwt(tokenString string) (*JWTClaims, error) {
 		log.Fatal("unknown claims type, cannot proceed")
 	}
 
-	return token.Claims.(*JWTClaims), nil
+	// Decode metadata fields
+	if err := decodeBase64Metadata(claims); err != nil {
+
+		return nil, fmt.Errorf("decoding metadata: %w", err)
+	}
+
+	return claims, nil
+}
+
+func decodeBase64Metadata(claims *JWTClaims) error {
+	// Helper function to decode a Base64 string to a regular string.
+	decodeField := func(field *string) error {
+		decoded, err := base64.RawStdEncoding.DecodeString(*field)
+		if err != nil {
+			return fmt.Errorf("base64 decoding: %w", err)
+		}
+		*field = string(decoded)
+		return nil
+	}
+
+	if err := decodeField(&claims.Metadata.ContactID); err != nil {
+		return err
+	}
+	if err := decodeField(&claims.Metadata.BranchID); err != nil {
+		return err
+	}
+
+	return nil
 }

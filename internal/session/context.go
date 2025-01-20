@@ -6,11 +6,11 @@ type contextKey string
 
 const userContextKey = contextKey("user")
 
-func GetUserSession(ctx context.Context) *UserSession {
+func (m *Manager) GetUserSession(ctx context.Context) *UserSession {
 	user, _ := ctx.Value(userContextKey).(*UserSession)
 	return user
 }
 
-func WithUserSession(ctx context.Context, user *UserSession) context.Context {
+func (m *Manager) WithUserSession(ctx context.Context, user *UserSession) context.Context {
 	return context.WithValue(ctx, userContextKey, user)
 }
