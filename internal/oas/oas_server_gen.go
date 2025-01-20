@@ -27,6 +27,12 @@ type Handler interface {
 	//
 	// GET /products/{id}
 	GetProduct(ctx context.Context, params GetProductParams) (GetProductRes, error)
+	// GetQuote implements getQuote operation.
+	//
+	// Get quote by ID.
+	//
+	// GET /account/quotes/{id}
+	GetQuote(ctx context.Context, params GetQuoteParams) (*GetQuoteOK, error)
 	// ListCustomerBranches implements listCustomerBranches operation.
 	//
 	// Get available branches for customer.

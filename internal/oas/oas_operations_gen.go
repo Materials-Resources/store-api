@@ -9,6 +9,7 @@ const (
 	CreateQuoteOperation          OperationName = "CreateQuote"
 	GetOrderOperation             OperationName = "GetOrder"
 	GetProductOperation           OperationName = "GetProduct"
+	GetQuoteOperation             OperationName = "GetQuote"
 	ListCustomerBranchesOperation OperationName = "ListCustomerBranches"
 	ListOrdersOperation           OperationName = "ListOrders"
 	ListQuotesOperation           OperationName = "ListQuotes"

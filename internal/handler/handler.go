@@ -24,6 +24,11 @@ type Handler struct {
 	z       *zitadel.Client
 }
 
+func (h Handler) GetQuote(ctx context.Context, params oas.GetQuoteParams) (*oas.GetQuoteOK, error) {
+	res, err := h.service.Order.GetQuote(ctx, params)
+	return res, err
+}
+
 func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (*oas.ListQuotesOK, error) {
 	res, err := h.service.Order.ListQuotes(ctx, params)
 	return res, err

@@ -3,6 +3,7 @@ package service
 import (
 	"connectrpc.com/connect"
 	"context"
+	"fmt"
 	orderv1 "github.com/materials-resources/customer-api/internal/grpc-client/order"
 	"github.com/materials-resources/customer-api/internal/grpc-client/order/orderconnect"
 	"github.com/materials-resources/customer-api/internal/oas"
@@ -48,6 +49,40 @@ func (s *Order) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.C
 	return &oas.CreateQuoteCreated{
 		QuoteID: pbRes.Msg.GetId(),
 	}, nil
+}
+
+func (s *Order) GetQuote(ctx context.Context, req oas.GetQuoteParams) (*oas.GetQuoteOK, error) {
+	pbReq := &orderv1.GetQuoteRequest{Id: req.ID}
+	pbRes, err := s.Client.GetQuote(ctx, connect.NewRequest(pbReq))
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(pbRes.Msg.GetQuote().GetDateExpires().AsTime().IsZero())
+
+	response := oas.GetQuoteOK{
+		Quote: oas.Quote{
+			ID:            pbRes.Msg.GetQuote().GetId(),
+			PurchaseOrder: pbRes.Msg.GetQuote().GetPurchaseOrder(),
+			Status:        convertQuoteStatus(pbRes.Msg.GetQuote().GetStatus()),
+			DateCreated:   pbRes.Msg.GetQuote().GetDateCreated().AsTime(),
+		},
+	}
+
+	for _, item := range pbRes.Msg.GetQuote().GetItems() {
+		response.Quote.Items = append(response.Quote.Items, oas.QuoteItem{
+			ProductID:         item.GetProductId(),
+			ProductSn:         item.GetProductSn(),
+			ProductName:       item.GetProductName(),
+			CustomerProductSn: item.GetCustomerProductSn(),
+			UnitPrice:         item.GetUnitPrice(),
+			UnitType:          item.GetUnitType(),
+			OrderedQuantity:   item.GetOrderedQuantity(),
+			TotalPrice:        item.GetTotalPrice(),
+		})
+	}
+
+	return &response, nil
 }
 
 func (s *Order) GetOrder(ctx context.Context, req oas.GetOrderParams) (oas.GetOrderRes, error) {

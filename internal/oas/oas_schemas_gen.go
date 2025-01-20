@@ -427,6 +427,20 @@ func (s *GetProductOK) SetProduct(val Product) {
 
 func (*GetProductOK) getProductRes() {}
 
+type GetQuoteOK struct {
+	Quote Quote `json:"quote"`
+}
+
+// GetQuote returns the value of Quote.
+func (s *GetQuoteOK) GetQuote() Quote {
+	return s.Quote
+}
+
+// SetQuote sets the value of Quote.
+func (s *GetQuoteOK) SetQuote(val Quote) {
+	s.Quote = val
+}
+
 type ListCustomerBranchesOK struct {
 	Branches []Branch `json:"branches"`
 }
@@ -1084,6 +1098,168 @@ func (s *Product) SetDescription(val OptString) {
 // SetImageURL sets the value of ImageURL.
 func (s *Product) SetImageURL(val OptString) {
 	s.ImageURL = val
+}
+
+// Ref: #/components/schemas/Quote
+type Quote struct {
+	ID            string      `json:"id"`
+	PurchaseOrder string      `json:"purchase_order"`
+	DateCreated   time.Time   `json:"date_created"`
+	DateExpires   time.Time   `json:"date_expires"`
+	Status        QuoteStatus `json:"status"`
+	Items         []QuoteItem `json:"items"`
+}
+
+// GetID returns the value of ID.
+func (s *Quote) GetID() string {
+	return s.ID
+}
+
+// GetPurchaseOrder returns the value of PurchaseOrder.
+func (s *Quote) GetPurchaseOrder() string {
+	return s.PurchaseOrder
+}
+
+// GetDateCreated returns the value of DateCreated.
+func (s *Quote) GetDateCreated() time.Time {
+	return s.DateCreated
+}
+
+// GetDateExpires returns the value of DateExpires.
+func (s *Quote) GetDateExpires() time.Time {
+	return s.DateExpires
+}
+
+// GetStatus returns the value of Status.
+func (s *Quote) GetStatus() QuoteStatus {
+	return s.Status
+}
+
+// GetItems returns the value of Items.
+func (s *Quote) GetItems() []QuoteItem {
+	return s.Items
+}
+
+// SetID sets the value of ID.
+func (s *Quote) SetID(val string) {
+	s.ID = val
+}
+
+// SetPurchaseOrder sets the value of PurchaseOrder.
+func (s *Quote) SetPurchaseOrder(val string) {
+	s.PurchaseOrder = val
+}
+
+// SetDateCreated sets the value of DateCreated.
+func (s *Quote) SetDateCreated(val time.Time) {
+	s.DateCreated = val
+}
+
+// SetDateExpires sets the value of DateExpires.
+func (s *Quote) SetDateExpires(val time.Time) {
+	s.DateExpires = val
+}
+
+// SetStatus sets the value of Status.
+func (s *Quote) SetStatus(val QuoteStatus) {
+	s.Status = val
+}
+
+// SetItems sets the value of Items.
+func (s *Quote) SetItems(val []QuoteItem) {
+	s.Items = val
+}
+
+// Ref: #/components/schemas/QuoteItem
+type QuoteItem struct {
+	ProductID         string  `json:"product_id"`
+	ProductSn         string  `json:"product_sn"`
+	ProductName       string  `json:"product_name"`
+	CustomerProductSn string  `json:"customer_product_sn"`
+	OrderedQuantity   float64 `json:"ordered_quantity"`
+	UnitType          string  `json:"unit_type"`
+	UnitPrice         float64 `json:"unit_price"`
+	TotalPrice        float64 `json:"total_price"`
+}
+
+// GetProductID returns the value of ProductID.
+func (s *QuoteItem) GetProductID() string {
+	return s.ProductID
+}
+
+// GetProductSn returns the value of ProductSn.
+func (s *QuoteItem) GetProductSn() string {
+	return s.ProductSn
+}
+
+// GetProductName returns the value of ProductName.
+func (s *QuoteItem) GetProductName() string {
+	return s.ProductName
+}
+
+// GetCustomerProductSn returns the value of CustomerProductSn.
+func (s *QuoteItem) GetCustomerProductSn() string {
+	return s.CustomerProductSn
+}
+
+// GetOrderedQuantity returns the value of OrderedQuantity.
+func (s *QuoteItem) GetOrderedQuantity() float64 {
+	return s.OrderedQuantity
+}
+
+// GetUnitType returns the value of UnitType.
+func (s *QuoteItem) GetUnitType() string {
+	return s.UnitType
+}
+
+// GetUnitPrice returns the value of UnitPrice.
+func (s *QuoteItem) GetUnitPrice() float64 {
+	return s.UnitPrice
+}
+
+// GetTotalPrice returns the value of TotalPrice.
+func (s *QuoteItem) GetTotalPrice() float64 {
+	return s.TotalPrice
+}
+
+// SetProductID sets the value of ProductID.
+func (s *QuoteItem) SetProductID(val string) {
+	s.ProductID = val
+}
+
+// SetProductSn sets the value of ProductSn.
+func (s *QuoteItem) SetProductSn(val string) {
+	s.ProductSn = val
+}
+
+// SetProductName sets the value of ProductName.
+func (s *QuoteItem) SetProductName(val string) {
+	s.ProductName = val
+}
+
+// SetCustomerProductSn sets the value of CustomerProductSn.
+func (s *QuoteItem) SetCustomerProductSn(val string) {
+	s.CustomerProductSn = val
+}
+
+// SetOrderedQuantity sets the value of OrderedQuantity.
+func (s *QuoteItem) SetOrderedQuantity(val float64) {
+	s.OrderedQuantity = val
+}
+
+// SetUnitType sets the value of UnitType.
+func (s *QuoteItem) SetUnitType(val string) {
+	s.UnitType = val
+}
+
+// SetUnitPrice sets the value of UnitPrice.
+func (s *QuoteItem) SetUnitPrice(val float64) {
+	s.UnitPrice = val
+}
+
+// SetTotalPrice sets the value of TotalPrice.
+func (s *QuoteItem) SetTotalPrice(val float64) {
+	s.TotalPrice = val
 }
 
 // Ref: #/components/schemas/QuoteStatus
