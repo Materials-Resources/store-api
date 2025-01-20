@@ -118,13 +118,16 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - total_records
+                  - orders
                 properties:
+                  total_records:
+                    type: integer
                   orders:
                     type: array
                     items:
                       $ref: '#/components/schemas/OrderSummary'
-                required:
-                  - orders
 
         default:
           description: General Error
@@ -277,6 +280,7 @@ paths:
                 type: object
                 required:
                   - total_records
+                  - quotes
                 properties:
                   total_records:
                     type: integer

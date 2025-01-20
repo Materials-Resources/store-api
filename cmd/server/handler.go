@@ -112,7 +112,9 @@ func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (*
 		return nil, err
 	}
 
-	response := oas.ListOrdersOK{}
+	response := oas.ListOrdersOK{
+		TotalRecords: int(pbRes.Msg.GetTotalRecords()),
+	}
 
 	for _, pbOrder := range pbRes.Msg.GetOrders() {
 		response.Orders = append(response.Orders, oas.OrderSummary{

@@ -461,12 +461,23 @@ func (s *ListCustomerBranchesOK) SetBranches(val []Branch) {
 }
 
 type ListOrdersOK struct {
-	Orders []OrderSummary `json:"orders"`
+	TotalRecords int            `json:"total_records"`
+	Orders       []OrderSummary `json:"orders"`
+}
+
+// GetTotalRecords returns the value of TotalRecords.
+func (s *ListOrdersOK) GetTotalRecords() int {
+	return s.TotalRecords
 }
 
 // GetOrders returns the value of Orders.
 func (s *ListOrdersOK) GetOrders() []OrderSummary {
 	return s.Orders
+}
+
+// SetTotalRecords sets the value of TotalRecords.
+func (s *ListOrdersOK) SetTotalRecords(val int) {
+	s.TotalRecords = val
 }
 
 // SetOrders sets the value of Orders.

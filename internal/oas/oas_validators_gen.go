@@ -188,6 +188,9 @@ func (s *ListQuotesOK) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
+		if s.Quotes == nil {
+			return errors.New("nil is invalid value")
+		}
 		var failures []validate.FieldError
 		for i, elem := range s.Quotes {
 			if err := func() error {
