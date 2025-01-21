@@ -4,6 +4,7 @@ import (
 	"connectrpc.com/connect"
 	"context"
 	"fmt"
+	customerv1 "github.com/materials-resources/customer-api/internal/grpc-client/customer"
 	orderv1 "github.com/materials-resources/customer-api/internal/grpc-client/order"
 	"github.com/materials-resources/customer-api/internal/oas"
 	"github.com/materials-resources/customer-api/internal/service"
@@ -27,6 +28,25 @@ type Handler struct {
 	sessionManager *session.Manager
 	service        service.Service
 	z              *zitadel.Client
+}
+
+func (h Handler) GetActiveBranches(ctx context.Context) (*oas.GetActiveBranchesOK, error) {
+	userSession := h.sessionManager.GetUserSession(ctx)
+	pbReq := &customerv1.GetBranchRequest{
+		Id: userSession.Profile.BranchID,
+	}
+
+	pbRes, err := h.service.Customer.Client.GetBranch(ctx, connect.NewRequest(pbReq))
+	if err != nil {
+		return nil, err
+	}
+	response := oas.GetActiveBranchesOK{
+		Branch: oas.Branch{
+			ID:   pbRes.Msg.GetBranch().GetId(),
+			Name: pbRes.Msg.GetBranch().GetName(),
+		},
+	}
+	return &response, nil
 }
 
 func (h Handler) GetQuote(ctx context.Context, params oas.GetQuoteParams) (*oas.GetQuoteOK, error) {

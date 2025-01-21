@@ -65,6 +65,28 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /account/branches/active:
+    get:
+      summary: Get active branch for user
+      operationId: getActiveBranches
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                required:
+                  - branch
+                type: object
+                properties:
+                  branch:
+                    $ref: '#/components/schemas/Branch'
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /account/branches:
     get:
       summary: Get available branches for customer

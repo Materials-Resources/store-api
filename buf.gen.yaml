@@ -8,6 +8,8 @@ plugins:
       - Msearch.proto=github.com/materials-resources/customer-api/internal/grpc-client/search
       - Mcatalog.proto=github.com/materials-resources/customer-api/internal/grpc-client/catalog
       - Morder.proto=github.com/materials-resources/customer-api/internal/grpc-client/order
+      - Mbilling.proto=github.com/materials-resources/customer-api/internal/grpc-client/billing
+      - Mcustomer.proto=github.com/materials-resources/customer-api/internal/grpc-client/customer
   - remote: buf.build/protocolbuffers/go:v1.34.2
     out: internal/grpc-client
     opt:
@@ -15,6 +17,8 @@ plugins:
       - Msearch.proto=github.com/materials-resources/customer-api/internal/grpc-client/search
       - Mcatalog.proto=github.com/materials-resources/customer-api/internal/grpc-client/catalog
       - Morder.proto=github.com/materials-resources/customer-api/internal/grpc-client/order
+      - Mbilling.proto=github.com/materials-resources/customer-api/internal/grpc-client/billing
+      - Mcustomer.proto=github.com/materials-resources/customer-api/internal/grpc-client/customer
 
 
 inputs:
@@ -24,3 +28,5 @@ inputs:
       - "search.v1.SearchService"
       - "catalog.v1.CatalogService"
       - "order.v1.OrderService"
+      - "billing.v1.BillingService"
+      - "customer.v1.CustomerService"

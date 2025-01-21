@@ -385,6 +385,20 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
 }
 
+type GetActiveBranchesOK struct {
+	Branch Branch `json:"branch"`
+}
+
+// GetBranch returns the value of Branch.
+func (s *GetActiveBranchesOK) GetBranch() Branch {
+	return s.Branch
+}
+
+// SetBranch sets the value of Branch.
+func (s *GetActiveBranchesOK) SetBranch(val Branch) {
+	s.Branch = val
+}
+
 // GetOrderNotFound is response for GetOrder operation.
 type GetOrderNotFound struct{}
 

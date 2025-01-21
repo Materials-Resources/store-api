@@ -15,6 +15,12 @@ type Handler interface {
 	//
 	// POST /account/quotes
 	CreateQuote(ctx context.Context, req *CreateQuoteReq) (CreateQuoteRes, error)
+	// GetActiveBranches implements getActiveBranches operation.
+	//
+	// Get active branch for user.
+	//
+	// GET /account/branches/active
+	GetActiveBranches(ctx context.Context) (*GetActiveBranchesOK, error)
 	// GetOrder implements getOrder operation.
 	//
 	// Get an order by ID.
