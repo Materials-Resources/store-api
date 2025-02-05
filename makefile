@@ -34,6 +34,16 @@ gen/oapi:
 
 
 # ==================================================================================== #
+# Quality Control
+# ==================================================================================== #
+.PHONY: lint
+## lint: Run quality control checks
+lint:
+	go vet ./...
+	go fmt ./...
+	golangci-lint run
+
+# ==================================================================================== #
 # Application
 # ==================================================================================== #
 
@@ -51,7 +61,7 @@ app/serve:
 .PHONY: build
 ## build: Build the application
 build:
-	CGO_ENABLED=0 go build -trimpath -o ./bin/server_$(GOOS)_$(GOARCH)$(EXTENSION) ./cmd
+	CGO_ENABLED=0 go build -trimpath -o ./bin/server_$(GOOS)_$(GOARCH)$(EXTENSION) ./cmd/server
 .PHONY: build/linux_amd64
 build/linux_amd64:
 	GOOS=linux GOARCH=amd64 $(MAKE) build

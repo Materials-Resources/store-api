@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/materials-resources/customer-api/internal/oas"
 	"github.com/materials-resources/customer-api/internal/session"
 )
@@ -31,7 +30,6 @@ func (s SecurityHandler) HandleBearerAuth(ctx context.Context, operationName oas
 
 	claims, err := s.sessionManager.ParseJwt(t.GetToken())
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 

@@ -10,6 +10,7 @@ import (
 	"github.com/materials-resources/customer-api/internal/service"
 	"github.com/materials-resources/customer-api/internal/session"
 	"github.com/materials-resources/customer-api/internal/zitadel"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func NewHandler(service service.Service, sessionManager *session.Manager) Handler {
@@ -58,8 +59,7 @@ func (h Handler) GetQuote(ctx context.Context, params oas.GetQuoteParams) (*oas.
 	}
 
 	if pbRes.Msg.GetQuote().GetBranch().GetId() != userSession.Profile.BranchID {
-		fmt.Println("user is not authorized to access this branch")
-		return nil, err
+		return nil, fmt.Errorf("user is not authorized to access this branch")
 	}
 
 	response := oas.GetQuoteOK{
@@ -152,19 +152,44 @@ func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (*
 }
 
 func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchReq) (oas.SetActiveBranchRes, error) {
-	fmt.Println("changed branch")
 	// check if user can access this branch
 	// get user id from token
 
 	// update the branch
-	h.z.ChangeUserBranchId(ctx, "295379791043934934", req.GetBranchID())
+	err := h.z.ChangeUserBranchId(ctx, "295379791043934934", req.GetBranchID())
+	if err != nil {
+		return nil, err
+	}
 	// return success
 
 	return &oas.SetActiveBranchOK{}, nil
 }
 
 func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.CreateQuoteRes, error) {
-	return h.service.Order.CreateQuote(ctx, req)
+	userSession := h.sessionManager.GetUserSession(ctx)
+	pbReq := &orderv1.CreateQuoteRequest{
+		BranchId:             userSession.Profile.BranchID,
+		ContactId:            userSession.Profile.ContactID,
+		PurchaseOrder:        req.PurchaseOrder,
+		RequestedDate:        timestamppb.New(req.GetDateRequested()),
+		DeliveryInstructions: req.DeliveryInstructions,
+	}
+
+	for _, item := range req.Items {
+		pbReq.Items = append(pbReq.Items, &orderv1.CreateQuoteRequest_Item{
+			ProductId: item.GetProductID(),
+			Quantity:  item.GetQuantity(),
+		})
+	}
+
+	pbRes, err := h.service.Order.Client.CreateQuote(ctx, connect.NewRequest(pbReq))
+	if err != nil {
+		return nil, err
+	}
+
+	return &oas.CreateQuoteCreated{
+		QuoteID: pbRes.Msg.GetId(),
+	}, nil
 }
 
 func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.GetOrderRes, error) {

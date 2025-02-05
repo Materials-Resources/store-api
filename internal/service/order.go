@@ -2,12 +2,16 @@ package service
 
 import (
 	"connectrpc.com/connect"
+	"connectrpc.com/otelconnect"
 	"context"
-	"fmt"
+	"github.com/materials-resources/customer-api/app"
 	orderv1 "github.com/materials-resources/customer-api/internal/grpc-client/order"
 	"github.com/materials-resources/customer-api/internal/grpc-client/order/orderconnect"
 	"github.com/materials-resources/customer-api/internal/oas"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/trace"
+	"log"
 	"net/http"
 )
 
@@ -15,40 +19,26 @@ type Order struct {
 	Client orderconnect.OrderServiceClient
 }
 
-func NewOrderService() *Order {
+func newInterceptor(tp trace.TracerProvider, mp metric.MeterProvider, p propagation.TextMapPropagator) (connect.Interceptor, error) {
+	return otelconnect.NewInterceptor(
+		otelconnect.WithTracerProvider(tp),
+		otelconnect.WithMeterProvider(mp),
+		otelconnect.WithPropagator(p),
+	)
+}
+
+func NewOrderService(a *app.App) *Order {
+	otelInterceptor, err := newInterceptor(a.Otel.GetTracerProvider(), a.Otel.GetMeterProvider(), a.Otel.GetTextMapPropagator())
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return &Order{
 		Client: orderconnect.NewOrderServiceClient(http.DefaultClient,
 			"http://localhost:8082",
+			connect.WithInterceptors(otelInterceptor),
 			connect.WithGRPC()),
 	}
-}
-
-func (s *Order) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.CreateQuoteRes, error) {
-	branchId := "100039" //TODO get from auth
-	contactId := "1041"  //TODO get from auth
-	pbReq := &orderv1.CreateQuoteRequest{
-		BranchId:             branchId,
-		ContactId:            contactId,
-		PurchaseOrder:        req.PurchaseOrder,
-		RequestedDate:        timestamppb.New(req.GetDateRequested()),
-		DeliveryInstructions: req.DeliveryInstructions,
-	}
-
-	for _, item := range req.Items {
-		pbReq.Items = append(pbReq.Items, &orderv1.CreateQuoteRequest_Item{
-			ProductId: item.GetProductID(),
-			Quantity:  item.GetQuantity(),
-		})
-	}
-
-	pbRes, err := s.Client.CreateQuote(ctx, connect.NewRequest(pbReq))
-	if err != nil {
-		return nil, err
-	}
-
-	return &oas.CreateQuoteCreated{
-		QuoteID: pbRes.Msg.GetId(),
-	}, nil
 }
 
 func (s *Order) GetQuote(ctx context.Context, req oas.GetQuoteParams) (*oas.GetQuoteOK, error) {
@@ -57,8 +47,6 @@ func (s *Order) GetQuote(ctx context.Context, req oas.GetQuoteParams) (*oas.GetQ
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(pbRes.Msg.GetQuote().GetDateExpires().AsTime().IsZero())
 
 	response := oas.GetQuoteOK{
 		Quote: oas.Quote{
