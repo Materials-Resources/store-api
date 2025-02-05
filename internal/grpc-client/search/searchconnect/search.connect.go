@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	search "github.com/materials-resources/customer-api/internal/grpc-client/search"
+	search "github.com/materials-resources/store-api/internal/grpc-client/search"
 	http "net/http"
 	strings "strings"
 )

@@ -1,6 +1,6 @@
 package service
 
-import "github.com/materials-resources/customer-api/app"
+import "github.com/materials-resources/store-api/app"
 
 type Service struct {
 	Order    *Order

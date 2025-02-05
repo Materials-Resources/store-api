@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"github.com/materials-resources/customer-api/internal/oas"
+	"github.com/materials-resources/store-api/internal/oas"
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 

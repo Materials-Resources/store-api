@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/materials-resources/customer-api/app"
-	"github.com/materials-resources/customer-api/internal/oas"
-	"github.com/materials-resources/customer-api/internal/service"
-	"github.com/materials-resources/customer-api/internal/session"
+	"github.com/materials-resources/store-api/app"
+	"github.com/materials-resources/store-api/internal/oas"
+	"github.com/materials-resources/store-api/internal/service"
+	"github.com/materials-resources/store-api/internal/session"
 	"log"
 	"net/http"
 )

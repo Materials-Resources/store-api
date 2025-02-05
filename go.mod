@@ -1,4 +1,4 @@
-module github.com/materials-resources/customer-api
+module github.com/materials-resources/store-api
 
 go 1.23
 

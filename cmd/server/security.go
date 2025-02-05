@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/materials-resources/customer-api/internal/oas"
-	"github.com/materials-resources/customer-api/internal/session"
+	"github.com/materials-resources/store-api/internal/oas"
+	"github.com/materials-resources/store-api/internal/session"
 )
 
 var _ oas.SecurityHandler = (*SecurityHandler)(nil)

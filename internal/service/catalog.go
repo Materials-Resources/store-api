@@ -3,9 +3,9 @@ package service
 import (
 	"connectrpc.com/connect"
 	"context"
-	catalogv1 "github.com/materials-resources/customer-api/internal/grpc-client/catalog"
-	"github.com/materials-resources/customer-api/internal/grpc-client/catalog/catalogconnect"
-	"github.com/materials-resources/customer-api/internal/oas"
+	catalogv1 "github.com/materials-resources/store-api/internal/grpc-client/catalog"
+	"github.com/materials-resources/store-api/internal/grpc-client/catalog/catalogconnect"
+	"github.com/materials-resources/store-api/internal/oas"
 	"net/http"
 )
 

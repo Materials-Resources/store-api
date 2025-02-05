@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"github.com/materials-resources/customer-api/config"
+	"github.com/materials-resources/store-api/config"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"

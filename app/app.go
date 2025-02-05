@@ -1,6 +1,6 @@
 package app
 
-import "github.com/materials-resources/customer-api/config"
+import "github.com/materials-resources/store-api/config"
 
 type App struct {
 	Otel *Otel

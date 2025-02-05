@@ -2,7 +2,7 @@ package service
 
 import (
 	"connectrpc.com/connect"
-	"github.com/materials-resources/customer-api/internal/grpc-client/customer/customerconnect"
+	"github.com/materials-resources/store-api/internal/grpc-client/customer/customerconnect"
 	"net/http"
 )
 

@@ -4,12 +4,12 @@ import (
 	"connectrpc.com/connect"
 	"context"
 	"fmt"
-	customerv1 "github.com/materials-resources/customer-api/internal/grpc-client/customer"
-	orderv1 "github.com/materials-resources/customer-api/internal/grpc-client/order"
-	"github.com/materials-resources/customer-api/internal/oas"
-	"github.com/materials-resources/customer-api/internal/service"
-	"github.com/materials-resources/customer-api/internal/session"
-	"github.com/materials-resources/customer-api/internal/zitadel"
+	customerv1 "github.com/materials-resources/store-api/internal/grpc-client/customer"
+	orderv1 "github.com/materials-resources/store-api/internal/grpc-client/order"
+	"github.com/materials-resources/store-api/internal/oas"
+	"github.com/materials-resources/store-api/internal/service"
+	"github.com/materials-resources/store-api/internal/session"
+	"github.com/materials-resources/store-api/internal/zitadel"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
