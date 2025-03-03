@@ -32,11 +32,13 @@ func (s *CatalogService) GetProduct(ctx context.Context, params oas.GetProductPa
 
 	response := oas.GetProductOK{
 		Product: oas.Product{
-			ID:          pbRes.Msg.GetProduct().GetId(),
-			Sn:          pbRes.Msg.GetProduct().GetSn(),
-			Name:        pbRes.Msg.GetProduct().GetName(),
-			Description: oas.OptString{Value: pbRes.Msg.GetProduct().GetDescription(), Set: true},
-			ImageURL:    oas.OptString{},
+			ID:               pbRes.Msg.GetProduct().GetId(),
+			Sn:               pbRes.Msg.GetProduct().GetSn(),
+			Name:             pbRes.Msg.GetProduct().GetName(),
+			ProductGroupSn:   pbRes.Msg.GetProduct().GetProductGroupSn(),
+			ProductGroupName: pbRes.Msg.GetProduct().GetProductGroupName(),
+			Description:      oas.OptString{Value: pbRes.Msg.GetProduct().GetDescription(), Set: true},
+			ImageURL:         oas.OptString{},
 		},
 	}
 

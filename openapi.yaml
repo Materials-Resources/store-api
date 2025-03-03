@@ -806,6 +806,8 @@ components:
         - id
         - sn
         - name
+        - product_group_sn
+        - product_group_name
       type: object
       properties:
           id:
@@ -815,6 +817,10 @@ components:
           name:
             type: string
           description:
+            type: string
+          product_group_sn:
+            type: string
+          product_group_name:
             type: string
           image_url:
             type: string

@@ -13,7 +13,7 @@ plugins:
   - remote: buf.build/protocolbuffers/go:v1.34.2
     out: internal/grpc-client
     opt:
-      - module=github.com/materials-resources/customer-api/internal/grpc-client
+      - module=github.com/materials-resources/store-api/internal/grpc-client
       - Msearch.proto=github.com/materials-resources/store-api/internal/grpc-client/search
       - Mcatalog.proto=github.com/materials-resources/store-api/internal/grpc-client/catalog
       - Morder.proto=github.com/materials-resources/store-api/internal/grpc-client/order

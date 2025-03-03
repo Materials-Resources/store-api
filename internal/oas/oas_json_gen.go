@@ -2893,6 +2893,14 @@ func (s *Product) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		e.FieldStart("product_group_sn")
+		e.Str(s.ProductGroupSn)
+	}
+	{
+		e.FieldStart("product_group_name")
+		e.Str(s.ProductGroupName)
+	}
+	{
 		if s.ImageURL.Set {
 			e.FieldStart("image_url")
 			s.ImageURL.Encode(e)
@@ -2900,12 +2908,14 @@ func (s *Product) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProduct = [5]string{
+var jsonFieldsNameOfProduct = [7]string{
 	0: "id",
 	1: "sn",
 	2: "name",
 	3: "description",
-	4: "image_url",
+	4: "product_group_sn",
+	5: "product_group_name",
+	6: "image_url",
 }
 
 // Decode decodes Product from json.
@@ -2963,6 +2973,30 @@ func (s *Product) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"description\"")
 			}
+		case "product_group_sn":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				v, err := d.Str()
+				s.ProductGroupSn = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"product_group_sn\"")
+			}
+		case "product_group_name":
+			requiredBitSet[0] |= 1 << 5
+			if err := func() error {
+				v, err := d.Str()
+				s.ProductGroupName = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"product_group_name\"")
+			}
 		case "image_url":
 			if err := func() error {
 				s.ImageURL.Reset()
@@ -2983,7 +3017,7 @@ func (s *Product) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000111,
+		0b00110111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

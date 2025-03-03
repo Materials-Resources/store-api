@@ -1084,11 +1084,13 @@ func (s *PageMetadata) SetTotalRecords(val int) {
 
 // Ref: #/components/schemas/Product
 type Product struct {
-	ID          string    `json:"id"`
-	Sn          string    `json:"sn"`
-	Name        string    `json:"name"`
-	Description OptString `json:"description"`
-	ImageURL    OptString `json:"image_url"`
+	ID               string    `json:"id"`
+	Sn               string    `json:"sn"`
+	Name             string    `json:"name"`
+	Description      OptString `json:"description"`
+	ProductGroupSn   string    `json:"product_group_sn"`
+	ProductGroupName string    `json:"product_group_name"`
+	ImageURL         OptString `json:"image_url"`
 }
 
 // GetID returns the value of ID.
@@ -1109,6 +1111,16 @@ func (s *Product) GetName() string {
 // GetDescription returns the value of Description.
 func (s *Product) GetDescription() OptString {
 	return s.Description
+}
+
+// GetProductGroupSn returns the value of ProductGroupSn.
+func (s *Product) GetProductGroupSn() string {
+	return s.ProductGroupSn
+}
+
+// GetProductGroupName returns the value of ProductGroupName.
+func (s *Product) GetProductGroupName() string {
+	return s.ProductGroupName
 }
 
 // GetImageURL returns the value of ImageURL.
@@ -1134,6 +1146,16 @@ func (s *Product) SetName(val string) {
 // SetDescription sets the value of Description.
 func (s *Product) SetDescription(val OptString) {
 	s.Description = val
+}
+
+// SetProductGroupSn sets the value of ProductGroupSn.
+func (s *Product) SetProductGroupSn(val string) {
+	s.ProductGroupSn = val
+}
+
+// SetProductGroupName sets the value of ProductGroupName.
+func (s *Product) SetProductGroupName(val string) {
+	s.ProductGroupName = val
 }
 
 // SetImageURL sets the value of ImageURL.
