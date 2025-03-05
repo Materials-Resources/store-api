@@ -425,6 +425,7 @@ paths:
                     items:
                       oneOf:
                         - $ref: '#/components/schemas/TermsAggregation'
+                        - $ref: '#/components/schemas/RangeAggregation'
                   metadata:
                     $ref: '#/components/schemas/PageMetadata'
                   products:

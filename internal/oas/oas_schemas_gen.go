@@ -1431,6 +1431,21 @@ func (s *QuoteSummary) SetDateExpires(val time.Time) {
 	s.DateExpires = val
 }
 
+// Ref: #/components/schemas/RangeAggregation
+type RangeAggregation struct {
+	FieldName OptString `json:"field_name"`
+}
+
+// GetFieldName returns the value of FieldName.
+func (s *RangeAggregation) GetFieldName() OptString {
+	return s.FieldName
+}
+
+// SetFieldName sets the value of FieldName.
+func (s *RangeAggregation) SetFieldName(val OptString) {
+	s.FieldName = val
+}
+
 type SearchProductsOK struct {
 	Aggregations []SearchProductsOKAggregationsItem `json:"aggregations"`
 	Metadata     PageMetadata                       `json:"metadata"`
@@ -1471,6 +1486,7 @@ func (s *SearchProductsOK) SetProducts(val []Product) {
 type SearchProductsOKAggregationsItem struct {
 	Type             SearchProductsOKAggregationsItemType // switch on this field
 	TermsAggregation TermsAggregation
+	RangeAggregation RangeAggregation
 }
 
 // SearchProductsOKAggregationsItemType is oneOf type of SearchProductsOKAggregationsItem.
@@ -1479,11 +1495,17 @@ type SearchProductsOKAggregationsItemType string
 // Possible values for SearchProductsOKAggregationsItemType.
 const (
 	TermsAggregationSearchProductsOKAggregationsItem SearchProductsOKAggregationsItemType = "TermsAggregation"
+	RangeAggregationSearchProductsOKAggregationsItem SearchProductsOKAggregationsItemType = "RangeAggregation"
 )
 
 // IsTermsAggregation reports whether SearchProductsOKAggregationsItem is TermsAggregation.
 func (s SearchProductsOKAggregationsItem) IsTermsAggregation() bool {
 	return s.Type == TermsAggregationSearchProductsOKAggregationsItem
+}
+
+// IsRangeAggregation reports whether SearchProductsOKAggregationsItem is RangeAggregation.
+func (s SearchProductsOKAggregationsItem) IsRangeAggregation() bool {
+	return s.Type == RangeAggregationSearchProductsOKAggregationsItem
 }
 
 // SetTermsAggregation sets SearchProductsOKAggregationsItem to TermsAggregation.
@@ -1504,6 +1526,27 @@ func (s SearchProductsOKAggregationsItem) GetTermsAggregation() (v TermsAggregat
 func NewTermsAggregationSearchProductsOKAggregationsItem(v TermsAggregation) SearchProductsOKAggregationsItem {
 	var s SearchProductsOKAggregationsItem
 	s.SetTermsAggregation(v)
+	return s
+}
+
+// SetRangeAggregation sets SearchProductsOKAggregationsItem to RangeAggregation.
+func (s *SearchProductsOKAggregationsItem) SetRangeAggregation(v RangeAggregation) {
+	s.Type = RangeAggregationSearchProductsOKAggregationsItem
+	s.RangeAggregation = v
+}
+
+// GetRangeAggregation returns RangeAggregation and true boolean if SearchProductsOKAggregationsItem is RangeAggregation.
+func (s SearchProductsOKAggregationsItem) GetRangeAggregation() (v RangeAggregation, ok bool) {
+	if !s.IsRangeAggregation() {
+		return v, false
+	}
+	return s.RangeAggregation, true
+}
+
+// NewRangeAggregationSearchProductsOKAggregationsItem returns new SearchProductsOKAggregationsItem from RangeAggregation.
+func NewRangeAggregationSearchProductsOKAggregationsItem(v RangeAggregation) SearchProductsOKAggregationsItem {
+	var s SearchProductsOKAggregationsItem
+	s.SetRangeAggregation(v)
 	return s
 }
 

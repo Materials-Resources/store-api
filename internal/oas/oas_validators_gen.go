@@ -562,6 +562,8 @@ func (s SearchProductsOKAggregationsItem) Validate() error {
 			return err
 		}
 		return nil
+	case RangeAggregationSearchProductsOKAggregationsItem:
+		return nil // no validation needed
 	default:
 		return errors.Errorf("invalid type %q", s.Type)
 	}
