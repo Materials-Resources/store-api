@@ -30,7 +30,7 @@ gen/buf:
 .PHONY: gen/oapi
 ## gen/oapi: Generate code from openapi.yaml using ogen
 gen/oapi:
-	go run github.com/ogen-go/ogen/cmd/ogen@v1.10.0 --config config.ogen.yaml --target internal/oas -package oas --clean api/openapi.yaml
+	go tool ogen --config config.ogen.yaml --target internal/oas -package oas --clean api/openapi.yaml
 
 
 # ==================================================================================== #

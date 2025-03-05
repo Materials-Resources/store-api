@@ -830,6 +830,11 @@ components:
       allOf:
         - $ref: '#/components/schemas/Product'
 
+    RangeAggregation:
+      type: object
+      properties:
+        field_name:
+          type: string
     TermsAggregation:
       required:
         - field_name
