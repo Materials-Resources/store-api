@@ -423,9 +423,7 @@ paths:
                   aggregations:
                     type: array
                     items:
-                      oneOf:
-                        - $ref: '#/components/schemas/TermsAggregation'
-                        - $ref: '#/components/schemas/RangeAggregation'
+                      $ref: '#/components/schemas/Aggregation'
                   metadata:
                     $ref: '#/components/schemas/PageMetadata'
                   products:
@@ -553,14 +551,6 @@ components:
           type: integer
         total_records:
           type: integer
-    Aggregation:
-      type: object
-      additionalProperties:
-        type: array
-        items:
-          oneOf:
-            - $ref: '#/components/schemas/TermsAggregation'
-
     Bucket:
       type: object
       required:
@@ -830,7 +820,10 @@ components:
     ProductSearchResult:
       allOf:
         - $ref: '#/components/schemas/Product'
-
+    Aggregation:
+      oneOf:
+        - $ref: '#/components/schemas/RangeAggregation'
+        - $ref: '#/components/schemas/TermsAggregation'
     RangeAggregation:
       type: object
       properties:

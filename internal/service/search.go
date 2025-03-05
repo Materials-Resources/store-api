@@ -45,11 +45,11 @@ func (s *Search) SearchProducts(ctx context.Context, req *oas.SearchProductsReq)
 			TotalPages:   int(pbRes.Msg.GetPageMetadata().GetTotalPages()),
 			TotalRecords: int(pbRes.Msg.GetPageMetadata().GetTotalRecords()),
 		},
-		Aggregations: make([]oas.SearchProductsOKAggregationsItem, 0),
+		Aggregations: make([]oas.Aggregation, 0),
 	}
 
 	for _, aggregationPb := range pbRes.Msg.GetAggregations() {
-		aggregation := oas.SearchProductsOKAggregationsItem{}
+		aggregation := oas.Aggregation{}
 		switch aggregationPb.WhichAggregationType() {
 		case searchv1.Aggregation_TermsAggregation_case:
 

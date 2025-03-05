@@ -105,6 +105,71 @@ func (s *Address) SetCountry(val string) {
 	s.Country = val
 }
 
+// Ref: #/components/schemas/Aggregation
+// Aggregation represents sum type.
+type Aggregation struct {
+	Type             AggregationType // switch on this field
+	RangeAggregation RangeAggregation
+	TermsAggregation TermsAggregation
+}
+
+// AggregationType is oneOf type of Aggregation.
+type AggregationType string
+
+// Possible values for AggregationType.
+const (
+	RangeAggregationAggregation AggregationType = "RangeAggregation"
+	TermsAggregationAggregation AggregationType = "TermsAggregation"
+)
+
+// IsRangeAggregation reports whether Aggregation is RangeAggregation.
+func (s Aggregation) IsRangeAggregation() bool { return s.Type == RangeAggregationAggregation }
+
+// IsTermsAggregation reports whether Aggregation is TermsAggregation.
+func (s Aggregation) IsTermsAggregation() bool { return s.Type == TermsAggregationAggregation }
+
+// SetRangeAggregation sets Aggregation to RangeAggregation.
+func (s *Aggregation) SetRangeAggregation(v RangeAggregation) {
+	s.Type = RangeAggregationAggregation
+	s.RangeAggregation = v
+}
+
+// GetRangeAggregation returns RangeAggregation and true boolean if Aggregation is RangeAggregation.
+func (s Aggregation) GetRangeAggregation() (v RangeAggregation, ok bool) {
+	if !s.IsRangeAggregation() {
+		return v, false
+	}
+	return s.RangeAggregation, true
+}
+
+// NewRangeAggregationAggregation returns new Aggregation from RangeAggregation.
+func NewRangeAggregationAggregation(v RangeAggregation) Aggregation {
+	var s Aggregation
+	s.SetRangeAggregation(v)
+	return s
+}
+
+// SetTermsAggregation sets Aggregation to TermsAggregation.
+func (s *Aggregation) SetTermsAggregation(v TermsAggregation) {
+	s.Type = TermsAggregationAggregation
+	s.TermsAggregation = v
+}
+
+// GetTermsAggregation returns TermsAggregation and true boolean if Aggregation is TermsAggregation.
+func (s Aggregation) GetTermsAggregation() (v TermsAggregation, ok bool) {
+	if !s.IsTermsAggregation() {
+		return v, false
+	}
+	return s.TermsAggregation, true
+}
+
+// NewTermsAggregationAggregation returns new Aggregation from TermsAggregation.
+func NewTermsAggregationAggregation(v TermsAggregation) Aggregation {
+	var s Aggregation
+	s.SetTermsAggregation(v)
+	return s
+}
+
 type BearerAuth struct {
 	Token string
 }
@@ -1447,13 +1512,13 @@ func (s *RangeAggregation) SetFieldName(val OptString) {
 }
 
 type SearchProductsOK struct {
-	Aggregations []SearchProductsOKAggregationsItem `json:"aggregations"`
-	Metadata     PageMetadata                       `json:"metadata"`
-	Products     []Product                          `json:"products"`
+	Aggregations []Aggregation `json:"aggregations"`
+	Metadata     PageMetadata  `json:"metadata"`
+	Products     []Product     `json:"products"`
 }
 
 // GetAggregations returns the value of Aggregations.
-func (s *SearchProductsOK) GetAggregations() []SearchProductsOKAggregationsItem {
+func (s *SearchProductsOK) GetAggregations() []Aggregation {
 	return s.Aggregations
 }
 
@@ -1468,7 +1533,7 @@ func (s *SearchProductsOK) GetProducts() []Product {
 }
 
 // SetAggregations sets the value of Aggregations.
-func (s *SearchProductsOK) SetAggregations(val []SearchProductsOKAggregationsItem) {
+func (s *SearchProductsOK) SetAggregations(val []Aggregation) {
 	s.Aggregations = val
 }
 
@@ -1480,74 +1545,6 @@ func (s *SearchProductsOK) SetMetadata(val PageMetadata) {
 // SetProducts sets the value of Products.
 func (s *SearchProductsOK) SetProducts(val []Product) {
 	s.Products = val
-}
-
-// SearchProductsOKAggregationsItem represents sum type.
-type SearchProductsOKAggregationsItem struct {
-	Type             SearchProductsOKAggregationsItemType // switch on this field
-	TermsAggregation TermsAggregation
-	RangeAggregation RangeAggregation
-}
-
-// SearchProductsOKAggregationsItemType is oneOf type of SearchProductsOKAggregationsItem.
-type SearchProductsOKAggregationsItemType string
-
-// Possible values for SearchProductsOKAggregationsItemType.
-const (
-	TermsAggregationSearchProductsOKAggregationsItem SearchProductsOKAggregationsItemType = "TermsAggregation"
-	RangeAggregationSearchProductsOKAggregationsItem SearchProductsOKAggregationsItemType = "RangeAggregation"
-)
-
-// IsTermsAggregation reports whether SearchProductsOKAggregationsItem is TermsAggregation.
-func (s SearchProductsOKAggregationsItem) IsTermsAggregation() bool {
-	return s.Type == TermsAggregationSearchProductsOKAggregationsItem
-}
-
-// IsRangeAggregation reports whether SearchProductsOKAggregationsItem is RangeAggregation.
-func (s SearchProductsOKAggregationsItem) IsRangeAggregation() bool {
-	return s.Type == RangeAggregationSearchProductsOKAggregationsItem
-}
-
-// SetTermsAggregation sets SearchProductsOKAggregationsItem to TermsAggregation.
-func (s *SearchProductsOKAggregationsItem) SetTermsAggregation(v TermsAggregation) {
-	s.Type = TermsAggregationSearchProductsOKAggregationsItem
-	s.TermsAggregation = v
-}
-
-// GetTermsAggregation returns TermsAggregation and true boolean if SearchProductsOKAggregationsItem is TermsAggregation.
-func (s SearchProductsOKAggregationsItem) GetTermsAggregation() (v TermsAggregation, ok bool) {
-	if !s.IsTermsAggregation() {
-		return v, false
-	}
-	return s.TermsAggregation, true
-}
-
-// NewTermsAggregationSearchProductsOKAggregationsItem returns new SearchProductsOKAggregationsItem from TermsAggregation.
-func NewTermsAggregationSearchProductsOKAggregationsItem(v TermsAggregation) SearchProductsOKAggregationsItem {
-	var s SearchProductsOKAggregationsItem
-	s.SetTermsAggregation(v)
-	return s
-}
-
-// SetRangeAggregation sets SearchProductsOKAggregationsItem to RangeAggregation.
-func (s *SearchProductsOKAggregationsItem) SetRangeAggregation(v RangeAggregation) {
-	s.Type = RangeAggregationSearchProductsOKAggregationsItem
-	s.RangeAggregation = v
-}
-
-// GetRangeAggregation returns RangeAggregation and true boolean if SearchProductsOKAggregationsItem is RangeAggregation.
-func (s SearchProductsOKAggregationsItem) GetRangeAggregation() (v RangeAggregation, ok bool) {
-	if !s.IsRangeAggregation() {
-		return v, false
-	}
-	return s.RangeAggregation, true
-}
-
-// NewRangeAggregationSearchProductsOKAggregationsItem returns new SearchProductsOKAggregationsItem from RangeAggregation.
-func NewRangeAggregationSearchProductsOKAggregationsItem(v RangeAggregation) SearchProductsOKAggregationsItem {
-	var s SearchProductsOKAggregationsItem
-	s.SetRangeAggregation(v)
-	return s
 }
 
 type SearchProductsReq struct {

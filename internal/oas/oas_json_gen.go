@@ -228,6 +228,84 @@ func (s *Address) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes Aggregation as json.
+func (s Aggregation) Encode(e *jx.Encoder) {
+	switch s.Type {
+	case RangeAggregationAggregation:
+		s.RangeAggregation.Encode(e)
+	case TermsAggregationAggregation:
+		s.TermsAggregation.Encode(e)
+	}
+}
+
+func (s Aggregation) encodeFields(e *jx.Encoder) {
+	switch s.Type {
+	case RangeAggregationAggregation:
+		s.RangeAggregation.encodeFields(e)
+	case TermsAggregationAggregation:
+		s.TermsAggregation.encodeFields(e)
+	}
+}
+
+// Decode decodes Aggregation from json.
+func (s *Aggregation) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode Aggregation to nil")
+	}
+	// Sum type fields.
+	if typ := d.Next(); typ != jx.Object {
+		return errors.Errorf("unexpected json type %q", typ)
+	}
+
+	var found bool
+	if err := d.Capture(func(d *jx.Decoder) error {
+		return d.ObjBytes(func(d *jx.Decoder, key []byte) error {
+			switch string(key) {
+			case "buckets":
+				match := TermsAggregationAggregation
+				if found && s.Type != match {
+					s.Type = ""
+					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+				}
+				found = true
+				s.Type = match
+			}
+			return d.Skip()
+		})
+	}); err != nil {
+		return errors.Wrap(err, "capture")
+	}
+	if !found {
+		s.Type = RangeAggregationAggregation
+	}
+	switch s.Type {
+	case RangeAggregationAggregation:
+		if err := s.RangeAggregation.Decode(d); err != nil {
+			return err
+		}
+	case TermsAggregationAggregation:
+		if err := s.TermsAggregation.Decode(d); err != nil {
+			return err
+		}
+	default:
+		return errors.Errorf("inferred invalid type: %s", s.Type)
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s Aggregation) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *Aggregation) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *Branch) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -3642,9 +3720,9 @@ func (s *SearchProductsOK) Decode(d *jx.Decoder) error {
 		case "aggregations":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.Aggregations = make([]SearchProductsOKAggregationsItem, 0)
+				s.Aggregations = make([]Aggregation, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem SearchProductsOKAggregationsItem
+					var elem Aggregation
 					if err := elem.Decode(d); err != nil {
 						return err
 					}
@@ -3737,84 +3815,6 @@ func (s *SearchProductsOK) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *SearchProductsOK) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes SearchProductsOKAggregationsItem as json.
-func (s SearchProductsOKAggregationsItem) Encode(e *jx.Encoder) {
-	switch s.Type {
-	case TermsAggregationSearchProductsOKAggregationsItem:
-		s.TermsAggregation.Encode(e)
-	case RangeAggregationSearchProductsOKAggregationsItem:
-		s.RangeAggregation.Encode(e)
-	}
-}
-
-func (s SearchProductsOKAggregationsItem) encodeFields(e *jx.Encoder) {
-	switch s.Type {
-	case TermsAggregationSearchProductsOKAggregationsItem:
-		s.TermsAggregation.encodeFields(e)
-	case RangeAggregationSearchProductsOKAggregationsItem:
-		s.RangeAggregation.encodeFields(e)
-	}
-}
-
-// Decode decodes SearchProductsOKAggregationsItem from json.
-func (s *SearchProductsOKAggregationsItem) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode SearchProductsOKAggregationsItem to nil")
-	}
-	// Sum type fields.
-	if typ := d.Next(); typ != jx.Object {
-		return errors.Errorf("unexpected json type %q", typ)
-	}
-
-	var found bool
-	if err := d.Capture(func(d *jx.Decoder) error {
-		return d.ObjBytes(func(d *jx.Decoder, key []byte) error {
-			switch string(key) {
-			case "buckets":
-				match := TermsAggregationSearchProductsOKAggregationsItem
-				if found && s.Type != match {
-					s.Type = ""
-					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
-				}
-				found = true
-				s.Type = match
-			}
-			return d.Skip()
-		})
-	}); err != nil {
-		return errors.Wrap(err, "capture")
-	}
-	if !found {
-		s.Type = RangeAggregationSearchProductsOKAggregationsItem
-	}
-	switch s.Type {
-	case TermsAggregationSearchProductsOKAggregationsItem:
-		if err := s.TermsAggregation.Decode(d); err != nil {
-			return err
-		}
-	case RangeAggregationSearchProductsOKAggregationsItem:
-		if err := s.RangeAggregation.Decode(d); err != nil {
-			return err
-		}
-	default:
-		return errors.Errorf("inferred invalid type: %s", s.Type)
-	}
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s SearchProductsOKAggregationsItem) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *SearchProductsOKAggregationsItem) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
