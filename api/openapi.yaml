@@ -421,7 +421,10 @@ paths:
                 type: object
                 properties:
                   aggregations:
-                    $ref: '#/components/schemas/Aggregation'
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: '#/components/schemas/TermsAggregation'
                   metadata:
                     $ref: '#/components/schemas/PageMetadata'
                   products:
@@ -492,7 +495,7 @@ components:
         id:
           type: string
         order_id:
-            type: string
+          type: string
         created_at:
           type: string
         total:
@@ -535,10 +538,10 @@ components:
         - name
       type: object
       properties:
-          id:
-              type: string
-          name:
-              type: string
+        id:
+          type: string
+        name:
+          type: string
     PageMetadata:
       required:
         - total_pages
@@ -554,9 +557,8 @@ components:
       additionalProperties:
         type: array
         items:
-          $ref: '#/components/schemas/Bucket'
-
-
+          oneOf:
+            - $ref: '#/components/schemas/TermsAggregation'
 
     Bucket:
       type: object
@@ -574,12 +576,12 @@ components:
         - options
       type: object
       properties:
-          attribute:
-            type: string
-          options:
-            type: array
-            items:
-              $ref: '#/components/schemas/SearchMetadataFacetOption'
+        attribute:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchMetadataFacetOption'
     SearchMetadataFacetOption:
       required:
         - value
@@ -810,24 +812,46 @@ components:
         - product_group_name
       type: object
       properties:
-          id:
-            type: string
-          sn:
-            type: string
-          name:
-            type: string
-          description:
-            type: string
-          product_group_sn:
-            type: string
-          product_group_name:
-            type: string
-          image_url:
-            type: string
+        id:
+          type: string
+        sn:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        product_group_sn:
+          type: string
+        product_group_name:
+          type: string
+        image_url:
+          type: string
     ProductSearchResult:
       allOf:
         - $ref: '#/components/schemas/Product'
 
+    TermsAggregation:
+      required:
+        - field_name
+        - buckets
+      type: object
+      properties:
+        field_name:
+          type: string
+        buckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/TermsAggregationBucket'
+    TermsAggregationBucket:
+      required:
+        - key
+        - count
+      type: object
+      properties:
+        key:
+          type: string
+        count:
+          type: integer
     Customer:
       type: object
       required:

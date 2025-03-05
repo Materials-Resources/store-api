@@ -11,6 +11,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/protobuf/proto"
 	"log"
 	"net/http"
 )
@@ -42,7 +43,7 @@ func NewOrderService(a *app.App) *Order {
 }
 
 func (s *Order) GetQuote(ctx context.Context, req oas.GetQuoteParams) (*oas.GetQuoteOK, error) {
-	pbReq := &orderv1.GetQuoteRequest{Id: req.ID}
+	pbReq := orderv1.GetQuoteRequest_builder{Id: proto.String(req.ID)}.Build()
 	pbRes, err := s.Client.GetQuote(ctx, connect.NewRequest(pbReq))
 	if err != nil {
 		return nil, err
@@ -74,7 +75,7 @@ func (s *Order) GetQuote(ctx context.Context, req oas.GetQuoteParams) (*oas.GetQ
 }
 
 func (s *Order) GetOrder(ctx context.Context, req oas.GetOrderParams) (oas.GetOrderRes, error) {
-	pbReq := &orderv1.GetOrderRequest{Id: req.ID}
+	pbReq := orderv1.GetOrderRequest_builder{Id: proto.String(req.ID)}.Build()
 	pbRes, err := s.Client.GetOrder(ctx, connect.NewRequest(pbReq))
 
 	if err != nil {
@@ -126,11 +127,11 @@ func (s *Order) GetOrder(ctx context.Context, req oas.GetOrderParams) (oas.GetOr
 }
 
 func (s *Order) ListOrders(ctx context.Context, req oas.ListOrdersParams) (*oas.ListOrdersOK, error) {
-	pbReq := &orderv1.ListOrdersRequest{
-		Page:     int32(req.Page),
-		PageSize: int32(req.PageSize),
-		BranchId: "100039",
-	}
+	pbReq := orderv1.ListOrdersRequest_builder{
+		Page:     proto.Int32(int32(req.Page)),
+		PageSize: proto.Int32(int32(req.PageSize)),
+		BranchId: proto.String("100039"),
+	}.Build()
 
 	pbRes, err := s.Client.ListOrders(ctx, connect.NewRequest(pbReq))
 
@@ -155,11 +156,11 @@ func (s *Order) ListOrders(ctx context.Context, req oas.ListOrdersParams) (*oas.
 }
 
 func (s *Order) ListQuotes(ctx context.Context, req oas.ListQuotesParams) (*oas.ListQuotesOK, error) {
-	pbReq := &orderv1.ListQuotesRequest{
-		Page:     int32(req.Page),
-		PageSize: int32(req.PageSize),
-		BranchId: "100039",
-	}
+	pbReq := orderv1.ListQuotesRequest_builder{
+		Page:     proto.Int32(int32(req.Page)),
+		PageSize: proto.Int32(int32(req.PageSize)),
+		BranchId: proto.String("100039"),
+	}.Build()
 
 	pbRes, err := s.Client.ListQuotes(ctx, connect.NewRequest(pbReq))
 	if err != nil {

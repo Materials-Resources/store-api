@@ -10,28 +10,6 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func (s Aggregation) Validate() error {
-	var failures []validate.FieldError
-	for key, elem := range s {
-		if err := func() error {
-			if elem == nil {
-				return errors.New("nil is invalid value")
-			}
-			return nil
-		}(); err != nil {
-			failures = append(failures, validate.FieldError{
-				Name:  key,
-				Error: err,
-			})
-		}
-	}
-
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-	return nil
-}
-
 func (s *CreateQuoteReq) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -533,8 +511,25 @@ func (s *SearchProductsOK) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
-		if err := s.Aggregations.Validate(); err != nil {
-			return err
+		if s.Aggregations == nil {
+			return errors.New("nil is invalid value")
+		}
+		var failures []validate.FieldError
+		for i, elem := range s.Aggregations {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
 		}
 		return nil
 	}(); err != nil {
@@ -558,6 +553,18 @@ func (s *SearchProductsOK) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s SearchProductsOKAggregationsItem) Validate() error {
+	switch s.Type {
+	case TermsAggregationSearchProductsOKAggregationsItem:
+		if err := s.TermsAggregation.Validate(); err != nil {
+			return err
+		}
+		return nil
+	default:
+		return errors.Errorf("invalid type %q", s.Type)
+	}
 }
 
 func (s *SearchProductsReq) Validate() error {
@@ -606,6 +613,29 @@ func (s SearchProductsReqFilters) Validate() error {
 		}
 	}
 
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *TermsAggregation) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if s.Buckets == nil {
+			return errors.New("nil is invalid value")
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "buckets",
+			Error: err,
+		})
+	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
 	}

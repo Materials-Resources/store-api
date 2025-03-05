@@ -41,13 +41,6 @@ const (
 	BillingServiceGetInvoiceProcedure = "/billing.v1.BillingService/GetInvoice"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	billingServiceServiceDescriptor                  = billing.File_billing_proto.Services().ByName("BillingService")
-	billingServiceGetInvoicesByOrderMethodDescriptor = billingServiceServiceDescriptor.Methods().ByName("GetInvoicesByOrder")
-	billingServiceGetInvoiceMethodDescriptor         = billingServiceServiceDescriptor.Methods().ByName("GetInvoice")
-)
-
 // BillingServiceClient is a client for the billing.v1.BillingService service.
 type BillingServiceClient interface {
 	// GetInvoicesByOrder returns all invoices for a given order
@@ -64,17 +57,18 @@ type BillingServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewBillingServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) BillingServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	billingServiceMethods := billing.File_billing_proto.Services().ByName("BillingService").Methods()
 	return &billingServiceClient{
 		getInvoicesByOrder: connect.NewClient[billing.GetInvoicesByOrderRequest, billing.GetInvoicesByOrderResponse](
 			httpClient,
 			baseURL+BillingServiceGetInvoicesByOrderProcedure,
-			connect.WithSchema(billingServiceGetInvoicesByOrderMethodDescriptor),
+			connect.WithSchema(billingServiceMethods.ByName("GetInvoicesByOrder")),
 			connect.WithClientOptions(opts...),
 		),
 		getInvoice: connect.NewClient[billing.GetInvoiceRequest, billing.GetInvoiceResponse](
 			httpClient,
 			baseURL+BillingServiceGetInvoiceProcedure,
-			connect.WithSchema(billingServiceGetInvoiceMethodDescriptor),
+			connect.WithSchema(billingServiceMethods.ByName("GetInvoice")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -109,16 +103,17 @@ type BillingServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	billingServiceMethods := billing.File_billing_proto.Services().ByName("BillingService").Methods()
 	billingServiceGetInvoicesByOrderHandler := connect.NewUnaryHandler(
 		BillingServiceGetInvoicesByOrderProcedure,
 		svc.GetInvoicesByOrder,
-		connect.WithSchema(billingServiceGetInvoicesByOrderMethodDescriptor),
+		connect.WithSchema(billingServiceMethods.ByName("GetInvoicesByOrder")),
 		connect.WithHandlerOptions(opts...),
 	)
 	billingServiceGetInvoiceHandler := connect.NewUnaryHandler(
 		BillingServiceGetInvoiceProcedure,
 		svc.GetInvoice,
-		connect.WithSchema(billingServiceGetInvoiceMethodDescriptor),
+		connect.WithSchema(billingServiceMethods.ByName("GetInvoice")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/billing.v1.BillingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

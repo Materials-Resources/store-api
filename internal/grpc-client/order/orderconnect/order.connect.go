@@ -55,19 +55,6 @@ const (
 	OrderServiceGetShipmentProcedure = "/order.v1.OrderService/GetShipment"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	orderServiceServiceDescriptor                    = order.File_order_proto.Services().ByName("OrderService")
-	orderServiceListOrdersMethodDescriptor           = orderServiceServiceDescriptor.Methods().ByName("ListOrders")
-	orderServiceGetOrderMethodDescriptor             = orderServiceServiceDescriptor.Methods().ByName("GetOrder")
-	orderServiceCreateOrderMethodDescriptor          = orderServiceServiceDescriptor.Methods().ByName("CreateOrder")
-	orderServiceListQuotesMethodDescriptor           = orderServiceServiceDescriptor.Methods().ByName("ListQuotes")
-	orderServiceGetQuoteMethodDescriptor             = orderServiceServiceDescriptor.Methods().ByName("GetQuote")
-	orderServiceCreateQuoteMethodDescriptor          = orderServiceServiceDescriptor.Methods().ByName("CreateQuote")
-	orderServiceListShipmentsByOrderMethodDescriptor = orderServiceServiceDescriptor.Methods().ByName("ListShipmentsByOrder")
-	orderServiceGetShipmentMethodDescriptor          = orderServiceServiceDescriptor.Methods().ByName("GetShipment")
-)
-
 // OrderServiceClient is a client for the order.v1.OrderService service.
 type OrderServiceClient interface {
 	// ListOrders returns a list of orders for a given customer
@@ -96,53 +83,54 @@ type OrderServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewOrderServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) OrderServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	orderServiceMethods := order.File_order_proto.Services().ByName("OrderService").Methods()
 	return &orderServiceClient{
 		listOrders: connect.NewClient[order.ListOrdersRequest, order.ListOrdersResponse](
 			httpClient,
 			baseURL+OrderServiceListOrdersProcedure,
-			connect.WithSchema(orderServiceListOrdersMethodDescriptor),
+			connect.WithSchema(orderServiceMethods.ByName("ListOrders")),
 			connect.WithClientOptions(opts...),
 		),
 		getOrder: connect.NewClient[order.GetOrderRequest, order.GetOrderResponse](
 			httpClient,
 			baseURL+OrderServiceGetOrderProcedure,
-			connect.WithSchema(orderServiceGetOrderMethodDescriptor),
+			connect.WithSchema(orderServiceMethods.ByName("GetOrder")),
 			connect.WithClientOptions(opts...),
 		),
 		createOrder: connect.NewClient[order.CreateOrderRequest, order.CreateOrderResponse](
 			httpClient,
 			baseURL+OrderServiceCreateOrderProcedure,
-			connect.WithSchema(orderServiceCreateOrderMethodDescriptor),
+			connect.WithSchema(orderServiceMethods.ByName("CreateOrder")),
 			connect.WithClientOptions(opts...),
 		),
 		listQuotes: connect.NewClient[order.ListQuotesRequest, order.ListQuotesResponse](
 			httpClient,
 			baseURL+OrderServiceListQuotesProcedure,
-			connect.WithSchema(orderServiceListQuotesMethodDescriptor),
+			connect.WithSchema(orderServiceMethods.ByName("ListQuotes")),
 			connect.WithClientOptions(opts...),
 		),
 		getQuote: connect.NewClient[order.GetQuoteRequest, order.GetQuoteResponse](
 			httpClient,
 			baseURL+OrderServiceGetQuoteProcedure,
-			connect.WithSchema(orderServiceGetQuoteMethodDescriptor),
+			connect.WithSchema(orderServiceMethods.ByName("GetQuote")),
 			connect.WithClientOptions(opts...),
 		),
 		createQuote: connect.NewClient[order.CreateQuoteRequest, order.CreateQuoteResponse](
 			httpClient,
 			baseURL+OrderServiceCreateQuoteProcedure,
-			connect.WithSchema(orderServiceCreateQuoteMethodDescriptor),
+			connect.WithSchema(orderServiceMethods.ByName("CreateQuote")),
 			connect.WithClientOptions(opts...),
 		),
 		listShipmentsByOrder: connect.NewClient[order.ListShipmentsByOrderRequest, order.ListShipmentsByOrderResponse](
 			httpClient,
 			baseURL+OrderServiceListShipmentsByOrderProcedure,
-			connect.WithSchema(orderServiceListShipmentsByOrderMethodDescriptor),
+			connect.WithSchema(orderServiceMethods.ByName("ListShipmentsByOrder")),
 			connect.WithClientOptions(opts...),
 		),
 		getShipment: connect.NewClient[order.GetShipmentRequest, order.GetShipmentResponse](
 			httpClient,
 			baseURL+OrderServiceGetShipmentProcedure,
-			connect.WithSchema(orderServiceGetShipmentMethodDescriptor),
+			connect.WithSchema(orderServiceMethods.ByName("GetShipment")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -225,52 +213,53 @@ type OrderServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewOrderServiceHandler(svc OrderServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	orderServiceMethods := order.File_order_proto.Services().ByName("OrderService").Methods()
 	orderServiceListOrdersHandler := connect.NewUnaryHandler(
 		OrderServiceListOrdersProcedure,
 		svc.ListOrders,
-		connect.WithSchema(orderServiceListOrdersMethodDescriptor),
+		connect.WithSchema(orderServiceMethods.ByName("ListOrders")),
 		connect.WithHandlerOptions(opts...),
 	)
 	orderServiceGetOrderHandler := connect.NewUnaryHandler(
 		OrderServiceGetOrderProcedure,
 		svc.GetOrder,
-		connect.WithSchema(orderServiceGetOrderMethodDescriptor),
+		connect.WithSchema(orderServiceMethods.ByName("GetOrder")),
 		connect.WithHandlerOptions(opts...),
 	)
 	orderServiceCreateOrderHandler := connect.NewUnaryHandler(
 		OrderServiceCreateOrderProcedure,
 		svc.CreateOrder,
-		connect.WithSchema(orderServiceCreateOrderMethodDescriptor),
+		connect.WithSchema(orderServiceMethods.ByName("CreateOrder")),
 		connect.WithHandlerOptions(opts...),
 	)
 	orderServiceListQuotesHandler := connect.NewUnaryHandler(
 		OrderServiceListQuotesProcedure,
 		svc.ListQuotes,
-		connect.WithSchema(orderServiceListQuotesMethodDescriptor),
+		connect.WithSchema(orderServiceMethods.ByName("ListQuotes")),
 		connect.WithHandlerOptions(opts...),
 	)
 	orderServiceGetQuoteHandler := connect.NewUnaryHandler(
 		OrderServiceGetQuoteProcedure,
 		svc.GetQuote,
-		connect.WithSchema(orderServiceGetQuoteMethodDescriptor),
+		connect.WithSchema(orderServiceMethods.ByName("GetQuote")),
 		connect.WithHandlerOptions(opts...),
 	)
 	orderServiceCreateQuoteHandler := connect.NewUnaryHandler(
 		OrderServiceCreateQuoteProcedure,
 		svc.CreateQuote,
-		connect.WithSchema(orderServiceCreateQuoteMethodDescriptor),
+		connect.WithSchema(orderServiceMethods.ByName("CreateQuote")),
 		connect.WithHandlerOptions(opts...),
 	)
 	orderServiceListShipmentsByOrderHandler := connect.NewUnaryHandler(
 		OrderServiceListShipmentsByOrderProcedure,
 		svc.ListShipmentsByOrder,
-		connect.WithSchema(orderServiceListShipmentsByOrderMethodDescriptor),
+		connect.WithSchema(orderServiceMethods.ByName("ListShipmentsByOrder")),
 		connect.WithHandlerOptions(opts...),
 	)
 	orderServiceGetShipmentHandler := connect.NewUnaryHandler(
 		OrderServiceGetShipmentProcedure,
 		svc.GetShipment,
-		connect.WithSchema(orderServiceGetShipmentMethodDescriptor),
+		connect.WithSchema(orderServiceMethods.ByName("GetShipment")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/order.v1.OrderService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

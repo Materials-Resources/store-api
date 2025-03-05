@@ -6,6 +6,7 @@ import (
 	searchv1 "github.com/materials-resources/store-api/internal/grpc-client/search"
 	"github.com/materials-resources/store-api/internal/grpc-client/search/searchconnect"
 	"github.com/materials-resources/store-api/internal/oas"
+	"google.golang.org/protobuf/proto"
 	"net/http"
 )
 
@@ -21,19 +22,19 @@ func NewSearchService() *Search {
 }
 
 func (s *Search) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (*oas.SearchProductsOK, error) {
-	pbReq := &searchv1.SearchProductsRequest{
-		Query:   req.GetQuery().Or(""),
-		Page:    int32(req.GetPage().Or(1)),
+	pbReq := searchv1.SearchProductsRequest_builder{
+		Query:   proto.String(req.GetQuery().Or("")),
+		Page:    proto.Int32(int32(req.GetPage().Or(1))),
 		Filters: make(map[string]*searchv1.Filter),
 	}
 
 	for name, values := range req.GetFilters().Or(make(oas.SearchProductsReqFilters)) {
-		pbReq.Filters[name] = &searchv1.Filter{
+		pbReq.Filters[name] = searchv1.Filter_builder{
 			Values: values,
-		}
+		}.Build()
 	}
 
-	pbRes, err := s.Client.SearchProducts(ctx, connect.NewRequest(pbReq))
+	pbRes, err := s.Client.SearchProducts(ctx, connect.NewRequest(pbReq.Build()))
 
 	if err != nil {
 		return nil, err
@@ -44,26 +45,36 @@ func (s *Search) SearchProducts(ctx context.Context, req *oas.SearchProductsReq)
 			TotalPages:   int(pbRes.Msg.GetPageMetadata().GetTotalPages()),
 			TotalRecords: int(pbRes.Msg.GetPageMetadata().GetTotalRecords()),
 		},
-		Aggregations: make(map[string][]oas.Bucket),
+		Aggregations: make([]oas.SearchProductsOKAggregationsItem, 0),
 	}
 
-	for fbName, pbFb := range pbRes.Msg.GetAggregations().GetFieldBuckets() {
-		var buckets []oas.Bucket
-		for _, pbBucket := range pbFb.Aggregations {
-			buckets = append(buckets, oas.Bucket{
-				Value: pbBucket.GetName(),
-				Count: int(pbBucket.GetCount()),
-			})
+	for _, aggregationPb := range pbRes.Msg.GetAggregations() {
+		aggregation := oas.SearchProductsOKAggregationsItem{}
+		switch aggregationPb.WhichAggregationType() {
+		case searchv1.Aggregation_TermsAggregation_case:
+
+			termsAggregation := oas.TermsAggregation{
+				FieldName: aggregationPb.GetTermsAggregation().GetFieldName(),
+			}
+
+			for _, term := range aggregationPb.GetTermsAggregation().GetBuckets() {
+				termsAggregation.Buckets = append(termsAggregation.Buckets, oas.TermsAggregationBucket{
+					Key:   term.GetKey(),
+					Count: int(term.GetCount()),
+				})
+			}
+
+			aggregation.SetTermsAggregation(termsAggregation)
 		}
-		response.Aggregations[fbName] = buckets
+		response.Aggregations = append(response.Aggregations, aggregation)
 	}
 
-	for _, pbProduct := range pbRes.Msg.GetResults() {
+	for _, pbProduct := range pbRes.Msg.GetProducts() {
 		response.Products = append(response.Products, oas.Product{
-			ID:          pbProduct.GetBase().GetUid(),
-			Sn:          pbProduct.GetBase().GetSerialNumber(),
-			Name:        pbProduct.GetBase().GetName(),
-			Description: oas.NewOptString(pbProduct.GetBase().GetDescription()),
+			ID:          pbProduct.GetId(),
+			Sn:          pbProduct.GetSn(),
+			Name:        pbProduct.GetName(),
+			Description: oas.NewOptString(pbProduct.GetDescription()),
 			ImageURL:    oas.OptString{},
 		})
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/materials-resources/store-api/internal/service"
 	"github.com/materials-resources/store-api/internal/session"
 	"github.com/materials-resources/store-api/internal/zitadel"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -33,9 +34,9 @@ type Handler struct {
 
 func (h Handler) GetActiveBranches(ctx context.Context) (*oas.GetActiveBranchesOK, error) {
 	userSession := h.sessionManager.GetUserSession(ctx)
-	pbReq := &customerv1.GetBranchRequest{
-		Id: userSession.Profile.BranchID,
-	}
+	pbReq := customerv1.GetBranchRequest_builder{
+		Id: proto.String(userSession.Profile.BranchID),
+	}.Build()
 
 	pbRes, err := h.service.Customer.Client.GetBranch(ctx, connect.NewRequest(pbReq))
 	if err != nil {
@@ -52,7 +53,7 @@ func (h Handler) GetActiveBranches(ctx context.Context) (*oas.GetActiveBranchesO
 
 func (h Handler) GetQuote(ctx context.Context, params oas.GetQuoteParams) (*oas.GetQuoteOK, error) {
 	userSession := h.sessionManager.GetUserSession(ctx)
-	pbReq := &orderv1.GetQuoteRequest{Id: params.ID}
+	pbReq := orderv1.GetQuoteRequest_builder{Id: proto.String(params.ID)}.Build()
 	pbRes, err := h.service.Order.Client.GetQuote(ctx, connect.NewRequest(pbReq))
 	if err != nil {
 		return nil, err
@@ -89,11 +90,11 @@ func (h Handler) GetQuote(ctx context.Context, params oas.GetQuoteParams) (*oas.
 
 func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (*oas.ListQuotesOK, error) {
 	userSession := h.sessionManager.GetUserSession(ctx)
-	pbReq := &orderv1.ListQuotesRequest{
-		Page:     int32(params.Page),
-		PageSize: int32(params.PageSize),
-		BranchId: userSession.Profile.BranchID,
-	}
+	pbReq := orderv1.ListQuotesRequest_builder{
+		Page:     proto.Int32(int32(params.Page)),
+		PageSize: proto.Int32(int32(params.PageSize)),
+		BranchId: proto.String(userSession.Profile.BranchID),
+	}.Build()
 
 	pbRes, err := h.service.Order.Client.ListQuotes(ctx, connect.NewRequest(pbReq))
 	if err != nil {
@@ -120,11 +121,11 @@ func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (*
 
 func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (*oas.ListOrdersOK, error) {
 	userSession := h.sessionManager.GetUserSession(ctx)
-	pbReq := &orderv1.ListOrdersRequest{
-		Page:     int32(params.Page),
-		PageSize: int32(params.PageSize),
-		BranchId: userSession.Profile.BranchID,
-	}
+	pbReq := orderv1.ListOrdersRequest_builder{
+		Page:     proto.Int32(int32(params.Page)),
+		PageSize: proto.Int32(int32(params.PageSize)),
+		BranchId: proto.String(userSession.Profile.BranchID),
+	}.Build()
 
 	pbRes, err := h.service.Order.Client.ListOrders(ctx, connect.NewRequest(pbReq))
 
@@ -167,22 +168,21 @@ func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchRe
 
 func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.CreateQuoteRes, error) {
 	userSession := h.sessionManager.GetUserSession(ctx)
-	pbReq := &orderv1.CreateQuoteRequest{
-		BranchId:             userSession.Profile.BranchID,
-		ContactId:            userSession.Profile.ContactID,
-		PurchaseOrder:        req.PurchaseOrder,
-		RequestedDate:        timestamppb.New(req.GetDateRequested()),
-		DeliveryInstructions: req.DeliveryInstructions,
+	pbReq := orderv1.CreateQuoteRequest_builder{
+		BranchId:      proto.String(userSession.Profile.BranchID),
+		ContactId:     proto.String(userSession.Profile.ContactID),
+		Notes:         proto.String(""), // TODO: add notes
+		RequestedDate: timestamppb.New(req.GetDateRequested()),
 	}
 
 	for _, item := range req.Items {
-		pbReq.Items = append(pbReq.Items, &orderv1.CreateQuoteRequest_Item{
-			ProductId: item.GetProductID(),
-			Quantity:  item.GetQuantity(),
-		})
+		pbReq.Items = append(pbReq.Items, orderv1.CreateQuoteRequest_Item_builder{
+			ProductId: proto.String(item.GetProductID()),
+			Quantity:  proto.Float64(item.GetQuantity()),
+		}.Build())
 	}
 
-	pbRes, err := h.service.Order.Client.CreateQuote(ctx, connect.NewRequest(pbReq))
+	pbRes, err := h.service.Order.Client.CreateQuote(ctx, connect.NewRequest(pbReq.Build()))
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +194,7 @@ func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.
 
 func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.GetOrderRes, error) {
 	userSession := h.sessionManager.GetUserSession(ctx)
-	pbReq := &orderv1.GetOrderRequest{Id: params.ID}
+	pbReq := orderv1.GetOrderRequest_builder{Id: proto.String(params.ID)}.Build()
 	pbRes, err := h.service.Order.Client.GetOrder(ctx, connect.NewRequest(pbReq))
 
 	if err != nil {

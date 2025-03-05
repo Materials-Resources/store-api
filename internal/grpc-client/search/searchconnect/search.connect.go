@@ -41,13 +41,6 @@ const (
 	SearchServiceAddProductProcedure = "/search.v1.SearchService/AddProduct"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	searchServiceServiceDescriptor              = search.File_search_proto.Services().ByName("SearchService")
-	searchServiceSearchProductsMethodDescriptor = searchServiceServiceDescriptor.Methods().ByName("SearchProducts")
-	searchServiceAddProductMethodDescriptor     = searchServiceServiceDescriptor.Methods().ByName("AddProduct")
-)
-
 // SearchServiceClient is a client for the search.v1.SearchService service.
 type SearchServiceClient interface {
 	// SearchProducts returns a list of products based on the search query and filters
@@ -65,17 +58,18 @@ type SearchServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewSearchServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) SearchServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	searchServiceMethods := search.File_search_proto.Services().ByName("SearchService").Methods()
 	return &searchServiceClient{
 		searchProducts: connect.NewClient[search.SearchProductsRequest, search.SearchProductsResponse](
 			httpClient,
 			baseURL+SearchServiceSearchProductsProcedure,
-			connect.WithSchema(searchServiceSearchProductsMethodDescriptor),
+			connect.WithSchema(searchServiceMethods.ByName("SearchProducts")),
 			connect.WithClientOptions(opts...),
 		),
 		addProduct: connect.NewClient[search.AddProductRequest, search.AddProductResponse](
 			httpClient,
 			baseURL+SearchServiceAddProductProcedure,
-			connect.WithSchema(searchServiceAddProductMethodDescriptor),
+			connect.WithSchema(searchServiceMethods.ByName("AddProduct")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -111,16 +105,17 @@ type SearchServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewSearchServiceHandler(svc SearchServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	searchServiceMethods := search.File_search_proto.Services().ByName("SearchService").Methods()
 	searchServiceSearchProductsHandler := connect.NewUnaryHandler(
 		SearchServiceSearchProductsProcedure,
 		svc.SearchProducts,
-		connect.WithSchema(searchServiceSearchProductsMethodDescriptor),
+		connect.WithSchema(searchServiceMethods.ByName("SearchProducts")),
 		connect.WithHandlerOptions(opts...),
 	)
 	searchServiceAddProductHandler := connect.NewUnaryHandler(
 		SearchServiceAddProductProcedure,
 		svc.AddProduct,
-		connect.WithSchema(searchServiceAddProductMethodDescriptor),
+		connect.WithSchema(searchServiceMethods.ByName("AddProduct")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/search.v1.SearchService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

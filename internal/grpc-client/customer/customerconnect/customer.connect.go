@@ -44,14 +44,6 @@ const (
 	CustomerServiceGetRecentPurchasesByBranchProcedure = "/customer.v1.CustomerService/GetRecentPurchasesByBranch"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	customerServiceServiceDescriptor                          = customer.File_customer_proto.Services().ByName("CustomerService")
-	customerServiceGetBranchesForContactMethodDescriptor      = customerServiceServiceDescriptor.Methods().ByName("GetBranchesForContact")
-	customerServiceGetBranchMethodDescriptor                  = customerServiceServiceDescriptor.Methods().ByName("GetBranch")
-	customerServiceGetRecentPurchasesByBranchMethodDescriptor = customerServiceServiceDescriptor.Methods().ByName("GetRecentPurchasesByBranch")
-)
-
 // CustomerServiceClient is a client for the customer.v1.CustomerService service.
 type CustomerServiceClient interface {
 	GetBranchesForContact(context.Context, *connect.Request[customer.GetBranchesForContactRequest]) (*connect.Response[customer.GetBranchesForContactResponse], error)
@@ -68,23 +60,24 @@ type CustomerServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewCustomerServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) CustomerServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	customerServiceMethods := customer.File_customer_proto.Services().ByName("CustomerService").Methods()
 	return &customerServiceClient{
 		getBranchesForContact: connect.NewClient[customer.GetBranchesForContactRequest, customer.GetBranchesForContactResponse](
 			httpClient,
 			baseURL+CustomerServiceGetBranchesForContactProcedure,
-			connect.WithSchema(customerServiceGetBranchesForContactMethodDescriptor),
+			connect.WithSchema(customerServiceMethods.ByName("GetBranchesForContact")),
 			connect.WithClientOptions(opts...),
 		),
 		getBranch: connect.NewClient[customer.GetBranchRequest, customer.GetBranchResponse](
 			httpClient,
 			baseURL+CustomerServiceGetBranchProcedure,
-			connect.WithSchema(customerServiceGetBranchMethodDescriptor),
+			connect.WithSchema(customerServiceMethods.ByName("GetBranch")),
 			connect.WithClientOptions(opts...),
 		),
 		getRecentPurchasesByBranch: connect.NewClient[customer.GetRecentPurchasesByBranchRequest, customer.GetRecentPurchasesByBranchResponse](
 			httpClient,
 			baseURL+CustomerServiceGetRecentPurchasesByBranchProcedure,
-			connect.WithSchema(customerServiceGetRecentPurchasesByBranchMethodDescriptor),
+			connect.WithSchema(customerServiceMethods.ByName("GetRecentPurchasesByBranch")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -125,22 +118,23 @@ type CustomerServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewCustomerServiceHandler(svc CustomerServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	customerServiceMethods := customer.File_customer_proto.Services().ByName("CustomerService").Methods()
 	customerServiceGetBranchesForContactHandler := connect.NewUnaryHandler(
 		CustomerServiceGetBranchesForContactProcedure,
 		svc.GetBranchesForContact,
-		connect.WithSchema(customerServiceGetBranchesForContactMethodDescriptor),
+		connect.WithSchema(customerServiceMethods.ByName("GetBranchesForContact")),
 		connect.WithHandlerOptions(opts...),
 	)
 	customerServiceGetBranchHandler := connect.NewUnaryHandler(
 		CustomerServiceGetBranchProcedure,
 		svc.GetBranch,
-		connect.WithSchema(customerServiceGetBranchMethodDescriptor),
+		connect.WithSchema(customerServiceMethods.ByName("GetBranch")),
 		connect.WithHandlerOptions(opts...),
 	)
 	customerServiceGetRecentPurchasesByBranchHandler := connect.NewUnaryHandler(
 		CustomerServiceGetRecentPurchasesByBranchProcedure,
 		svc.GetRecentPurchasesByBranch,
-		connect.WithSchema(customerServiceGetRecentPurchasesByBranchMethodDescriptor),
+		connect.WithSchema(customerServiceMethods.ByName("GetRecentPurchasesByBranch")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/customer.v1.CustomerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

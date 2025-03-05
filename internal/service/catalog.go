@@ -6,6 +6,7 @@ import (
 	catalogv1 "github.com/materials-resources/store-api/internal/grpc-client/catalog"
 	"github.com/materials-resources/store-api/internal/grpc-client/catalog/catalogconnect"
 	"github.com/materials-resources/store-api/internal/oas"
+	"google.golang.org/protobuf/proto"
 	"net/http"
 )
 
@@ -22,7 +23,7 @@ func NewCatalogService() *CatalogService {
 }
 
 func (s *CatalogService) GetProduct(ctx context.Context, params oas.GetProductParams) (oas.GetProductRes, error) {
-	pbReq := &catalogv1.GetProductRequest{Id: params.ID}
+	pbReq := catalogv1.GetProductRequest_builder{Id: proto.String(params.ID)}.Build()
 
 	pbRes, err := s.Client.GetProduct(ctx, connect.NewRequest(pbReq))
 

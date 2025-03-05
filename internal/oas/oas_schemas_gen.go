@@ -105,18 +105,6 @@ func (s *Address) SetCountry(val string) {
 	s.Country = val
 }
 
-// Ref: #/components/schemas/Aggregation
-type Aggregation map[string][]Bucket
-
-func (s *Aggregation) init() Aggregation {
-	m := *s
-	if m == nil {
-		m = map[string][]Bucket{}
-		*s = m
-	}
-	return m
-}
-
 type BearerAuth struct {
 	Token string
 }
@@ -155,32 +143,6 @@ func (s *Branch) SetID(val string) {
 // SetName sets the value of Name.
 func (s *Branch) SetName(val string) {
 	s.Name = val
-}
-
-// Ref: #/components/schemas/Bucket
-type Bucket struct {
-	Value string `json:"value"`
-	Count int    `json:"count"`
-}
-
-// GetValue returns the value of Value.
-func (s *Bucket) GetValue() string {
-	return s.Value
-}
-
-// GetCount returns the value of Count.
-func (s *Bucket) GetCount() int {
-	return s.Count
-}
-
-// SetValue sets the value of Value.
-func (s *Bucket) SetValue(val string) {
-	s.Value = val
-}
-
-// SetCount sets the value of Count.
-func (s *Bucket) SetCount(val int) {
-	s.Count = val
 }
 
 type CreateQuoteCreated struct {
@@ -1470,13 +1432,13 @@ func (s *QuoteSummary) SetDateExpires(val time.Time) {
 }
 
 type SearchProductsOK struct {
-	Aggregations Aggregation  `json:"aggregations"`
-	Metadata     PageMetadata `json:"metadata"`
-	Products     []Product    `json:"products"`
+	Aggregations []SearchProductsOKAggregationsItem `json:"aggregations"`
+	Metadata     PageMetadata                       `json:"metadata"`
+	Products     []Product                          `json:"products"`
 }
 
 // GetAggregations returns the value of Aggregations.
-func (s *SearchProductsOK) GetAggregations() Aggregation {
+func (s *SearchProductsOK) GetAggregations() []SearchProductsOKAggregationsItem {
 	return s.Aggregations
 }
 
@@ -1491,7 +1453,7 @@ func (s *SearchProductsOK) GetProducts() []Product {
 }
 
 // SetAggregations sets the value of Aggregations.
-func (s *SearchProductsOK) SetAggregations(val Aggregation) {
+func (s *SearchProductsOK) SetAggregations(val []SearchProductsOKAggregationsItem) {
 	s.Aggregations = val
 }
 
@@ -1503,6 +1465,46 @@ func (s *SearchProductsOK) SetMetadata(val PageMetadata) {
 // SetProducts sets the value of Products.
 func (s *SearchProductsOK) SetProducts(val []Product) {
 	s.Products = val
+}
+
+// SearchProductsOKAggregationsItem represents sum type.
+type SearchProductsOKAggregationsItem struct {
+	Type             SearchProductsOKAggregationsItemType // switch on this field
+	TermsAggregation TermsAggregation
+}
+
+// SearchProductsOKAggregationsItemType is oneOf type of SearchProductsOKAggregationsItem.
+type SearchProductsOKAggregationsItemType string
+
+// Possible values for SearchProductsOKAggregationsItemType.
+const (
+	TermsAggregationSearchProductsOKAggregationsItem SearchProductsOKAggregationsItemType = "TermsAggregation"
+)
+
+// IsTermsAggregation reports whether SearchProductsOKAggregationsItem is TermsAggregation.
+func (s SearchProductsOKAggregationsItem) IsTermsAggregation() bool {
+	return s.Type == TermsAggregationSearchProductsOKAggregationsItem
+}
+
+// SetTermsAggregation sets SearchProductsOKAggregationsItem to TermsAggregation.
+func (s *SearchProductsOKAggregationsItem) SetTermsAggregation(v TermsAggregation) {
+	s.Type = TermsAggregationSearchProductsOKAggregationsItem
+	s.TermsAggregation = v
+}
+
+// GetTermsAggregation returns TermsAggregation and true boolean if SearchProductsOKAggregationsItem is TermsAggregation.
+func (s SearchProductsOKAggregationsItem) GetTermsAggregation() (v TermsAggregation, ok bool) {
+	if !s.IsTermsAggregation() {
+		return v, false
+	}
+	return s.TermsAggregation, true
+}
+
+// NewTermsAggregationSearchProductsOKAggregationsItem returns new SearchProductsOKAggregationsItem from TermsAggregation.
+func NewTermsAggregationSearchProductsOKAggregationsItem(v TermsAggregation) SearchProductsOKAggregationsItem {
+	var s SearchProductsOKAggregationsItem
+	s.SetTermsAggregation(v)
+	return s
 }
 
 type SearchProductsReq struct {
@@ -1600,4 +1602,56 @@ func (s *SetActiveBranchReq) GetBranchID() string {
 // SetBranchID sets the value of BranchID.
 func (s *SetActiveBranchReq) SetBranchID(val string) {
 	s.BranchID = val
+}
+
+// Ref: #/components/schemas/TermsAggregation
+type TermsAggregation struct {
+	FieldName string                   `json:"field_name"`
+	Buckets   []TermsAggregationBucket `json:"buckets"`
+}
+
+// GetFieldName returns the value of FieldName.
+func (s *TermsAggregation) GetFieldName() string {
+	return s.FieldName
+}
+
+// GetBuckets returns the value of Buckets.
+func (s *TermsAggregation) GetBuckets() []TermsAggregationBucket {
+	return s.Buckets
+}
+
+// SetFieldName sets the value of FieldName.
+func (s *TermsAggregation) SetFieldName(val string) {
+	s.FieldName = val
+}
+
+// SetBuckets sets the value of Buckets.
+func (s *TermsAggregation) SetBuckets(val []TermsAggregationBucket) {
+	s.Buckets = val
+}
+
+// Ref: #/components/schemas/TermsAggregationBucket
+type TermsAggregationBucket struct {
+	Key   string `json:"key"`
+	Count int    `json:"count"`
+}
+
+// GetKey returns the value of Key.
+func (s *TermsAggregationBucket) GetKey() string {
+	return s.Key
+}
+
+// GetCount returns the value of Count.
+func (s *TermsAggregationBucket) GetCount() int {
+	return s.Count
+}
+
+// SetKey sets the value of Key.
+func (s *TermsAggregationBucket) SetKey(val string) {
+	s.Key = val
+}
+
+// SetCount sets the value of Count.
+func (s *TermsAggregationBucket) SetCount(val int) {
+	s.Count = val
 }

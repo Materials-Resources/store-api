@@ -1,7 +1,7 @@
 version: v2
 clean: true
 plugins:
-  - remote: buf.build/connectrpc/go:v1.17.0
+  - remote: buf.build/connectrpc/go:v1.18.1
     out: internal/grpc-client
     opt:
       - module=github.com/materials-resources/store-api/internal/grpc-client
@@ -10,7 +10,7 @@ plugins:
       - Morder.proto=github.com/materials-resources/store-api/internal/grpc-client/order
       - Mbilling.proto=github.com/materials-resources/store-api/internal/grpc-client/billing
       - Mcustomer.proto=github.com/materials-resources/store-api/internal/grpc-client/customer
-  - remote: buf.build/protocolbuffers/go:v1.34.2
+  - remote: buf.build/protocolbuffers/go:v1.36.5
     out: internal/grpc-client
     opt:
       - module=github.com/materials-resources/store-api/internal/grpc-client

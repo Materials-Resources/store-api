@@ -82,27 +82,6 @@ const (
 	CatalogServiceGetProductBySupplierProcedure = "/catalog.v1.CatalogService/GetProductBySupplier"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	catalogServiceServiceDescriptor                    = catalog.File_catalog_proto.Services().ByName("CatalogService")
-	catalogServiceListProductsMethodDescriptor         = catalogServiceServiceDescriptor.Methods().ByName("ListProducts")
-	catalogServiceCreateProductMethodDescriptor        = catalogServiceServiceDescriptor.Methods().ByName("CreateProduct")
-	catalogServiceGetProductMethodDescriptor           = catalogServiceServiceDescriptor.Methods().ByName("GetProduct")
-	catalogServiceUpdateProductMethodDescriptor        = catalogServiceServiceDescriptor.Methods().ByName("UpdateProduct")
-	catalogServiceDeleteProductMethodDescriptor        = catalogServiceServiceDescriptor.Methods().ByName("DeleteProduct")
-	catalogServiceListGroupsMethodDescriptor           = catalogServiceServiceDescriptor.Methods().ByName("ListGroups")
-	catalogServiceCreateGroupMethodDescriptor          = catalogServiceServiceDescriptor.Methods().ByName("CreateGroup")
-	catalogServiceGetGroupMethodDescriptor             = catalogServiceServiceDescriptor.Methods().ByName("GetGroup")
-	catalogServiceUpdateGroupMethodDescriptor          = catalogServiceServiceDescriptor.Methods().ByName("UpdateGroup")
-	catalogServiceDeleteGroupMethodDescriptor          = catalogServiceServiceDescriptor.Methods().ByName("DeleteGroup")
-	catalogServiceListSuppliersMethodDescriptor        = catalogServiceServiceDescriptor.Methods().ByName("ListSuppliers")
-	catalogServiceGetSupplierMethodDescriptor          = catalogServiceServiceDescriptor.Methods().ByName("GetSupplier")
-	catalogServiceCreateSupplierMethodDescriptor       = catalogServiceServiceDescriptor.Methods().ByName("CreateSupplier")
-	catalogServiceUpdateSupplierMethodDescriptor       = catalogServiceServiceDescriptor.Methods().ByName("UpdateSupplier")
-	catalogServiceSetPrimarySupplierMethodDescriptor   = catalogServiceServiceDescriptor.Methods().ByName("SetPrimarySupplier")
-	catalogServiceGetProductBySupplierMethodDescriptor = catalogServiceServiceDescriptor.Methods().ByName("GetProductBySupplier")
-)
-
 // CatalogServiceClient is a client for the catalog.v1.CatalogService service.
 type CatalogServiceClient interface {
 	// ListProducts returns a List of products
@@ -148,101 +127,102 @@ type CatalogServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewCatalogServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) CatalogServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	catalogServiceMethods := catalog.File_catalog_proto.Services().ByName("CatalogService").Methods()
 	return &catalogServiceClient{
 		listProducts: connect.NewClient[catalog.ListProductsRequest, catalog.ListProductsResponse](
 			httpClient,
 			baseURL+CatalogServiceListProductsProcedure,
-			connect.WithSchema(catalogServiceListProductsMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("ListProducts")),
 			connect.WithClientOptions(opts...),
 		),
 		createProduct: connect.NewClient[catalog.CreateProductRequest, catalog.CreateProductResponse](
 			httpClient,
 			baseURL+CatalogServiceCreateProductProcedure,
-			connect.WithSchema(catalogServiceCreateProductMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("CreateProduct")),
 			connect.WithClientOptions(opts...),
 		),
 		getProduct: connect.NewClient[catalog.GetProductRequest, catalog.GetProductResponse](
 			httpClient,
 			baseURL+CatalogServiceGetProductProcedure,
-			connect.WithSchema(catalogServiceGetProductMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("GetProduct")),
 			connect.WithClientOptions(opts...),
 		),
 		updateProduct: connect.NewClient[catalog.UpdateProductRequest, catalog.UpdateProductResponse](
 			httpClient,
 			baseURL+CatalogServiceUpdateProductProcedure,
-			connect.WithSchema(catalogServiceUpdateProductMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("UpdateProduct")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteProduct: connect.NewClient[catalog.DeleteProductRequest, catalog.DeleteProductResponse](
 			httpClient,
 			baseURL+CatalogServiceDeleteProductProcedure,
-			connect.WithSchema(catalogServiceDeleteProductMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("DeleteProduct")),
 			connect.WithClientOptions(opts...),
 		),
 		listGroups: connect.NewClient[catalog.ListGroupRequest, catalog.ListGroupResponse](
 			httpClient,
 			baseURL+CatalogServiceListGroupsProcedure,
-			connect.WithSchema(catalogServiceListGroupsMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("ListGroups")),
 			connect.WithClientOptions(opts...),
 		),
 		createGroup: connect.NewClient[catalog.CreateGroupRequest, catalog.CreateGroupResponse](
 			httpClient,
 			baseURL+CatalogServiceCreateGroupProcedure,
-			connect.WithSchema(catalogServiceCreateGroupMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("CreateGroup")),
 			connect.WithClientOptions(opts...),
 		),
 		getGroup: connect.NewClient[catalog.GetGroupRequest, catalog.GetGroupResponse](
 			httpClient,
 			baseURL+CatalogServiceGetGroupProcedure,
-			connect.WithSchema(catalogServiceGetGroupMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("GetGroup")),
 			connect.WithClientOptions(opts...),
 		),
 		updateGroup: connect.NewClient[catalog.UpdateGroupRequest, catalog.UpdateGroupResponse](
 			httpClient,
 			baseURL+CatalogServiceUpdateGroupProcedure,
-			connect.WithSchema(catalogServiceUpdateGroupMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("UpdateGroup")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteGroup: connect.NewClient[catalog.DeleteGroupRequest, catalog.DeleteGroupResponse](
 			httpClient,
 			baseURL+CatalogServiceDeleteGroupProcedure,
-			connect.WithSchema(catalogServiceDeleteGroupMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("DeleteGroup")),
 			connect.WithClientOptions(opts...),
 		),
 		listSuppliers: connect.NewClient[catalog.ListSuppliersRequest, catalog.ListSuppliersResponse](
 			httpClient,
 			baseURL+CatalogServiceListSuppliersProcedure,
-			connect.WithSchema(catalogServiceListSuppliersMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("ListSuppliers")),
 			connect.WithClientOptions(opts...),
 		),
 		getSupplier: connect.NewClient[catalog.GetSupplierRequest, catalog.GetSupplierResponse](
 			httpClient,
 			baseURL+CatalogServiceGetSupplierProcedure,
-			connect.WithSchema(catalogServiceGetSupplierMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("GetSupplier")),
 			connect.WithClientOptions(opts...),
 		),
 		createSupplier: connect.NewClient[catalog.CreateSupplierRequest, catalog.CreateSupplierResponse](
 			httpClient,
 			baseURL+CatalogServiceCreateSupplierProcedure,
-			connect.WithSchema(catalogServiceCreateSupplierMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("CreateSupplier")),
 			connect.WithClientOptions(opts...),
 		),
 		updateSupplier: connect.NewClient[catalog.UpdateSupplierRequest, catalog.UpdateSupplierResponse](
 			httpClient,
 			baseURL+CatalogServiceUpdateSupplierProcedure,
-			connect.WithSchema(catalogServiceUpdateSupplierMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("UpdateSupplier")),
 			connect.WithClientOptions(opts...),
 		),
 		setPrimarySupplier: connect.NewClient[catalog.SetPrimarySupplierRequest, catalog.SetPrimarySupplierResponse](
 			httpClient,
 			baseURL+CatalogServiceSetPrimarySupplierProcedure,
-			connect.WithSchema(catalogServiceSetPrimarySupplierMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("SetPrimarySupplier")),
 			connect.WithClientOptions(opts...),
 		),
 		getProductBySupplier: connect.NewClient[catalog.GetProductBySupplierRequest, catalog.GetProductBySupplierResponse](
 			httpClient,
 			baseURL+CatalogServiceGetProductBySupplierProcedure,
-			connect.WithSchema(catalogServiceGetProductBySupplierMethodDescriptor),
+			connect.WithSchema(catalogServiceMethods.ByName("GetProductBySupplier")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -390,100 +370,101 @@ type CatalogServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewCatalogServiceHandler(svc CatalogServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	catalogServiceMethods := catalog.File_catalog_proto.Services().ByName("CatalogService").Methods()
 	catalogServiceListProductsHandler := connect.NewUnaryHandler(
 		CatalogServiceListProductsProcedure,
 		svc.ListProducts,
-		connect.WithSchema(catalogServiceListProductsMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("ListProducts")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceCreateProductHandler := connect.NewUnaryHandler(
 		CatalogServiceCreateProductProcedure,
 		svc.CreateProduct,
-		connect.WithSchema(catalogServiceCreateProductMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("CreateProduct")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceGetProductHandler := connect.NewUnaryHandler(
 		CatalogServiceGetProductProcedure,
 		svc.GetProduct,
-		connect.WithSchema(catalogServiceGetProductMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("GetProduct")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceUpdateProductHandler := connect.NewUnaryHandler(
 		CatalogServiceUpdateProductProcedure,
 		svc.UpdateProduct,
-		connect.WithSchema(catalogServiceUpdateProductMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("UpdateProduct")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceDeleteProductHandler := connect.NewUnaryHandler(
 		CatalogServiceDeleteProductProcedure,
 		svc.DeleteProduct,
-		connect.WithSchema(catalogServiceDeleteProductMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("DeleteProduct")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceListGroupsHandler := connect.NewUnaryHandler(
 		CatalogServiceListGroupsProcedure,
 		svc.ListGroups,
-		connect.WithSchema(catalogServiceListGroupsMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("ListGroups")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceCreateGroupHandler := connect.NewUnaryHandler(
 		CatalogServiceCreateGroupProcedure,
 		svc.CreateGroup,
-		connect.WithSchema(catalogServiceCreateGroupMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("CreateGroup")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceGetGroupHandler := connect.NewUnaryHandler(
 		CatalogServiceGetGroupProcedure,
 		svc.GetGroup,
-		connect.WithSchema(catalogServiceGetGroupMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("GetGroup")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceUpdateGroupHandler := connect.NewUnaryHandler(
 		CatalogServiceUpdateGroupProcedure,
 		svc.UpdateGroup,
-		connect.WithSchema(catalogServiceUpdateGroupMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("UpdateGroup")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceDeleteGroupHandler := connect.NewUnaryHandler(
 		CatalogServiceDeleteGroupProcedure,
 		svc.DeleteGroup,
-		connect.WithSchema(catalogServiceDeleteGroupMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("DeleteGroup")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceListSuppliersHandler := connect.NewUnaryHandler(
 		CatalogServiceListSuppliersProcedure,
 		svc.ListSuppliers,
-		connect.WithSchema(catalogServiceListSuppliersMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("ListSuppliers")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceGetSupplierHandler := connect.NewUnaryHandler(
 		CatalogServiceGetSupplierProcedure,
 		svc.GetSupplier,
-		connect.WithSchema(catalogServiceGetSupplierMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("GetSupplier")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceCreateSupplierHandler := connect.NewUnaryHandler(
 		CatalogServiceCreateSupplierProcedure,
 		svc.CreateSupplier,
-		connect.WithSchema(catalogServiceCreateSupplierMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("CreateSupplier")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceUpdateSupplierHandler := connect.NewUnaryHandler(
 		CatalogServiceUpdateSupplierProcedure,
 		svc.UpdateSupplier,
-		connect.WithSchema(catalogServiceUpdateSupplierMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("UpdateSupplier")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceSetPrimarySupplierHandler := connect.NewUnaryHandler(
 		CatalogServiceSetPrimarySupplierProcedure,
 		svc.SetPrimarySupplier,
-		connect.WithSchema(catalogServiceSetPrimarySupplierMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("SetPrimarySupplier")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceGetProductBySupplierHandler := connect.NewUnaryHandler(
 		CatalogServiceGetProductBySupplierProcedure,
 		svc.GetProductBySupplier,
-		connect.WithSchema(catalogServiceGetProductBySupplierMethodDescriptor),
+		connect.WithSchema(catalogServiceMethods.ByName("GetProductBySupplier")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/catalog.v1.CatalogService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
