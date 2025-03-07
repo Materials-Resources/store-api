@@ -230,20 +230,43 @@ func (s *Address) UnmarshalJSON(data []byte) error {
 
 // Encode encodes Aggregation as json.
 func (s Aggregation) Encode(e *jx.Encoder) {
-	switch s.Type {
-	case RangeAggregationAggregation:
-		s.RangeAggregation.Encode(e)
-	case TermsAggregationAggregation:
-		s.TermsAggregation.Encode(e)
-	}
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
 }
 
 func (s Aggregation) encodeFields(e *jx.Encoder) {
 	switch s.Type {
 	case RangeAggregationAggregation:
-		s.RangeAggregation.encodeFields(e)
+		e.FieldStart("objectType")
+		e.Str("RangeAggregation")
+		{
+			s := s.RangeAggregation
+			{
+				e.FieldStart("field_name")
+				e.Str(s.FieldName)
+			}
+		}
 	case TermsAggregationAggregation:
-		s.TermsAggregation.encodeFields(e)
+		e.FieldStart("objectType")
+		e.Str("TermsAggregation")
+		{
+			s := s.TermsAggregation
+			{
+				e.FieldStart("field_name")
+				e.Str(s.FieldName)
+			}
+			{
+				if s.Buckets != nil {
+					e.FieldStart("buckets")
+					e.ArrStart()
+					for _, elem := range s.Buckets {
+						elem.Encode(e)
+					}
+					e.ArrEnd()
+				}
+			}
+		}
 	}
 }
 
@@ -252,7 +275,7 @@ func (s *Aggregation) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode Aggregation to nil")
 	}
-	// Sum type fields.
+	// Sum type discriminator.
 	if typ := d.Next(); typ != jx.Object {
 		return errors.Errorf("unexpected json type %q", typ)
 	}
@@ -260,15 +283,26 @@ func (s *Aggregation) Decode(d *jx.Decoder) error {
 	var found bool
 	if err := d.Capture(func(d *jx.Decoder) error {
 		return d.ObjBytes(func(d *jx.Decoder, key []byte) error {
+			if found {
+				return d.Skip()
+			}
 			switch string(key) {
-			case "buckets":
-				match := TermsAggregationAggregation
-				if found && s.Type != match {
-					s.Type = ""
-					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+			case "objectType":
+				typ, err := d.Str()
+				if err != nil {
+					return err
 				}
-				found = true
-				s.Type = match
+				switch typ {
+				case "RangeAggregation":
+					s.Type = RangeAggregationAggregation
+					found = true
+				case "TermsAggregation":
+					s.Type = TermsAggregationAggregation
+					found = true
+				default:
+					return errors.Errorf("unknown type %s", typ)
+				}
+				return nil
 			}
 			return d.Skip()
 		})
@@ -276,7 +310,7 @@ func (s *Aggregation) Decode(d *jx.Decoder) error {
 		return errors.Wrap(err, "capture")
 	}
 	if !found {
-		s.Type = RangeAggregationAggregation
+		return errors.New("unable to detect sum type variant")
 	}
 	switch s.Type {
 	case RangeAggregationAggregation:
@@ -3618,10 +3652,8 @@ func (s *RangeAggregation) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *RangeAggregation) encodeFields(e *jx.Encoder) {
 	{
-		if s.FieldName.Set {
-			e.FieldStart("field_name")
-			s.FieldName.Encode(e)
-		}
+		e.FieldStart("field_name")
+		e.Str(s.FieldName)
 	}
 }
 
@@ -3634,13 +3666,16 @@ func (s *RangeAggregation) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode RangeAggregation to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "field_name":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.FieldName.Reset()
-				if err := s.FieldName.Decode(d); err != nil {
+				v, err := d.Str()
+				s.FieldName = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -3653,6 +3688,38 @@ func (s *RangeAggregation) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode RangeAggregation")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfRangeAggregation) {
+					name = jsonFieldsNameOfRangeAggregation[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -4250,12 +4317,14 @@ func (s *TermsAggregation) encodeFields(e *jx.Encoder) {
 		e.Str(s.FieldName)
 	}
 	{
-		e.FieldStart("buckets")
-		e.ArrStart()
-		for _, elem := range s.Buckets {
-			elem.Encode(e)
+		if s.Buckets != nil {
+			e.FieldStart("buckets")
+			e.ArrStart()
+			for _, elem := range s.Buckets {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
 		}
-		e.ArrEnd()
 	}
 }
 
@@ -4286,7 +4355,6 @@ func (s *TermsAggregation) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"field_name\"")
 			}
 		case "buckets":
-			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
 				s.Buckets = make([]TermsAggregationBucket, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -4313,7 +4381,7 @@ func (s *TermsAggregation) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000011,
+		0b00000001,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

@@ -1496,18 +1496,19 @@ func (s *QuoteSummary) SetDateExpires(val time.Time) {
 	s.DateExpires = val
 }
 
+// Merged schema.
 // Ref: #/components/schemas/RangeAggregation
 type RangeAggregation struct {
-	FieldName OptString `json:"field_name"`
+	FieldName string `json:"field_name"`
 }
 
 // GetFieldName returns the value of FieldName.
-func (s *RangeAggregation) GetFieldName() OptString {
+func (s *RangeAggregation) GetFieldName() string {
 	return s.FieldName
 }
 
 // SetFieldName sets the value of FieldName.
-func (s *RangeAggregation) SetFieldName(val OptString) {
+func (s *RangeAggregation) SetFieldName(val string) {
 	s.FieldName = val
 }
 
@@ -1644,6 +1645,7 @@ func (s *SetActiveBranchReq) SetBranchID(val string) {
 	s.BranchID = val
 }
 
+// Merged schema.
 // Ref: #/components/schemas/TermsAggregation
 type TermsAggregation struct {
 	FieldName string                   `json:"field_name"`

@@ -824,23 +824,31 @@ components:
       oneOf:
         - $ref: '#/components/schemas/RangeAggregation'
         - $ref: '#/components/schemas/TermsAggregation'
-    RangeAggregation:
-      type: object
-      properties:
-        field_name:
-          type: string
-    TermsAggregation:
+      discriminator:
+        propertyName: objectType
+    AggregationCommonProperties:
       required:
         - field_name
-        - buckets
       type: object
       properties:
         field_name:
           type: string
-        buckets:
-          type: array
-          items:
-            $ref: '#/components/schemas/TermsAggregationBucket'
+    RangeAggregation:
+      allOf:
+        - "$ref": '#/components/schemas/AggregationCommonProperties'
+        - type: object
+
+    TermsAggregation:
+      required:
+        - buckets
+      allOf:
+        - "$ref": '#/components/schemas/AggregationCommonProperties'
+        - type: object
+          properties:
+            buckets:
+              type: array
+              items:
+                $ref: '#/components/schemas/TermsAggregationBucket'
     TermsAggregationBucket:
       required:
         - key

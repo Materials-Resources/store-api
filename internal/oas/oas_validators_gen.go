@@ -10,20 +10,6 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func (s Aggregation) Validate() error {
-	switch s.Type {
-	case RangeAggregationAggregation:
-		return nil // no validation needed
-	case TermsAggregationAggregation:
-		if err := s.TermsAggregation.Validate(); err != nil {
-			return err
-		}
-		return nil
-	default:
-		return errors.Errorf("invalid type %q", s.Type)
-	}
-}
-
 func (s *CreateQuoteReq) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -528,23 +514,6 @@ func (s *SearchProductsOK) Validate() error {
 		if s.Aggregations == nil {
 			return errors.New("nil is invalid value")
 		}
-		var failures []validate.FieldError
-		for i, elem := range s.Aggregations {
-			if err := func() error {
-				if err := elem.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				failures = append(failures, validate.FieldError{
-					Name:  fmt.Sprintf("[%d]", i),
-					Error: err,
-				})
-			}
-		}
-		if len(failures) > 0 {
-			return &validate.Error{Fields: failures}
-		}
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
@@ -615,29 +584,6 @@ func (s SearchProductsReqFilters) Validate() error {
 		}
 	}
 
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-	return nil
-}
-
-func (s *TermsAggregation) Validate() error {
-	if s == nil {
-		return validate.ErrNilPointer
-	}
-
-	var failures []validate.FieldError
-	if err := func() error {
-		if s.Buckets == nil {
-			return errors.New("nil is invalid value")
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "buckets",
-			Error: err,
-		})
-	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
 	}
