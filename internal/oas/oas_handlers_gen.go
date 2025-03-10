@@ -116,9 +116,8 @@ func (s *Server) handleCreateQuoteRequest(args [0]string, argsEscaped bool, w ht
 					Security:         "BearerAuth",
 					Err:              err,
 				}
-				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					defer recordError("Security:BearerAuth", err)
-				}
+				defer recordError("Security:BearerAuth", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
 			if ok {
@@ -145,9 +144,8 @@ func (s *Server) handleCreateQuoteRequest(args [0]string, argsEscaped bool, w ht
 				OperationContext: opErrContext,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
-			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				defer recordError("Security", err)
-			}
+			defer recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
 			return
 		}
 	}
@@ -201,19 +199,8 @@ func (s *Server) handleCreateQuoteRequest(args [0]string, argsEscaped bool, w ht
 		response, err = s.h.CreateQuote(ctx, request)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
-			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				defer recordError("Internal", err)
-			}
-			return
-		}
-		if errors.Is(err, ht.ErrNotImplemented) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-			return
-		}
-		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			defer recordError("Internal", err)
-		}
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 
@@ -311,9 +298,8 @@ func (s *Server) handleGetActiveBranchesRequest(args [0]string, argsEscaped bool
 					Security:         "BearerAuth",
 					Err:              err,
 				}
-				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					defer recordError("Security:BearerAuth", err)
-				}
+				defer recordError("Security:BearerAuth", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
 			if ok {
@@ -340,14 +326,13 @@ func (s *Server) handleGetActiveBranchesRequest(args [0]string, argsEscaped bool
 				OperationContext: opErrContext,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
-			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				defer recordError("Security", err)
-			}
+			defer recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
 			return
 		}
 	}
 
-	var response *GetActiveBranchesOK
+	var response GetActiveBranchesRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -362,7 +347,7 @@ func (s *Server) handleGetActiveBranchesRequest(args [0]string, argsEscaped bool
 		type (
 			Request  = struct{}
 			Params   = struct{}
-			Response = *GetActiveBranchesOK
+			Response = GetActiveBranchesRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -381,19 +366,8 @@ func (s *Server) handleGetActiveBranchesRequest(args [0]string, argsEscaped bool
 		response, err = s.h.GetActiveBranches(ctx)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
-			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				defer recordError("Internal", err)
-			}
-			return
-		}
-		if errors.Is(err, ht.ErrNotImplemented) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-			return
-		}
-		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			defer recordError("Internal", err)
-		}
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 
@@ -491,9 +465,8 @@ func (s *Server) handleGetOrderRequest(args [1]string, argsEscaped bool, w http.
 					Security:         "BearerAuth",
 					Err:              err,
 				}
-				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					defer recordError("Security:BearerAuth", err)
-				}
+				defer recordError("Security:BearerAuth", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
 			if ok {
@@ -520,9 +493,8 @@ func (s *Server) handleGetOrderRequest(args [1]string, argsEscaped bool, w http.
 				OperationContext: opErrContext,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
-			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				defer recordError("Security", err)
-			}
+			defer recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
 			return
 		}
 	}
@@ -576,19 +548,8 @@ func (s *Server) handleGetOrderRequest(args [1]string, argsEscaped bool, w http.
 		response, err = s.h.GetOrder(ctx, params)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
-			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				defer recordError("Internal", err)
-			}
-			return
-		}
-		if errors.Is(err, ht.ErrNotImplemented) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-			return
-		}
-		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			defer recordError("Internal", err)
-		}
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 
@@ -725,19 +686,8 @@ func (s *Server) handleGetProductRequest(args [1]string, argsEscaped bool, w htt
 		response, err = s.h.GetProduct(ctx, params)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
-			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				defer recordError("Internal", err)
-			}
-			return
-		}
-		if errors.Is(err, ht.ErrNotImplemented) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-			return
-		}
-		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			defer recordError("Internal", err)
-		}
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 
@@ -835,9 +785,8 @@ func (s *Server) handleGetQuoteRequest(args [1]string, argsEscaped bool, w http.
 					Security:         "BearerAuth",
 					Err:              err,
 				}
-				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					defer recordError("Security:BearerAuth", err)
-				}
+				defer recordError("Security:BearerAuth", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
 			if ok {
@@ -864,9 +813,8 @@ func (s *Server) handleGetQuoteRequest(args [1]string, argsEscaped bool, w http.
 				OperationContext: opErrContext,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
-			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				defer recordError("Security", err)
-			}
+			defer recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
 			return
 		}
 	}
@@ -881,7 +829,7 @@ func (s *Server) handleGetQuoteRequest(args [1]string, argsEscaped bool, w http.
 		return
 	}
 
-	var response *GetQuoteOK
+	var response GetQuoteRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -901,7 +849,7 @@ func (s *Server) handleGetQuoteRequest(args [1]string, argsEscaped bool, w http.
 		type (
 			Request  = struct{}
 			Params   = GetQuoteParams
-			Response = *GetQuoteOK
+			Response = GetQuoteRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -920,23 +868,179 @@ func (s *Server) handleGetQuoteRequest(args [1]string, argsEscaped bool, w http.
 		response, err = s.h.GetQuote(ctx, params)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
-			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				defer recordError("Internal", err)
-			}
-			return
-		}
-		if errors.Is(err, ht.ErrNotImplemented) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-			return
-		}
-		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			defer recordError("Internal", err)
-		}
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 
 	if err := encodeGetQuoteResponse(response, w, span); err != nil {
+		defer recordError("EncodeResponse", err)
+		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+		}
+		return
+	}
+}
+
+// handleGetRecentPurchasesRequest handles getRecentPurchases operation.
+//
+// Get recent purchases for customer.
+//
+// GET /account/recent-purchases
+func (s *Server) handleGetRecentPurchasesRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+	statusWriter := &codeRecorder{ResponseWriter: w}
+	w = statusWriter
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getRecentPurchases"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/account/recent-purchases"),
+	}
+
+	// Start a span for this request.
+	ctx, span := s.cfg.Tracer.Start(r.Context(), GetRecentPurchasesOperation,
+		trace.WithAttributes(otelAttrs...),
+		serverSpanKind,
+	)
+	defer span.End()
+
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		elapsedDuration := time.Since(startTime)
+
+		attrSet := labeler.AttributeSet()
+		attrs := attrSet.ToSlice()
+		code := statusWriter.status
+		if code != 0 {
+			codeAttr := semconv.HTTPResponseStatusCode(code)
+			attrs = append(attrs, codeAttr)
+			span.SetAttributes(codeAttr)
+		}
+		attrOpt := metric.WithAttributes(attrs...)
+
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), attrOpt)
+	}()
+
+	var (
+		recordError = func(stage string, err error) {
+			span.RecordError(err)
+
+			// https://opentelemetry.io/docs/specs/semconv/http/http-spans/#status
+			// Span Status MUST be left unset if HTTP status code was in the 1xx, 2xx or 3xx ranges,
+			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
+			// max redirects exceeded), in which case status MUST be set to Error.
+			code := statusWriter.status
+			if code >= 100 && code < 500 {
+				span.SetStatus(codes.Error, stage)
+			}
+
+			attrSet := labeler.AttributeSet()
+			attrs := attrSet.ToSlice()
+			if code != 0 {
+				attrs = append(attrs, semconv.HTTPResponseStatusCode(code))
+			}
+
+			s.errors.Add(ctx, 1, metric.WithAttributes(attrs...))
+		}
+		err          error
+		opErrContext = ogenerrors.OperationContext{
+			Name: GetRecentPurchasesOperation,
+			ID:   "getRecentPurchases",
+		}
+	)
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			sctx, ok, err := s.securityBearerAuth(ctx, GetRecentPurchasesOperation, r)
+			if err != nil {
+				err = &ogenerrors.SecurityError{
+					OperationContext: opErrContext,
+					Security:         "BearerAuth",
+					Err:              err,
+				}
+				defer recordError("Security:BearerAuth", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
+				return
+			}
+			if ok {
+				satisfied[0] |= 1 << 0
+				ctx = sctx
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			err = &ogenerrors.SecurityError{
+				OperationContext: opErrContext,
+				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
+			}
+			defer recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+	}
+
+	var response *GetRecentPurchasesOK
+	if m := s.cfg.Middleware; m != nil {
+		mreq := middleware.Request{
+			Context:          ctx,
+			OperationName:    GetRecentPurchasesOperation,
+			OperationSummary: "Get recent purchases for customer",
+			OperationID:      "getRecentPurchases",
+			Body:             nil,
+			Params:           middleware.Parameters{},
+			Raw:              r,
+		}
+
+		type (
+			Request  = struct{}
+			Params   = struct{}
+			Response = *GetRecentPurchasesOK
+		)
+		response, err = middleware.HookMiddleware[
+			Request,
+			Params,
+			Response,
+		](
+			m,
+			mreq,
+			nil,
+			func(ctx context.Context, request Request, params Params) (response Response, err error) {
+				response, err = s.h.GetRecentPurchases(ctx)
+				return response, err
+			},
+		)
+	} else {
+		response, err = s.h.GetRecentPurchases(ctx)
+	}
+	if err != nil {
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+
+	if err := encodeGetRecentPurchasesResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
@@ -1030,9 +1134,8 @@ func (s *Server) handleListCustomerBranchesRequest(args [0]string, argsEscaped b
 					Security:         "BearerAuth",
 					Err:              err,
 				}
-				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					defer recordError("Security:BearerAuth", err)
-				}
+				defer recordError("Security:BearerAuth", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
 			if ok {
@@ -1059,9 +1162,8 @@ func (s *Server) handleListCustomerBranchesRequest(args [0]string, argsEscaped b
 				OperationContext: opErrContext,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
-			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				defer recordError("Security", err)
-			}
+			defer recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
 			return
 		}
 	}
@@ -1076,7 +1178,7 @@ func (s *Server) handleListCustomerBranchesRequest(args [0]string, argsEscaped b
 		return
 	}
 
-	var response *ListCustomerBranchesOK
+	var response ListCustomerBranchesRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -1096,7 +1198,7 @@ func (s *Server) handleListCustomerBranchesRequest(args [0]string, argsEscaped b
 		type (
 			Request  = struct{}
 			Params   = ListCustomerBranchesParams
-			Response = *ListCustomerBranchesOK
+			Response = ListCustomerBranchesRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1115,19 +1217,8 @@ func (s *Server) handleListCustomerBranchesRequest(args [0]string, argsEscaped b
 		response, err = s.h.ListCustomerBranches(ctx, params)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
-			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				defer recordError("Internal", err)
-			}
-			return
-		}
-		if errors.Is(err, ht.ErrNotImplemented) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-			return
-		}
-		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			defer recordError("Internal", err)
-		}
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 
@@ -1225,9 +1316,8 @@ func (s *Server) handleListOrdersRequest(args [0]string, argsEscaped bool, w htt
 					Security:         "BearerAuth",
 					Err:              err,
 				}
-				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					defer recordError("Security:BearerAuth", err)
-				}
+				defer recordError("Security:BearerAuth", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
 			if ok {
@@ -1254,9 +1344,8 @@ func (s *Server) handleListOrdersRequest(args [0]string, argsEscaped bool, w htt
 				OperationContext: opErrContext,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
-			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				defer recordError("Security", err)
-			}
+			defer recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
 			return
 		}
 	}
@@ -1271,7 +1360,7 @@ func (s *Server) handleListOrdersRequest(args [0]string, argsEscaped bool, w htt
 		return
 	}
 
-	var response *ListOrdersOK
+	var response ListOrdersRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -1295,7 +1384,7 @@ func (s *Server) handleListOrdersRequest(args [0]string, argsEscaped bool, w htt
 		type (
 			Request  = struct{}
 			Params   = ListOrdersParams
-			Response = *ListOrdersOK
+			Response = ListOrdersRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1314,19 +1403,8 @@ func (s *Server) handleListOrdersRequest(args [0]string, argsEscaped bool, w htt
 		response, err = s.h.ListOrders(ctx, params)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
-			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				defer recordError("Internal", err)
-			}
-			return
-		}
-		if errors.Is(err, ht.ErrNotImplemented) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-			return
-		}
-		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			defer recordError("Internal", err)
-		}
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 
@@ -1424,9 +1502,8 @@ func (s *Server) handleListQuotesRequest(args [0]string, argsEscaped bool, w htt
 					Security:         "BearerAuth",
 					Err:              err,
 				}
-				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					defer recordError("Security:BearerAuth", err)
-				}
+				defer recordError("Security:BearerAuth", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
 			if ok {
@@ -1453,9 +1530,8 @@ func (s *Server) handleListQuotesRequest(args [0]string, argsEscaped bool, w htt
 				OperationContext: opErrContext,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
-			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				defer recordError("Security", err)
-			}
+			defer recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
 			return
 		}
 	}
@@ -1470,7 +1546,7 @@ func (s *Server) handleListQuotesRequest(args [0]string, argsEscaped bool, w htt
 		return
 	}
 
-	var response *ListQuotesOK
+	var response ListQuotesRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -1494,7 +1570,7 @@ func (s *Server) handleListQuotesRequest(args [0]string, argsEscaped bool, w htt
 		type (
 			Request  = struct{}
 			Params   = ListQuotesParams
-			Response = *ListQuotesOK
+			Response = ListQuotesRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1513,19 +1589,8 @@ func (s *Server) handleListQuotesRequest(args [0]string, argsEscaped bool, w htt
 		response, err = s.h.ListQuotes(ctx, params)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
-			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				defer recordError("Internal", err)
-			}
-			return
-		}
-		if errors.Is(err, ht.ErrNotImplemented) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-			return
-		}
-		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			defer recordError("Internal", err)
-		}
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 
@@ -1628,7 +1693,7 @@ func (s *Server) handleSearchProductsRequest(args [0]string, argsEscaped bool, w
 		}
 	}()
 
-	var response *SearchProductsOK
+	var response SearchProductsRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -1643,7 +1708,7 @@ func (s *Server) handleSearchProductsRequest(args [0]string, argsEscaped bool, w
 		type (
 			Request  = *SearchProductsReq
 			Params   = struct{}
-			Response = *SearchProductsOK
+			Response = SearchProductsRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1662,19 +1727,8 @@ func (s *Server) handleSearchProductsRequest(args [0]string, argsEscaped bool, w
 		response, err = s.h.SearchProducts(ctx, request)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
-			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				defer recordError("Internal", err)
-			}
-			return
-		}
-		if errors.Is(err, ht.ErrNotImplemented) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-			return
-		}
-		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			defer recordError("Internal", err)
-		}
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 
@@ -1772,9 +1826,8 @@ func (s *Server) handleSetActiveBranchRequest(args [0]string, argsEscaped bool, 
 					Security:         "BearerAuth",
 					Err:              err,
 				}
-				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					defer recordError("Security:BearerAuth", err)
-				}
+				defer recordError("Security:BearerAuth", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
 			if ok {
@@ -1801,9 +1854,8 @@ func (s *Server) handleSetActiveBranchRequest(args [0]string, argsEscaped bool, 
 				OperationContext: opErrContext,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
-			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				defer recordError("Security", err)
-			}
+			defer recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
 			return
 		}
 	}
@@ -1857,19 +1909,8 @@ func (s *Server) handleSetActiveBranchRequest(args [0]string, argsEscaped bool, 
 		response, err = s.h.SetActiveBranch(ctx, request)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
-			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				defer recordError("Internal", err)
-			}
-			return
-		}
-		if errors.Is(err, ht.ErrNotImplemented) {
-			s.cfg.ErrorHandler(ctx, w, r, err)
-			return
-		}
-		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			defer recordError("Internal", err)
-		}
+		defer recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 

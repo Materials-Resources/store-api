@@ -32,8 +32,11 @@ type Handler struct {
 	z              *zitadel.Client
 }
 
-func (h Handler) GetActiveBranches(ctx context.Context) (*oas.GetActiveBranchesOK, error) {
-	userSession := h.sessionManager.GetUserSession(ctx)
+func (h Handler) GetActiveBranches(ctx context.Context) (oas.GetActiveBranchesRes, error) {
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
 	pbReq := customerv1.GetBranchRequest_builder{
 		Id: proto.String(userSession.Profile.BranchID),
 	}.Build()
@@ -51,8 +54,11 @@ func (h Handler) GetActiveBranches(ctx context.Context) (*oas.GetActiveBranchesO
 	return &response, nil
 }
 
-func (h Handler) GetQuote(ctx context.Context, params oas.GetQuoteParams) (*oas.GetQuoteOK, error) {
-	userSession := h.sessionManager.GetUserSession(ctx)
+func (h Handler) GetQuote(ctx context.Context, params oas.GetQuoteParams) (oas.GetQuoteRes, error) {
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
 	pbReq := orderv1.GetQuoteRequest_builder{Id: proto.String(params.ID)}.Build()
 	pbRes, err := h.service.Order.Client.GetQuote(ctx, connect.NewRequest(pbReq))
 	if err != nil {
@@ -88,8 +94,80 @@ func (h Handler) GetQuote(ctx context.Context, params oas.GetQuoteParams) (*oas.
 	return res, err
 }
 
-func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (*oas.ListQuotesOK, error) {
-	userSession := h.sessionManager.GetUserSession(ctx)
+func (h Handler) GetRecentPurchases(ctx context.Context) (*oas.GetRecentPurchasesOK, error) {
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+	pbReq := customerv1.GetRecentPurchasesByBranchRequest_builder{
+		Id: proto.String(userSession.Profile.BranchID),
+	}.Build()
+	pbRes, err := h.service.Customer.Client.GetRecentPurchasesByBranch(ctx, connect.NewRequest(pbReq))
+	if err != nil {
+		return nil, err
+	}
+	response := oas.GetRecentPurchasesOK{}
+
+	for _, purchase := range pbRes.Msg.GetItems() {
+		response.Purchases = append(response.Purchases, oas.PurchaseSummary{
+			ProductID:          purchase.GetProductId(),
+			ProductSn:          purchase.GetProductSn(),
+			ProductName:        purchase.GetProductName(),
+			ProductDescription: purchase.GetProductDescription(),
+			OrderedQuantity:    purchase.GetOrderedQuantity(),
+			UnitType:           purchase.GetUnitType(),
+		})
+	}
+
+	return &response, nil
+
+}
+
+func (h Handler) ListCustomerBranches(ctx context.Context, params oas.ListCustomerBranchesParams) (oas.ListCustomerBranchesRes, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (oas.ListOrdersRes, error) {
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+	pbReq := orderv1.ListOrdersRequest_builder{
+		Page:     proto.Int32(int32(params.Page)),
+		PageSize: proto.Int32(int32(params.PageSize)),
+		BranchId: proto.String(userSession.Profile.BranchID),
+	}.Build()
+
+	pbRes, err := h.service.Order.Client.ListOrders(ctx, connect.NewRequest(pbReq))
+
+	if err != nil {
+		return nil, err
+	}
+
+	response := oas.ListOrdersOK{
+		TotalRecords: int(pbRes.Msg.GetTotalRecords()),
+	}
+
+	for _, pbOrder := range pbRes.Msg.GetOrders() {
+		response.Orders = append(response.Orders, oas.OrderSummary{
+			ID:            pbOrder.GetId(),
+			ContactID:     pbOrder.GetContactId(),
+			BranchID:      pbOrder.GetBranchId(),
+			PurchaseOrder: pbOrder.GetPurchaseOrder(),
+			Status:        convertOrderStatus(pbOrder.GetStatus()),
+			DateCreated:   pbOrder.GetDateCreated().AsTime(),
+			DateRequested: pbOrder.GetDateRequested().AsTime(),
+		})
+	}
+	return &response, nil
+}
+
+func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (oas.ListQuotesRes, error) {
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
 	pbReq := orderv1.ListQuotesRequest_builder{
 		Page:     proto.Int32(int32(params.Page)),
 		PageSize: proto.Int32(int32(params.PageSize)),
@@ -119,38 +197,11 @@ func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (*
 	return &response, err
 }
 
-func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (*oas.ListOrdersOK, error) {
-	userSession := h.sessionManager.GetUserSession(ctx)
-	pbReq := orderv1.ListOrdersRequest_builder{
-		Page:     proto.Int32(int32(params.Page)),
-		PageSize: proto.Int32(int32(params.PageSize)),
-		BranchId: proto.String(userSession.Profile.BranchID),
-	}.Build()
-
-	pbRes, err := h.service.Order.Client.ListOrders(ctx, connect.NewRequest(pbReq))
-
-	if err != nil {
-		return nil, err
-	}
-
-	response := oas.ListOrdersOK{
-		TotalRecords: int(pbRes.Msg.GetTotalRecords()),
-	}
-
-	for _, pbOrder := range pbRes.Msg.GetOrders() {
-		response.Orders = append(response.Orders, oas.OrderSummary{
-			ID:            pbOrder.GetId(),
-			ContactID:     pbOrder.GetContactId(),
-			BranchID:      pbOrder.GetBranchId(),
-			PurchaseOrder: pbOrder.GetPurchaseOrder(),
-			Status:        convertOrderStatus(pbOrder.GetStatus()),
-			DateCreated:   pbOrder.GetDateCreated().AsTime(),
-			DateRequested: pbOrder.GetDateRequested().AsTime(),
-		})
-	}
-	return &response, nil
-
+func (h Handler) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (oas.SearchProductsRes, error) {
+	return h.service.Search.SearchProducts(ctx, req)
 }
+
+var _ oas.Handler = (*Handler)(nil)
 
 func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchReq) (oas.SetActiveBranchRes, error) {
 	// check if user can access this branch
@@ -167,7 +218,10 @@ func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchRe
 }
 
 func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.CreateQuoteRes, error) {
-	userSession := h.sessionManager.GetUserSession(ctx)
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
 	pbReq := orderv1.CreateQuoteRequest_builder{
 		BranchId:      proto.String(userSession.Profile.BranchID),
 		ContactId:     proto.String(userSession.Profile.ContactID),
@@ -193,7 +247,10 @@ func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.
 }
 
 func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.GetOrderRes, error) {
-	userSession := h.sessionManager.GetUserSession(ctx)
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
 	pbReq := orderv1.GetOrderRequest_builder{Id: proto.String(params.ID)}.Build()
 	pbRes, err := h.service.Order.Client.GetOrder(ctx, connect.NewRequest(pbReq))
 
@@ -253,17 +310,6 @@ func (h Handler) GetProduct(ctx context.Context, params oas.GetProductParams) (o
 	res, err := h.service.Catalog.GetProduct(ctx, params)
 	return res, err
 }
-
-func (h Handler) ListCustomerBranches(ctx context.Context, params oas.ListCustomerBranchesParams) (*oas.ListCustomerBranchesOK, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h Handler) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (*oas.SearchProductsOK, error) {
-	return h.service.Search.SearchProducts(ctx, req)
-}
-
-var _ oas.Handler = (*Handler)(nil)
 
 func convertOrderStatus(status orderv1.OrderStatus) oas.OrderStatus {
 	switch status {

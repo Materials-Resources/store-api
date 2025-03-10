@@ -347,6 +347,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /account/recent-purchases:
+    get:
+      summary: Get recent purchases for customer
+      operationId: getRecentPurchases
+      tags:
+        - account
+      responses:
+        '200':
+          description: "List of recent purchases"
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - purchases
+                properties:
+                  purchases:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PurchaseSummary'
+
   /products/{id}:
     get:
       summary: Get a product by ID
@@ -702,6 +723,29 @@ components:
         date_requested:
           type: string
           format: date-time
+    PurchaseSummary:
+      required:
+        - product_id
+        - product_sn
+        - product_name
+        - product_description
+        - ordered_quantity
+        - unit_type
+      type: object
+      properties:
+        product_id:
+          type: string
+        product_sn:
+          type: string
+        product_name:
+          type: string
+        product_description:
+          type: string
+        ordered_quantity:
+          type: number
+          x-go-type: float64
+        unit_type:
+          type: string
     QuoteStatus:
       type: string
       enum:

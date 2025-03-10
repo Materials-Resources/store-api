@@ -20,7 +20,7 @@ type Handler interface {
 	// Get active branch for user.
 	//
 	// GET /account/branches/active
-	GetActiveBranches(ctx context.Context) (*GetActiveBranchesOK, error)
+	GetActiveBranches(ctx context.Context) (GetActiveBranchesRes, error)
 	// GetOrder implements getOrder operation.
 	//
 	// Get an order by ID.
@@ -38,41 +38,43 @@ type Handler interface {
 	// Get quote by ID.
 	//
 	// GET /account/quotes/{id}
-	GetQuote(ctx context.Context, params GetQuoteParams) (*GetQuoteOK, error)
+	GetQuote(ctx context.Context, params GetQuoteParams) (GetQuoteRes, error)
+	// GetRecentPurchases implements getRecentPurchases operation.
+	//
+	// Get recent purchases for customer.
+	//
+	// GET /account/recent-purchases
+	GetRecentPurchases(ctx context.Context) (*GetRecentPurchasesOK, error)
 	// ListCustomerBranches implements listCustomerBranches operation.
 	//
 	// Get available branches for customer.
 	//
 	// GET /account/branches
-	ListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) (*ListCustomerBranchesOK, error)
+	ListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) (ListCustomerBranchesRes, error)
 	// ListOrders implements listOrders operation.
 	//
 	// Get a list of orders.
 	//
 	// GET /account/orders
-	ListOrders(ctx context.Context, params ListOrdersParams) (*ListOrdersOK, error)
+	ListOrders(ctx context.Context, params ListOrdersParams) (ListOrdersRes, error)
 	// ListQuotes implements listQuotes operation.
 	//
 	// Get a list of quotes.
 	//
 	// GET /account/quotes
-	ListQuotes(ctx context.Context, params ListQuotesParams) (*ListQuotesOK, error)
+	ListQuotes(ctx context.Context, params ListQuotesParams) (ListQuotesRes, error)
 	// SearchProducts implements searchProducts operation.
 	//
 	// Search for products.
 	//
 	// POST /search/products
-	SearchProducts(ctx context.Context, req *SearchProductsReq) (*SearchProductsOK, error)
+	SearchProducts(ctx context.Context, req *SearchProductsReq) (SearchProductsRes, error)
 	// SetActiveBranch implements setActiveBranch operation.
 	//
 	// Set active branch for current user.
 	//
 	// PUT /account/branch
 	SetActiveBranch(ctx context.Context, req *SetActiveBranchReq) (SetActiveBranchRes, error)
-	// NewError creates *ErrorStatusCode from error returned by handler.
-	//
-	// Used for common default response.
-	NewError(ctx context.Context, err error) *ErrorStatusCode
 }
 
 // Server implements http server based on OpenAPI v3 specification and

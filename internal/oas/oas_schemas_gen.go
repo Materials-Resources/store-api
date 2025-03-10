@@ -3,15 +3,10 @@
 package oas
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/go-faster/errors"
 )
-
-func (s *ErrorStatusCode) Error() string {
-	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
-}
 
 // Ref: #/components/schemas/Address
 type Address struct {
@@ -412,6 +407,17 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
 }
 
+func (*ErrorStatusCode) createQuoteRes()          {}
+func (*ErrorStatusCode) getActiveBranchesRes()    {}
+func (*ErrorStatusCode) getOrderRes()             {}
+func (*ErrorStatusCode) getProductRes()           {}
+func (*ErrorStatusCode) getQuoteRes()             {}
+func (*ErrorStatusCode) listCustomerBranchesRes() {}
+func (*ErrorStatusCode) listOrdersRes()           {}
+func (*ErrorStatusCode) listQuotesRes()           {}
+func (*ErrorStatusCode) searchProductsRes()       {}
+func (*ErrorStatusCode) setActiveBranchRes()      {}
+
 type GetActiveBranchesOK struct {
 	Branch Branch `json:"branch"`
 }
@@ -425,6 +431,8 @@ func (s *GetActiveBranchesOK) GetBranch() Branch {
 func (s *GetActiveBranchesOK) SetBranch(val Branch) {
 	s.Branch = val
 }
+
+func (*GetActiveBranchesOK) getActiveBranchesRes() {}
 
 // GetOrderNotFound is response for GetOrder operation.
 type GetOrderNotFound struct{}
@@ -487,6 +495,22 @@ func (s *GetQuoteOK) SetQuote(val Quote) {
 	s.Quote = val
 }
 
+func (*GetQuoteOK) getQuoteRes() {}
+
+type GetRecentPurchasesOK struct {
+	Purchases []PurchaseSummary `json:"purchases"`
+}
+
+// GetPurchases returns the value of Purchases.
+func (s *GetRecentPurchasesOK) GetPurchases() []PurchaseSummary {
+	return s.Purchases
+}
+
+// SetPurchases sets the value of Purchases.
+func (s *GetRecentPurchasesOK) SetPurchases(val []PurchaseSummary) {
+	s.Purchases = val
+}
+
 type ListCustomerBranchesOK struct {
 	Branches []Branch `json:"branches"`
 }
@@ -500,6 +524,8 @@ func (s *ListCustomerBranchesOK) GetBranches() []Branch {
 func (s *ListCustomerBranchesOK) SetBranches(val []Branch) {
 	s.Branches = val
 }
+
+func (*ListCustomerBranchesOK) listCustomerBranchesRes() {}
 
 type ListOrdersOK struct {
 	TotalRecords int            `json:"total_records"`
@@ -526,6 +552,8 @@ func (s *ListOrdersOK) SetOrders(val []OrderSummary) {
 	s.Orders = val
 }
 
+func (*ListOrdersOK) listOrdersRes() {}
+
 type ListQuotesOK struct {
 	TotalRecords int            `json:"total_records"`
 	Quotes       []QuoteSummary `json:"quotes"`
@@ -550,6 +578,8 @@ func (s *ListQuotesOK) SetTotalRecords(val int) {
 func (s *ListQuotesOK) SetQuotes(val []QuoteSummary) {
 	s.Quotes = val
 }
+
+func (*ListQuotesOK) listQuotesRes() {}
 
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {
@@ -1190,6 +1220,76 @@ func (s *Product) SetImageURL(val OptString) {
 	s.ImageURL = val
 }
 
+// Ref: #/components/schemas/PurchaseSummary
+type PurchaseSummary struct {
+	ProductID          string  `json:"product_id"`
+	ProductSn          string  `json:"product_sn"`
+	ProductName        string  `json:"product_name"`
+	ProductDescription string  `json:"product_description"`
+	OrderedQuantity    float64 `json:"ordered_quantity"`
+	UnitType           string  `json:"unit_type"`
+}
+
+// GetProductID returns the value of ProductID.
+func (s *PurchaseSummary) GetProductID() string {
+	return s.ProductID
+}
+
+// GetProductSn returns the value of ProductSn.
+func (s *PurchaseSummary) GetProductSn() string {
+	return s.ProductSn
+}
+
+// GetProductName returns the value of ProductName.
+func (s *PurchaseSummary) GetProductName() string {
+	return s.ProductName
+}
+
+// GetProductDescription returns the value of ProductDescription.
+func (s *PurchaseSummary) GetProductDescription() string {
+	return s.ProductDescription
+}
+
+// GetOrderedQuantity returns the value of OrderedQuantity.
+func (s *PurchaseSummary) GetOrderedQuantity() float64 {
+	return s.OrderedQuantity
+}
+
+// GetUnitType returns the value of UnitType.
+func (s *PurchaseSummary) GetUnitType() string {
+	return s.UnitType
+}
+
+// SetProductID sets the value of ProductID.
+func (s *PurchaseSummary) SetProductID(val string) {
+	s.ProductID = val
+}
+
+// SetProductSn sets the value of ProductSn.
+func (s *PurchaseSummary) SetProductSn(val string) {
+	s.ProductSn = val
+}
+
+// SetProductName sets the value of ProductName.
+func (s *PurchaseSummary) SetProductName(val string) {
+	s.ProductName = val
+}
+
+// SetProductDescription sets the value of ProductDescription.
+func (s *PurchaseSummary) SetProductDescription(val string) {
+	s.ProductDescription = val
+}
+
+// SetOrderedQuantity sets the value of OrderedQuantity.
+func (s *PurchaseSummary) SetOrderedQuantity(val float64) {
+	s.OrderedQuantity = val
+}
+
+// SetUnitType sets the value of UnitType.
+func (s *PurchaseSummary) SetUnitType(val string) {
+	s.UnitType = val
+}
+
 // Ref: #/components/schemas/Quote
 type Quote struct {
 	ID            string      `json:"id"`
@@ -1547,6 +1647,8 @@ func (s *SearchProductsOK) SetMetadata(val PageMetadata) {
 func (s *SearchProductsOK) SetProducts(val []Product) {
 	s.Products = val
 }
+
+func (*SearchProductsOK) searchProductsRes() {}
 
 type SearchProductsReq struct {
 	SortBy  OptString                   `json:"sort_by"`

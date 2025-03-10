@@ -240,6 +240,27 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					elem = origElem
+				case 'r': // Prefix: "recent-purchases"
+					origElem := elem
+					if l := len("recent-purchases"); len(elem) >= l && elem[0:l] == "recent-purchases" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleGetRecentPurchasesRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
+
+					elem = origElem
 				}
 
 				elem = origElem
@@ -593,6 +614,31 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						elem = origElem
+					}
+
+					elem = origElem
+				case 'r': // Prefix: "recent-purchases"
+					origElem := elem
+					if l := len("recent-purchases"); len(elem) >= l && elem[0:l] == "recent-purchases" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "GET":
+							r.name = GetRecentPurchasesOperation
+							r.summary = "Get recent purchases for customer"
+							r.operationID = "getRecentPurchases"
+							r.pathPattern = "/account/recent-purchases"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
 					}
 
 					elem = origElem

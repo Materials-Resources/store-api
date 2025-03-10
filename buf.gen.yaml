@@ -2,23 +2,23 @@ version: v2
 clean: true
 plugins:
   - remote: buf.build/connectrpc/go:v1.18.1
-    out: internal/grpc-client
+    out: internal/proto
     opt:
-      - module=github.com/materials-resources/store-api/internal/grpc-client
-      - Msearch.proto=github.com/materials-resources/store-api/internal/grpc-client/search
-      - Mcatalog.proto=github.com/materials-resources/store-api/internal/grpc-client/catalog
-      - Morder.proto=github.com/materials-resources/store-api/internal/grpc-client/order
-      - Mbilling.proto=github.com/materials-resources/store-api/internal/grpc-client/billing
-      - Mcustomer.proto=github.com/materials-resources/store-api/internal/grpc-client/customer
+      - module=github.com/materials-resources/store-api/internal/proto
+      - Msearch.proto=github.com/materials-resources/store-api/internal/proto/search
+      - Mcatalog.proto=github.com/materials-resources/store-api/internal/proto/catalog
+      - Morder.proto=github.com/materials-resources/store-api/internal/proto/order
+      - Mbilling.proto=github.com/materials-resources/store-api/internal/proto/billing
+      - Mcustomer.proto=github.com/materials-resources/store-api/internal/proto/customer
   - remote: buf.build/protocolbuffers/go:v1.36.5
-    out: internal/grpc-client
+    out: internal/proto
     opt:
-      - module=github.com/materials-resources/store-api/internal/grpc-client
-      - Msearch.proto=github.com/materials-resources/store-api/internal/grpc-client/search
-      - Mcatalog.proto=github.com/materials-resources/store-api/internal/grpc-client/catalog
-      - Morder.proto=github.com/materials-resources/store-api/internal/grpc-client/order
-      - Mbilling.proto=github.com/materials-resources/store-api/internal/grpc-client/billing
-      - Mcustomer.proto=github.com/materials-resources/store-api/internal/grpc-client/customer
+      - module=github.com/materials-resources/store-api/internal/proto
+      - Msearch.proto=github.com/materials-resources/store-api/internal/proto/search
+      - Mcatalog.proto=github.com/materials-resources/store-api/internal/proto/catalog
+      - Morder.proto=github.com/materials-resources/store-api/internal/proto/order
+      - Mbilling.proto=github.com/materials-resources/store-api/internal/proto/billing
+      - Mcustomer.proto=github.com/materials-resources/store-api/internal/proto/customer
 
 
 inputs:
