@@ -63,6 +63,12 @@ type Handler interface {
 	//
 	// GET /account/quotes
 	ListQuotes(ctx context.Context, params ListQuotesParams) (ListQuotesRes, error)
+	// PostContact implements postContact operation.
+	//
+	// Send details regarding a contact inquiry.
+	//
+	// POST /contact
+	PostContact(ctx context.Context, req *PostContactReq) error
 	// SearchProducts implements searchProducts operation.
 	//
 	// Search for products.

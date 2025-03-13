@@ -1139,6 +1139,56 @@ func (s *PageMetadata) SetTotalRecords(val int) {
 	s.TotalRecords = val
 }
 
+// PostContactOK is response for PostContact operation.
+type PostContactOK struct{}
+
+type PostContactReq struct {
+	Name    OptString `json:"name"`
+	Company OptString `json:"company"`
+	Email   OptString `json:"email"`
+	Message OptString `json:"message"`
+}
+
+// GetName returns the value of Name.
+func (s *PostContactReq) GetName() OptString {
+	return s.Name
+}
+
+// GetCompany returns the value of Company.
+func (s *PostContactReq) GetCompany() OptString {
+	return s.Company
+}
+
+// GetEmail returns the value of Email.
+func (s *PostContactReq) GetEmail() OptString {
+	return s.Email
+}
+
+// GetMessage returns the value of Message.
+func (s *PostContactReq) GetMessage() OptString {
+	return s.Message
+}
+
+// SetName sets the value of Name.
+func (s *PostContactReq) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetCompany sets the value of Company.
+func (s *PostContactReq) SetCompany(val OptString) {
+	s.Company = val
+}
+
+// SetEmail sets the value of Email.
+func (s *PostContactReq) SetEmail(val OptString) {
+	s.Email = val
+}
+
+// SetMessage sets the value of Message.
+func (s *PostContactReq) SetMessage(val OptString) {
+	s.Message = val
+}
+
 // Ref: #/components/schemas/Product
 type Product struct {
 	ID               string    `json:"id"`

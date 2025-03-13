@@ -458,6 +458,13 @@ func encodeListQuotesResponse(response ListQuotesRes, w http.ResponseWriter, spa
 	}
 }
 
+func encodePostContactResponse(response *PostContactOK, w http.ResponseWriter, span trace.Span) error {
+	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	return nil
+}
+
 func encodeSearchProductsResponse(response SearchProductsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *SearchProductsOK:

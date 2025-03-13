@@ -14,6 +14,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+var _ oas.Handler = (*Handler)(nil)
+
 func NewHandler(service service.Service, sessionManager *session.Manager) Handler {
 	z, err := zitadel.NewZitadelClient()
 	if err != nil {
@@ -30,6 +32,11 @@ type Handler struct {
 	sessionManager *session.Manager
 	service        service.Service
 	z              *zitadel.Client
+}
+
+func (h Handler) PostContact(ctx context.Context, req *oas.PostContactReq) error {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (h Handler) GetActiveBranches(ctx context.Context) (oas.GetActiveBranchesRes, error) {
@@ -100,7 +107,8 @@ func (h Handler) GetRecentPurchases(ctx context.Context) (*oas.GetRecentPurchase
 		return nil, err
 	}
 	pbReq := customerv1.GetRecentPurchasesByBranchRequest_builder{
-		Id: proto.String(userSession.Profile.BranchID),
+		Id:    proto.String(userSession.Profile.BranchID),
+		Limit: proto.Int32(10),
 	}.Build()
 	pbRes, err := h.service.Customer.Client.GetRecentPurchasesByBranch(ctx, connect.NewRequest(pbReq))
 	if err != nil {
@@ -200,8 +208,6 @@ func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (o
 func (h Handler) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (oas.SearchProductsRes, error) {
 	return h.service.Search.SearchProducts(ctx, req)
 }
-
-var _ oas.Handler = (*Handler)(nil)
 
 func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchReq) (oas.SetActiveBranchRes, error) {
 	// check if user can access this branch
