@@ -6,6 +6,7 @@ import (
 	"fmt"
 	customerv1 "github.com/materials-resources/store-api/internal/grpc-client/customer"
 	orderv1 "github.com/materials-resources/store-api/internal/grpc-client/order"
+	"github.com/materials-resources/store-api/internal/mailer"
 	"github.com/materials-resources/store-api/internal/oas"
 	"github.com/materials-resources/store-api/internal/service"
 	"github.com/materials-resources/store-api/internal/session"
@@ -21,10 +22,12 @@ func NewHandler(service service.Service, sessionManager *session.Manager) Handle
 	if err != nil {
 		panic(err)
 	}
+	m := mailer.New("smtp.materialsresources.org", 25, "", "", "noreply@materialsresources.org")
 	return Handler{
 		sessionManager: sessionManager,
 		z:              z,
 		service:        service,
+		mailer:         m,
 	}
 }
 
@@ -32,11 +35,22 @@ type Handler struct {
 	sessionManager *session.Manager
 	service        service.Service
 	z              *zitadel.Client
+	mailer         mailer.Mailer
 }
 
-func (h Handler) PostContact(ctx context.Context, req *oas.PostContactReq) error {
-	//TODO implement me
-	panic("implement me")
+func (h Handler) SubmitContact(ctx context.Context, req *oas.SubmitContactReq) error {
+	d := map[string]any{
+		"organization": req.GetOrganization(),
+		"name":         req.GetName(),
+		"email":        req.GetEmail(),
+		"message":      req.GetMessage(),
+	}
+	err := h.mailer.Send("smallegan@emrsinc.com", "smallegan@emrsinc.com", "contact_request.tmpl", d)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
 
 func (h Handler) GetActiveBranches(ctx context.Context) (oas.GetActiveBranchesRes, error) {

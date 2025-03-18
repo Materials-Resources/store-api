@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.1
 info:
   title: Materials Resources Store APIs
   description: APIs for the Materials Resources Store designed specifically for the accompanying web application
@@ -6,9 +6,9 @@ info:
 tags:
   - name: account
     description: Account operations such as order and invoice management
-  - name: orders
+  - name: order
     description: Order operations for customers
-  - name: products
+  - name: product
     description: Product operations related to finding and viewing products
 servers:
   - url: http://localhost:8080
@@ -374,7 +374,7 @@ paths:
       security: []
       operationId: getProduct
       tags:
-        - products
+        - product
       parameters:
         - name: id
           in: path
@@ -405,9 +405,9 @@ paths:
 
   /search/products:
     post:
-      security: []
+      security: [ ]
       tags:
-      - products
+        - product
       operationId: searchProducts
       summary: Search for products
       requestBody:
@@ -462,18 +462,23 @@ paths:
       security: []
       tags:
         - contact
-      operationId: postContact
+      operationId: submitContact
       summary: "Send details regarding a contact inquiry"
       requestBody:
         required: true
         content:
           application/json:
             schema:
+              required:
+              - name
+              - organization
+              - email
+              - message
               type: object
               properties:
                 name:
                   type: string
-                company:
+                organization:
                   type: string
                 email:
                   type: string

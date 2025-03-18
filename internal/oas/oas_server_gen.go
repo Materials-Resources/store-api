@@ -63,12 +63,6 @@ type Handler interface {
 	//
 	// GET /account/quotes
 	ListQuotes(ctx context.Context, params ListQuotesParams) (ListQuotesRes, error)
-	// PostContact implements postContact operation.
-	//
-	// Send details regarding a contact inquiry.
-	//
-	// POST /contact
-	PostContact(ctx context.Context, req *PostContactReq) error
 	// SearchProducts implements searchProducts operation.
 	//
 	// Search for products.
@@ -81,6 +75,12 @@ type Handler interface {
 	//
 	// PUT /account/branch
 	SetActiveBranch(ctx context.Context, req *SetActiveBranchReq) (SetActiveBranchRes, error)
+	// SubmitContact implements submitContact operation.
+	//
+	// Send details regarding a contact inquiry.
+	//
+	// POST /contact
+	SubmitContact(ctx context.Context, req *SubmitContactReq) error
 }
 
 // Server implements http server based on OpenAPI v3 specification and

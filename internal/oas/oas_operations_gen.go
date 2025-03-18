@@ -15,7 +15,7 @@ const (
 	ListCustomerBranchesOperation OperationName = "ListCustomerBranches"
 	ListOrdersOperation           OperationName = "ListOrders"
 	ListQuotesOperation           OperationName = "ListQuotes"
-	PostContactOperation          OperationName = "PostContact"
 	SearchProductsOperation       OperationName = "SearchProducts"
 	SetActiveBranchOperation      OperationName = "SetActiveBranch"
+	SubmitContactOperation        OperationName = "SubmitContact"
 )

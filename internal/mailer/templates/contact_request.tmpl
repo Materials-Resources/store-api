@@ -1,0 +1,19 @@
+{{define "subject"}}New Contact Request{{end}}
+{{define "plainBody"}}
+    A new contact request has been submitted.
+
+    Name: {{.Name}}
+    Organization: {{.Organization}}
+    Email: {{.Email}}
+    Message: {{.Message}}
+{{end}}
+{{define "htmlBody"}}
+   <p>A new contact request has been submitted.</p>
+   <p>
+       <strong>Name:</strong> <span>{{.Name}}</span><br>
+       <strong>Organization:</strong> <span>{{.Organization}}</span><br>
+       <strong>Email:</strong> <span>{{.Email}}</span><br>
+       <strong>Message:</strong> <span>{{.Message}}</span>
+   </p>
+{{end}}
+

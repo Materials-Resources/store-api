@@ -1139,56 +1139,6 @@ func (s *PageMetadata) SetTotalRecords(val int) {
 	s.TotalRecords = val
 }
 
-// PostContactOK is response for PostContact operation.
-type PostContactOK struct{}
-
-type PostContactReq struct {
-	Name    OptString `json:"name"`
-	Company OptString `json:"company"`
-	Email   OptString `json:"email"`
-	Message OptString `json:"message"`
-}
-
-// GetName returns the value of Name.
-func (s *PostContactReq) GetName() OptString {
-	return s.Name
-}
-
-// GetCompany returns the value of Company.
-func (s *PostContactReq) GetCompany() OptString {
-	return s.Company
-}
-
-// GetEmail returns the value of Email.
-func (s *PostContactReq) GetEmail() OptString {
-	return s.Email
-}
-
-// GetMessage returns the value of Message.
-func (s *PostContactReq) GetMessage() OptString {
-	return s.Message
-}
-
-// SetName sets the value of Name.
-func (s *PostContactReq) SetName(val OptString) {
-	s.Name = val
-}
-
-// SetCompany sets the value of Company.
-func (s *PostContactReq) SetCompany(val OptString) {
-	s.Company = val
-}
-
-// SetEmail sets the value of Email.
-func (s *PostContactReq) SetEmail(val OptString) {
-	s.Email = val
-}
-
-// SetMessage sets the value of Message.
-func (s *PostContactReq) SetMessage(val OptString) {
-	s.Message = val
-}
-
 // Ref: #/components/schemas/Product
 type Product struct {
 	ID               string    `json:"id"`
@@ -1795,6 +1745,56 @@ func (s *SetActiveBranchReq) GetBranchID() string {
 // SetBranchID sets the value of BranchID.
 func (s *SetActiveBranchReq) SetBranchID(val string) {
 	s.BranchID = val
+}
+
+// SubmitContactOK is response for SubmitContact operation.
+type SubmitContactOK struct{}
+
+type SubmitContactReq struct {
+	Name         string `json:"name"`
+	Organization string `json:"organization"`
+	Email        string `json:"email"`
+	Message      string `json:"message"`
+}
+
+// GetName returns the value of Name.
+func (s *SubmitContactReq) GetName() string {
+	return s.Name
+}
+
+// GetOrganization returns the value of Organization.
+func (s *SubmitContactReq) GetOrganization() string {
+	return s.Organization
+}
+
+// GetEmail returns the value of Email.
+func (s *SubmitContactReq) GetEmail() string {
+	return s.Email
+}
+
+// GetMessage returns the value of Message.
+func (s *SubmitContactReq) GetMessage() string {
+	return s.Message
+}
+
+// SetName sets the value of Name.
+func (s *SubmitContactReq) SetName(val string) {
+	s.Name = val
+}
+
+// SetOrganization sets the value of Organization.
+func (s *SubmitContactReq) SetOrganization(val string) {
+	s.Organization = val
+}
+
+// SetEmail sets the value of Email.
+func (s *SubmitContactReq) SetEmail(val string) {
+	s.Email = val
+}
+
+// SetMessage sets the value of Message.
+func (s *SubmitContactReq) SetMessage(val string) {
+	s.Message = val
 }
 
 // Merged schema.
