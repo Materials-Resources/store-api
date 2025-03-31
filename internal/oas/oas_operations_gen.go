@@ -6,9 +6,12 @@ package oas
 type OperationName = string
 
 const (
+	ContactUsOperation            OperationName = "ContactUs"
 	CreateQuoteOperation          OperationName = "CreateQuote"
 	GetActiveBranchesOperation    OperationName = "GetActiveBranches"
+	GetInvoiceReportOperation     OperationName = "GetInvoiceReport"
 	GetOrderOperation             OperationName = "GetOrder"
+	GetOrderInvoicesOperation     OperationName = "GetOrderInvoices"
 	GetProductOperation           OperationName = "GetProduct"
 	GetQuoteOperation             OperationName = "GetQuote"
 	GetRecentPurchasesOperation   OperationName = "GetRecentPurchases"
@@ -17,5 +20,4 @@ const (
 	ListQuotesOperation           OperationName = "ListQuotes"
 	SearchProductsOperation       OperationName = "SearchProducts"
 	SetActiveBranchOperation      OperationName = "SetActiveBranch"
-	SubmitContactOperation        OperationName = "SubmitContact"
 )

@@ -7,6 +7,8 @@ type Service struct {
 	Catalog  *CatalogService
 	Search   *Search
 	Customer *CustomerService
+	Report   *ReportService
+	Billing  *BillingService
 }
 
 func NewService(a *app.App) Service {
@@ -16,5 +18,7 @@ func NewService(a *app.App) Service {
 		Catalog:  NewCatalogService(),
 		Search:   NewSearchService(),
 		Customer: NewCustomerService(),
+		Report:   NewReportService(),
+		Billing:  NewBillingService(),
 	}
 }

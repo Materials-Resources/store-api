@@ -3,6 +3,7 @@
 package oas
 
 import (
+	"io"
 	"time"
 
 	"github.com/go-faster/errors"
@@ -203,6 +204,56 @@ func (s *Branch) SetID(val string) {
 // SetName sets the value of Name.
 func (s *Branch) SetName(val string) {
 	s.Name = val
+}
+
+// ContactUsOK is response for ContactUs operation.
+type ContactUsOK struct{}
+
+type ContactUsReq struct {
+	Name         string `json:"name"`
+	Organization string `json:"organization"`
+	Email        string `json:"email"`
+	Message      string `json:"message"`
+}
+
+// GetName returns the value of Name.
+func (s *ContactUsReq) GetName() string {
+	return s.Name
+}
+
+// GetOrganization returns the value of Organization.
+func (s *ContactUsReq) GetOrganization() string {
+	return s.Organization
+}
+
+// GetEmail returns the value of Email.
+func (s *ContactUsReq) GetEmail() string {
+	return s.Email
+}
+
+// GetMessage returns the value of Message.
+func (s *ContactUsReq) GetMessage() string {
+	return s.Message
+}
+
+// SetName sets the value of Name.
+func (s *ContactUsReq) SetName(val string) {
+	s.Name = val
+}
+
+// SetOrganization sets the value of Organization.
+func (s *ContactUsReq) SetOrganization(val string) {
+	s.Organization = val
+}
+
+// SetEmail sets the value of Email.
+func (s *ContactUsReq) SetEmail(val string) {
+	s.Email = val
+}
+
+// SetMessage sets the value of Message.
+func (s *ContactUsReq) SetMessage(val string) {
+	s.Message = val
 }
 
 type CreateQuoteCreated struct {
@@ -409,6 +460,7 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 
 func (*ErrorStatusCode) createQuoteRes()          {}
 func (*ErrorStatusCode) getActiveBranchesRes()    {}
+func (*ErrorStatusCode) getInvoiceReportRes()     {}
 func (*ErrorStatusCode) getOrderRes()             {}
 func (*ErrorStatusCode) getProductRes()           {}
 func (*ErrorStatusCode) getQuoteRes()             {}
@@ -433,6 +485,36 @@ func (s *GetActiveBranchesOK) SetBranch(val Branch) {
 }
 
 func (*GetActiveBranchesOK) getActiveBranchesRes() {}
+
+type GetInvoiceReportOK struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s GetInvoiceReportOK) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+func (*GetInvoiceReportOK) getInvoiceReportRes() {}
+
+type GetOrderInvoicesOK struct {
+	Invoices []InvoiceSummary `json:"invoices"`
+}
+
+// GetInvoices returns the value of Invoices.
+func (s *GetOrderInvoicesOK) GetInvoices() []InvoiceSummary {
+	return s.Invoices
+}
+
+// SetInvoices sets the value of Invoices.
+func (s *GetOrderInvoicesOK) SetInvoices(val []InvoiceSummary) {
+	s.Invoices = val
+}
 
 // GetOrderNotFound is response for GetOrder operation.
 type GetOrderNotFound struct{}
@@ -509,6 +591,43 @@ func (s *GetRecentPurchasesOK) GetPurchases() []PurchaseSummary {
 // SetPurchases sets the value of Purchases.
 func (s *GetRecentPurchasesOK) SetPurchases(val []PurchaseSummary) {
 	s.Purchases = val
+}
+
+// Ref: #/components/schemas/InvoiceSummary
+type InvoiceSummary struct {
+	ID           string    `json:"id"`
+	OrderID      string    `json:"order_id"`
+	DateInvoiced time.Time `json:"date_invoiced"`
+}
+
+// GetID returns the value of ID.
+func (s *InvoiceSummary) GetID() string {
+	return s.ID
+}
+
+// GetOrderID returns the value of OrderID.
+func (s *InvoiceSummary) GetOrderID() string {
+	return s.OrderID
+}
+
+// GetDateInvoiced returns the value of DateInvoiced.
+func (s *InvoiceSummary) GetDateInvoiced() time.Time {
+	return s.DateInvoiced
+}
+
+// SetID sets the value of ID.
+func (s *InvoiceSummary) SetID(val string) {
+	s.ID = val
+}
+
+// SetOrderID sets the value of OrderID.
+func (s *InvoiceSummary) SetOrderID(val string) {
+	s.OrderID = val
+}
+
+// SetDateInvoiced sets the value of DateInvoiced.
+func (s *InvoiceSummary) SetDateInvoiced(val time.Time) {
+	s.DateInvoiced = val
 }
 
 type ListCustomerBranchesOK struct {
@@ -1745,56 +1864,6 @@ func (s *SetActiveBranchReq) GetBranchID() string {
 // SetBranchID sets the value of BranchID.
 func (s *SetActiveBranchReq) SetBranchID(val string) {
 	s.BranchID = val
-}
-
-// SubmitContactOK is response for SubmitContact operation.
-type SubmitContactOK struct{}
-
-type SubmitContactReq struct {
-	Name         string `json:"name"`
-	Organization string `json:"organization"`
-	Email        string `json:"email"`
-	Message      string `json:"message"`
-}
-
-// GetName returns the value of Name.
-func (s *SubmitContactReq) GetName() string {
-	return s.Name
-}
-
-// GetOrganization returns the value of Organization.
-func (s *SubmitContactReq) GetOrganization() string {
-	return s.Organization
-}
-
-// GetEmail returns the value of Email.
-func (s *SubmitContactReq) GetEmail() string {
-	return s.Email
-}
-
-// GetMessage returns the value of Message.
-func (s *SubmitContactReq) GetMessage() string {
-	return s.Message
-}
-
-// SetName sets the value of Name.
-func (s *SubmitContactReq) SetName(val string) {
-	s.Name = val
-}
-
-// SetOrganization sets the value of Organization.
-func (s *SubmitContactReq) SetOrganization(val string) {
-	s.Organization = val
-}
-
-// SetEmail sets the value of Email.
-func (s *SubmitContactReq) SetEmail(val string) {
-	s.Email = val
-}
-
-// SetMessage sets the value of Message.
-func (s *SubmitContactReq) SetMessage(val string) {
-	s.Message = val
 }
 
 // Merged schema.

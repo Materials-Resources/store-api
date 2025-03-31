@@ -9,6 +9,10 @@ type GetActiveBranchesRes interface {
 	getActiveBranchesRes()
 }
 
+type GetInvoiceReportRes interface {
+	getInvoiceReportRes()
+}
+
 type GetOrderRes interface {
 	getOrderRes()
 }

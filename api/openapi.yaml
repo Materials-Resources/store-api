@@ -116,7 +116,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /account/orders:
+  /account/order:
     get:
       tags:
         - account
@@ -157,11 +157,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /account/orders/{id}:
+  /account/order/{id}:
     get:
       operationId: getOrder
       tags:
-        - account
+        - order
       summary: Get an order by ID
       parameters:
         - name: id
@@ -191,6 +191,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /account/order/{id}/invoices:
+    get:
+      operationId: getOrderInvoices
+      tags:
+        - order
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Invoices"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invoices:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InvoiceSummary'
   /account/quotes:
     post:
       summary: Create a new quote
@@ -347,6 +371,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /account/invoice/{id}/report:
+    get:
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Get invoice report by ID
+      operationId: getInvoiceReport
+      tags:
+        - account
+      responses:
+        '200':
+          description: "Invoice report document"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /account/recent-purchases:
     get:
       summary: Get recent purchases for customer
@@ -462,7 +513,7 @@ paths:
       security: []
       tags:
         - contact
-      operationId: submitContact
+      operationId: contactUs
       summary: "Send details regarding a contact inquiry"
       requestBody:
         required: true
@@ -533,27 +584,21 @@ components:
           type: string
         carrier_tracking:
           type: string
-    InvoiceSimplified:
+    InvoiceSummary:
       required:
         - id
         - order_id
-        - created_at
-        - total
-        - amount_paid
+        - date_invoiced
       type: object
       properties:
         id:
           type: string
         order_id:
           type: string
-        created_at:
+        date_invoiced:
           type: string
-        total:
-          x-go-type: float64
-          type: number
-        amount_paid:
-          x-go-type: float64
-          type: number
+          format: date-time
+
     Address:
       required:
         - id

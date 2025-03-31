@@ -8,6 +8,12 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// ContactUs implements contactUs operation.
+	//
+	// Send details regarding a contact inquiry.
+	//
+	// POST /contact
+	ContactUs(ctx context.Context, req *ContactUsReq) error
 	// CreateQuote implements createQuote operation.
 	//
 	// Create a new quote. The `customer_id` and `contact_id` are extracted from the provided
@@ -21,12 +27,22 @@ type Handler interface {
 	//
 	// GET /account/branches/active
 	GetActiveBranches(ctx context.Context) (GetActiveBranchesRes, error)
+	// GetInvoiceReport implements getInvoiceReport operation.
+	//
+	// Get invoice report by ID.
+	//
+	// GET /account/invoice/{id}/report
+	GetInvoiceReport(ctx context.Context, params GetInvoiceReportParams) (GetInvoiceReportRes, error)
 	// GetOrder implements getOrder operation.
 	//
 	// Get an order by ID.
 	//
-	// GET /account/orders/{id}
+	// GET /account/order/{id}
 	GetOrder(ctx context.Context, params GetOrderParams) (GetOrderRes, error)
+	// GetOrderInvoices implements getOrderInvoices operation.
+	//
+	// GET /account/order/{id}/invoices
+	GetOrderInvoices(ctx context.Context, params GetOrderInvoicesParams) (*GetOrderInvoicesOK, error)
 	// GetProduct implements getProduct operation.
 	//
 	// Get a product by ID.
@@ -55,7 +71,7 @@ type Handler interface {
 	//
 	// Get a list of orders.
 	//
-	// GET /account/orders
+	// GET /account/order
 	ListOrders(ctx context.Context, params ListOrdersParams) (ListOrdersRes, error)
 	// ListQuotes implements listQuotes operation.
 	//
@@ -75,12 +91,6 @@ type Handler interface {
 	//
 	// PUT /account/branch
 	SetActiveBranch(ctx context.Context, req *SetActiveBranchReq) (SetActiveBranchRes, error)
-	// SubmitContact implements submitContact operation.
-	//
-	// Send details regarding a contact inquiry.
-	//
-	// POST /contact
-	SubmitContact(ctx context.Context, req *SubmitContactReq) error
 }
 
 // Server implements http server based on OpenAPI v3 specification and

@@ -3,9 +3,9 @@ package service
 import (
 	"connectrpc.com/connect"
 	"context"
-	searchv1 "github.com/materials-resources/store-api/internal/grpc-client/search"
-	"github.com/materials-resources/store-api/internal/grpc-client/search/searchconnect"
 	"github.com/materials-resources/store-api/internal/oas"
+	searchv1 "github.com/materials-resources/store-api/internal/proto/search"
+	"github.com/materials-resources/store-api/internal/proto/search/searchconnect"
 	"google.golang.org/protobuf/proto"
 	"net/http"
 )

@@ -1,13 +1,14 @@
 package main
 
 import (
-	"connectrpc.com/connect"
 	"context"
 	"fmt"
-	customerv1 "github.com/materials-resources/store-api/internal/grpc-client/customer"
-	orderv1 "github.com/materials-resources/store-api/internal/grpc-client/order"
+
+	"connectrpc.com/connect"
 	"github.com/materials-resources/store-api/internal/mailer"
 	"github.com/materials-resources/store-api/internal/oas"
+	customerv1 "github.com/materials-resources/store-api/internal/proto/customer"
+	orderv1 "github.com/materials-resources/store-api/internal/proto/order"
 	"github.com/materials-resources/store-api/internal/service"
 	"github.com/materials-resources/store-api/internal/session"
 	"github.com/materials-resources/store-api/internal/zitadel"
@@ -22,7 +23,7 @@ func NewHandler(service service.Service, sessionManager *session.Manager) Handle
 	if err != nil {
 		panic(err)
 	}
-	m := mailer.New("smtp.materialsresources.org", 25, "", "", "noreply@materialsresources.org")
+	m := mailer.New("smtp.materialsresources.or", 25, "", "", "noreply@materialsresources.org")
 	return Handler{
 		sessionManager: sessionManager,
 		z:              z,
@@ -38,12 +39,12 @@ type Handler struct {
 	mailer         mailer.Mailer
 }
 
-func (h Handler) SubmitContact(ctx context.Context, req *oas.SubmitContactReq) error {
+func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) error {
 	d := map[string]any{
-		"organization": req.GetOrganization(),
-		"name":         req.GetName(),
-		"email":        req.GetEmail(),
-		"message":      req.GetMessage(),
+		"Organization": req.GetOrganization(),
+		"Name":         req.GetName(),
+		"Email":        req.GetEmail(),
+		"Message":      req.GetMessage(),
 	}
 	err := h.mailer.Send("smallegan@emrsinc.com", "smallegan@emrsinc.com", "contact_request.tmpl", d)
 	if err != nil {
@@ -51,6 +52,34 @@ func (h Handler) SubmitContact(ctx context.Context, req *oas.SubmitContactReq) e
 		return err
 	}
 	return nil
+}
+
+func (h Handler) GetOrderInvoices(ctx context.Context, params oas.GetOrderInvoicesParams) (*oas.GetOrderInvoicesOK, error) {
+	invoices, err := h.service.Billing.GetInvoicesByOrder(ctx, params.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &oas.GetOrderInvoicesOK{}
+	for _, invoice := range invoices {
+		res.Invoices = append(res.Invoices, oas.InvoiceSummary{
+			ID:           invoice.Id,
+			OrderID:      invoice.OrderId,
+			DateInvoiced: invoice.DateInvoiced,
+		})
+	}
+	return res, nil
+}
+
+func (h Handler) GetInvoiceReport(ctx context.Context, params oas.GetInvoiceReportParams) (oas.GetInvoiceReportRes,
+	error) {
+	data, err := h.service.Report.GetInvoice(ctx, params.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &oas.GetInvoiceReportOK{
+		Data: data,
+	}, nil
 }
 
 func (h Handler) GetActiveBranches(ctx context.Context) (oas.GetActiveBranchesRes, error) {

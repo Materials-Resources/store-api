@@ -135,9 +135,54 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 					}
 
-				case 'o': // Prefix: "orders"
+				case 'i': // Prefix: "invoice/"
 
-					if l := len("orders"); len(elem) >= l && elem[0:l] == "orders" {
+					if l := len("invoice/"); len(elem) >= l && elem[0:l] == "invoice/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/report"
+
+						if l := len("/report"); len(elem) >= l && elem[0:l] == "/report" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleGetInvoiceReportRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+
+					}
+
+				case 'o': // Prefix: "order"
+
+					if l := len("order"); len(elem) >= l && elem[0:l] == "order" {
 						elem = elem[l:]
 					} else {
 						break
@@ -163,16 +208,15 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						// Param: "id"
-						// Leaf parameter, slashes are prohibited
+						// Match until "/"
 						idx := strings.IndexByte(elem, '/')
-						if idx >= 0 {
-							break
+						if idx < 0 {
+							idx = len(elem)
 						}
-						args[0] = elem
-						elem = ""
+						args[0] = elem[:idx]
+						elem = elem[idx:]
 
 						if len(elem) == 0 {
-							// Leaf node.
 							switch r.Method {
 							case "GET":
 								s.handleGetOrderRequest([1]string{
@@ -183,6 +227,30 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 
 							return
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/invoices"
+
+							if l := len("/invoices"); len(elem) >= l && elem[0:l] == "/invoices" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "GET":
+									s.handleGetOrderInvoicesRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "GET")
+								}
+
+								return
+							}
+
 						}
 
 					}
@@ -275,7 +343,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					// Leaf node.
 					switch r.Method {
 					case "POST":
-						s.handleSubmitContactRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleContactUsRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "POST")
 					}
@@ -514,9 +582,56 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 					}
 
-				case 'o': // Prefix: "orders"
+				case 'i': // Prefix: "invoice/"
 
-					if l := len("orders"); len(elem) >= l && elem[0:l] == "orders" {
+					if l := len("invoice/"); len(elem) >= l && elem[0:l] == "invoice/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/report"
+
+						if l := len("/report"); len(elem) >= l && elem[0:l] == "/report" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "GET":
+								r.name = GetInvoiceReportOperation
+								r.summary = "Get invoice report by ID"
+								r.operationID = "getInvoiceReport"
+								r.pathPattern = "/account/invoice/{id}/report"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+
+					}
+
+				case 'o': // Prefix: "order"
+
+					if l := len("order"); len(elem) >= l && elem[0:l] == "order" {
 						elem = elem[l:]
 					} else {
 						break
@@ -528,7 +643,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = ListOrdersOperation
 							r.summary = "Get a list of orders"
 							r.operationID = "listOrders"
-							r.pathPattern = "/account/orders"
+							r.pathPattern = "/account/order"
 							r.args = args
 							r.count = 0
 							return r, true
@@ -546,28 +661,53 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						// Param: "id"
-						// Leaf parameter, slashes are prohibited
+						// Match until "/"
 						idx := strings.IndexByte(elem, '/')
-						if idx >= 0 {
-							break
+						if idx < 0 {
+							idx = len(elem)
 						}
-						args[0] = elem
-						elem = ""
+						args[0] = elem[:idx]
+						elem = elem[idx:]
 
 						if len(elem) == 0 {
-							// Leaf node.
 							switch method {
 							case "GET":
 								r.name = GetOrderOperation
 								r.summary = "Get an order by ID"
 								r.operationID = "getOrder"
-								r.pathPattern = "/account/orders/{id}"
+								r.pathPattern = "/account/order/{id}"
 								r.args = args
 								r.count = 1
 								return r, true
 							default:
 								return
 							}
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/invoices"
+
+							if l := len("/invoices"); len(elem) >= l && elem[0:l] == "/invoices" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch method {
+								case "GET":
+									r.name = GetOrderInvoicesOperation
+									r.summary = ""
+									r.operationID = "getOrderInvoices"
+									r.pathPattern = "/account/order/{id}/invoices"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
+								}
+							}
+
 						}
 
 					}
@@ -676,9 +816,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					// Leaf node.
 					switch method {
 					case "POST":
-						r.name = SubmitContactOperation
+						r.name = ContactUsOperation
 						r.summary = "Send details regarding a contact inquiry"
-						r.operationID = "submitContact"
+						r.operationID = "contactUs"
 						r.pathPattern = "/contact"
 						r.args = args
 						r.count = 0

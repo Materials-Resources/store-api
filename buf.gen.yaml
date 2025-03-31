@@ -10,6 +10,7 @@ plugins:
       - Morder.proto=github.com/materials-resources/store-api/internal/proto/order
       - Mbilling.proto=github.com/materials-resources/store-api/internal/proto/billing
       - Mcustomer.proto=github.com/materials-resources/store-api/internal/proto/customer
+      - Mreport.proto=github.com/materials-resources/store-api/internal/proto/report
   - remote: buf.build/protocolbuffers/go:v1.36.5
     out: internal/proto
     opt:
@@ -19,6 +20,7 @@ plugins:
       - Morder.proto=github.com/materials-resources/store-api/internal/proto/order
       - Mbilling.proto=github.com/materials-resources/store-api/internal/proto/billing
       - Mcustomer.proto=github.com/materials-resources/store-api/internal/proto/customer
+      - Mreport.proto=github.com/materials-resources/store-api/internal/proto/report
 
 
 inputs:
@@ -30,3 +32,4 @@ inputs:
       - "order.v1.OrderService"
       - "billing.v1.BillingService"
       - "customer.v1.CustomerService"
+      - "report.v1.ReportService"
