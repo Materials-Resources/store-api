@@ -231,13 +231,13 @@ paths:
               type: object
               required:
                 - purchase_order
-                - delivery_instructions
+                - notes
                 - date_requested
                 - items
               properties:
                 purchase_order:
                   type: string
-                delivery_instructions:
+                notes:
                   type: string
                 date_requested:
                   type: string

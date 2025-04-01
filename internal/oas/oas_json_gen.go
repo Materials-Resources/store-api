@@ -727,8 +727,8 @@ func (s *CreateQuoteReq) encodeFields(e *jx.Encoder) {
 		e.Str(s.PurchaseOrder)
 	}
 	{
-		e.FieldStart("delivery_instructions")
-		e.Str(s.DeliveryInstructions)
+		e.FieldStart("notes")
+		e.Str(s.Notes)
 	}
 	{
 		e.FieldStart("date_requested")
@@ -746,7 +746,7 @@ func (s *CreateQuoteReq) encodeFields(e *jx.Encoder) {
 
 var jsonFieldsNameOfCreateQuoteReq = [4]string{
 	0: "purchase_order",
-	1: "delivery_instructions",
+	1: "notes",
 	2: "date_requested",
 	3: "items",
 }
@@ -772,17 +772,17 @@ func (s *CreateQuoteReq) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"purchase_order\"")
 			}
-		case "delivery_instructions":
+		case "notes":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
 				v, err := d.Str()
-				s.DeliveryInstructions = string(v)
+				s.Notes = string(v)
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"delivery_instructions\"")
+				return errors.Wrap(err, "decode field \"notes\"")
 			}
 		case "date_requested":
 			requiredBitSet[0] |= 1 << 2

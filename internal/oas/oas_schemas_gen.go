@@ -286,8 +286,8 @@ func (s *CreateQuoteCreated) SetStatus(val OptString) {
 func (*CreateQuoteCreated) createQuoteRes() {}
 
 type CreateQuoteReq struct {
-	PurchaseOrder        string `json:"purchase_order"`
-	DeliveryInstructions string `json:"delivery_instructions"`
+	PurchaseOrder string `json:"purchase_order"`
+	Notes         string `json:"notes"`
 	// Date of the request.  Should be in YYYY-MM-DD format (ISO 8601).
 	DateRequested time.Time `json:"date_requested"`
 	// List of items for the quote.
@@ -299,9 +299,9 @@ func (s *CreateQuoteReq) GetPurchaseOrder() string {
 	return s.PurchaseOrder
 }
 
-// GetDeliveryInstructions returns the value of DeliveryInstructions.
-func (s *CreateQuoteReq) GetDeliveryInstructions() string {
-	return s.DeliveryInstructions
+// GetNotes returns the value of Notes.
+func (s *CreateQuoteReq) GetNotes() string {
+	return s.Notes
 }
 
 // GetDateRequested returns the value of DateRequested.
@@ -319,9 +319,9 @@ func (s *CreateQuoteReq) SetPurchaseOrder(val string) {
 	s.PurchaseOrder = val
 }
 
-// SetDeliveryInstructions sets the value of DeliveryInstructions.
-func (s *CreateQuoteReq) SetDeliveryInstructions(val string) {
-	s.DeliveryInstructions = val
+// SetNotes sets the value of Notes.
+func (s *CreateQuoteReq) SetNotes(val string) {
+	s.Notes = val
 }
 
 // SetDateRequested sets the value of DateRequested.

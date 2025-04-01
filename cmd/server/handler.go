@@ -274,7 +274,7 @@ func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.
 	pbReq := orderv1.CreateQuoteRequest_builder{
 		BranchId:      proto.String(userSession.Profile.BranchID),
 		ContactId:     proto.String(userSession.Profile.ContactID),
-		Notes:         proto.String(""), // TODO: add notes
+		Notes:         proto.String(req.Notes),
 		RequestedDate: timestamppb.New(req.GetDateRequested()),
 	}
 
