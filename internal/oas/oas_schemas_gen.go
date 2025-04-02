@@ -1260,13 +1260,14 @@ func (s *PageMetadata) SetTotalRecords(val int) {
 
 // Ref: #/components/schemas/Product
 type Product struct {
-	ID               string    `json:"id"`
-	Sn               string    `json:"sn"`
-	Name             string    `json:"name"`
-	Description      OptString `json:"description"`
-	ProductGroupSn   string    `json:"product_group_sn"`
-	ProductGroupName string    `json:"product_group_name"`
-	ImageURL         OptString `json:"image_url"`
+	ID                     string            `json:"id"`
+	Sn                     string            `json:"sn"`
+	Name                   string            `json:"name"`
+	Description            string            `json:"description"`
+	ProductGroupID         string            `json:"product_group_id"`
+	ProductGroupName       string            `json:"product_group_name"`
+	SalesUnitOfMeasurement UnitOfMeasurement `json:"sales_unit_of_measurement"`
+	ImageURL               OptString         `json:"image_url"`
 }
 
 // GetID returns the value of ID.
@@ -1285,18 +1286,23 @@ func (s *Product) GetName() string {
 }
 
 // GetDescription returns the value of Description.
-func (s *Product) GetDescription() OptString {
+func (s *Product) GetDescription() string {
 	return s.Description
 }
 
-// GetProductGroupSn returns the value of ProductGroupSn.
-func (s *Product) GetProductGroupSn() string {
-	return s.ProductGroupSn
+// GetProductGroupID returns the value of ProductGroupID.
+func (s *Product) GetProductGroupID() string {
+	return s.ProductGroupID
 }
 
 // GetProductGroupName returns the value of ProductGroupName.
 func (s *Product) GetProductGroupName() string {
 	return s.ProductGroupName
+}
+
+// GetSalesUnitOfMeasurement returns the value of SalesUnitOfMeasurement.
+func (s *Product) GetSalesUnitOfMeasurement() UnitOfMeasurement {
+	return s.SalesUnitOfMeasurement
 }
 
 // GetImageURL returns the value of ImageURL.
@@ -1320,18 +1326,23 @@ func (s *Product) SetName(val string) {
 }
 
 // SetDescription sets the value of Description.
-func (s *Product) SetDescription(val OptString) {
+func (s *Product) SetDescription(val string) {
 	s.Description = val
 }
 
-// SetProductGroupSn sets the value of ProductGroupSn.
-func (s *Product) SetProductGroupSn(val string) {
-	s.ProductGroupSn = val
+// SetProductGroupID sets the value of ProductGroupID.
+func (s *Product) SetProductGroupID(val string) {
+	s.ProductGroupID = val
 }
 
 // SetProductGroupName sets the value of ProductGroupName.
 func (s *Product) SetProductGroupName(val string) {
 	s.ProductGroupName = val
+}
+
+// SetSalesUnitOfMeasurement sets the value of SalesUnitOfMeasurement.
+func (s *Product) SetSalesUnitOfMeasurement(val UnitOfMeasurement) {
+	s.SalesUnitOfMeasurement = val
 }
 
 // SetImageURL sets the value of ImageURL.
@@ -1346,7 +1357,7 @@ type PurchaseSummary struct {
 	ProductName        string  `json:"product_name"`
 	ProductDescription string  `json:"product_description"`
 	OrderedQuantity    float64 `json:"ordered_quantity"`
-	UnitType           string  `json:"unit_type"`
+	UnitOfMeasurement  string  `json:"unit_of_measurement"`
 }
 
 // GetProductID returns the value of ProductID.
@@ -1374,9 +1385,9 @@ func (s *PurchaseSummary) GetOrderedQuantity() float64 {
 	return s.OrderedQuantity
 }
 
-// GetUnitType returns the value of UnitType.
-func (s *PurchaseSummary) GetUnitType() string {
-	return s.UnitType
+// GetUnitOfMeasurement returns the value of UnitOfMeasurement.
+func (s *PurchaseSummary) GetUnitOfMeasurement() string {
+	return s.UnitOfMeasurement
 }
 
 // SetProductID sets the value of ProductID.
@@ -1404,9 +1415,9 @@ func (s *PurchaseSummary) SetOrderedQuantity(val float64) {
 	s.OrderedQuantity = val
 }
 
-// SetUnitType sets the value of UnitType.
-func (s *PurchaseSummary) SetUnitType(val string) {
-	s.UnitType = val
+// SetUnitOfMeasurement sets the value of UnitOfMeasurement.
+func (s *PurchaseSummary) SetUnitOfMeasurement(val string) {
+	s.UnitOfMeasurement = val
 }
 
 // Ref: #/components/schemas/Quote
@@ -1917,4 +1928,30 @@ func (s *TermsAggregationBucket) SetKey(val string) {
 // SetCount sets the value of Count.
 func (s *TermsAggregationBucket) SetCount(val int) {
 	s.Count = val
+}
+
+// Ref: #/components/schemas/UnitOfMeasurement
+type UnitOfMeasurement struct {
+	ID               string  `json:"id"`
+	ConversionFactor float64 `json:"conversion_factor"`
+}
+
+// GetID returns the value of ID.
+func (s *UnitOfMeasurement) GetID() string {
+	return s.ID
+}
+
+// GetConversionFactor returns the value of ConversionFactor.
+func (s *UnitOfMeasurement) GetConversionFactor() float64 {
+	return s.ConversionFactor
+}
+
+// SetID sets the value of ID.
+func (s *UnitOfMeasurement) SetID(val string) {
+	s.ID = val
+}
+
+// SetConversionFactor sets the value of ConversionFactor.
+func (s *UnitOfMeasurement) SetConversionFactor(val float64) {
+	s.ConversionFactor = val
 }

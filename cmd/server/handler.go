@@ -166,7 +166,7 @@ func (h Handler) GetRecentPurchases(ctx context.Context) (*oas.GetRecentPurchase
 			ProductName:        purchase.GetProductName(),
 			ProductDescription: purchase.GetProductDescription(),
 			OrderedQuantity:    purchase.GetOrderedQuantity(),
-			UnitType:           purchase.GetUnitType(),
+			UnitOfMeasurement:  purchase.GetUnitType(),
 		})
 	}
 
@@ -356,8 +356,28 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 }
 
 func (h Handler) GetProduct(ctx context.Context, params oas.GetProductParams) (oas.GetProductRes, error) {
-	res, err := h.service.Catalog.GetProduct(ctx, params)
-	return res, err
+	product, err := h.service.Catalog.GetProduct(ctx, params)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := oas.GetProductOK{
+		Product: oas.Product{
+			ID:               product.Id,
+			Sn:               product.Sn,
+			Name:             product.Name,
+			Description:      product.Description,
+			ProductGroupName: product.ProductGroupName,
+			ProductGroupID:   product.ProductGroupId,
+			SalesUnitOfMeasurement: oas.UnitOfMeasurement{
+				ID:               product.SalesUnitOfMeasurement.Id,
+				ConversionFactor: product.SalesUnitOfMeasurement.ConversionFactor,
+			},
+		},
+	}
+
+	return &res, err
 }
 
 func convertOrderStatus(status orderv1.OrderStatus) oas.OrderStatus {

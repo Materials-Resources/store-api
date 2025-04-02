@@ -3277,18 +3277,20 @@ func (s *Product) encodeFields(e *jx.Encoder) {
 		e.Str(s.Name)
 	}
 	{
-		if s.Description.Set {
-			e.FieldStart("description")
-			s.Description.Encode(e)
-		}
+		e.FieldStart("description")
+		e.Str(s.Description)
 	}
 	{
-		e.FieldStart("product_group_sn")
-		e.Str(s.ProductGroupSn)
+		e.FieldStart("product_group_id")
+		e.Str(s.ProductGroupID)
 	}
 	{
 		e.FieldStart("product_group_name")
 		e.Str(s.ProductGroupName)
+	}
+	{
+		e.FieldStart("sales_unit_of_measurement")
+		s.SalesUnitOfMeasurement.Encode(e)
 	}
 	{
 		if s.ImageURL.Set {
@@ -3298,14 +3300,15 @@ func (s *Product) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProduct = [7]string{
+var jsonFieldsNameOfProduct = [8]string{
 	0: "id",
 	1: "sn",
 	2: "name",
 	3: "description",
-	4: "product_group_sn",
+	4: "product_group_id",
 	5: "product_group_name",
-	6: "image_url",
+	6: "sales_unit_of_measurement",
+	7: "image_url",
 }
 
 // Decode decodes Product from json.
@@ -3354,26 +3357,28 @@ func (s *Product) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"name\"")
 			}
 		case "description":
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
-				s.Description.Reset()
-				if err := s.Description.Decode(d); err != nil {
+				v, err := d.Str()
+				s.Description = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"description\"")
 			}
-		case "product_group_sn":
+		case "product_group_id":
 			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				v, err := d.Str()
-				s.ProductGroupSn = string(v)
+				s.ProductGroupID = string(v)
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"product_group_sn\"")
+				return errors.Wrap(err, "decode field \"product_group_id\"")
 			}
 		case "product_group_name":
 			requiredBitSet[0] |= 1 << 5
@@ -3386,6 +3391,16 @@ func (s *Product) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"product_group_name\"")
+			}
+		case "sales_unit_of_measurement":
+			requiredBitSet[0] |= 1 << 6
+			if err := func() error {
+				if err := s.SalesUnitOfMeasurement.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"sales_unit_of_measurement\"")
 			}
 		case "image_url":
 			if err := func() error {
@@ -3407,7 +3422,7 @@ func (s *Product) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00110111,
+		0b01111111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -3483,8 +3498,8 @@ func (s *PurchaseSummary) encodeFields(e *jx.Encoder) {
 		e.Float64(s.OrderedQuantity)
 	}
 	{
-		e.FieldStart("unit_type")
-		e.Str(s.UnitType)
+		e.FieldStart("unit_of_measurement")
+		e.Str(s.UnitOfMeasurement)
 	}
 }
 
@@ -3494,7 +3509,7 @@ var jsonFieldsNameOfPurchaseSummary = [6]string{
 	2: "product_name",
 	3: "product_description",
 	4: "ordered_quantity",
-	5: "unit_type",
+	5: "unit_of_measurement",
 }
 
 // Decode decodes PurchaseSummary from json.
@@ -3566,17 +3581,17 @@ func (s *PurchaseSummary) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"ordered_quantity\"")
 			}
-		case "unit_type":
+		case "unit_of_measurement":
 			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
 				v, err := d.Str()
-				s.UnitType = string(v)
+				s.UnitOfMeasurement = string(v)
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"unit_type\"")
+				return errors.Wrap(err, "decode field \"unit_of_measurement\"")
 			}
 		default:
 			return d.Skip()
@@ -5174,6 +5189,119 @@ func (s *TermsAggregationBucket) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *TermsAggregationBucket) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *UnitOfMeasurement) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *UnitOfMeasurement) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("id")
+		e.Str(s.ID)
+	}
+	{
+		e.FieldStart("conversion_factor")
+		e.Float64(s.ConversionFactor)
+	}
+}
+
+var jsonFieldsNameOfUnitOfMeasurement = [2]string{
+	0: "id",
+	1: "conversion_factor",
+}
+
+// Decode decodes UnitOfMeasurement from json.
+func (s *UnitOfMeasurement) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode UnitOfMeasurement to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "id":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.ID = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"id\"")
+			}
+		case "conversion_factor":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Float64()
+				s.ConversionFactor = float64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"conversion_factor\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode UnitOfMeasurement")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000011,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfUnitOfMeasurement) {
+					name = jsonFieldsNameOfUnitOfMeasurement[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *UnitOfMeasurement) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *UnitOfMeasurement) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

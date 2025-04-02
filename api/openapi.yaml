@@ -805,7 +805,7 @@ components:
         - product_name
         - product_description
         - ordered_quantity
-        - unit_type
+        - unit_of_measurement
       type: object
       properties:
         product_id:
@@ -819,7 +819,7 @@ components:
         ordered_quantity:
           type: number
           x-go-type: float64
-        unit_type:
+        unit_of_measurement:
           type: string
     QuoteStatus:
       type: string
@@ -918,8 +918,10 @@ components:
         - id
         - sn
         - name
-        - product_group_sn
+        - description
+        - product_group_id
         - product_group_name
+        - sales_unit_of_measurement
       type: object
       properties:
         id:
@@ -930,15 +932,28 @@ components:
           type: string
         description:
           type: string
-        product_group_sn:
+        product_group_id:
           type: string
         product_group_name:
           type: string
+        sales_unit_of_measurement:
+          $ref: '#/components/schemas/UnitOfMeasurement'
         image_url:
           type: string
     ProductSearchResult:
       allOf:
         - $ref: '#/components/schemas/Product'
+    UnitOfMeasurement:
+      required:
+        - id
+        - conversion_factor
+      type: object
+      properties:
+        id:
+          type: string
+        conversion_factor:
+          type: number
+          x-go-type: float64
     Aggregation:
       oneOf:
         - $ref: '#/components/schemas/RangeAggregation'

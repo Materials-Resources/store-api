@@ -3,6 +3,7 @@ package service
 import (
 	"connectrpc.com/connect"
 	"context"
+	"github.com/materials-resources/store-api/internal/domain"
 	"github.com/materials-resources/store-api/internal/oas"
 	catalogv1 "github.com/materials-resources/store-api/internal/proto/catalog"
 	"github.com/materials-resources/store-api/internal/proto/catalog/catalogconnect"
@@ -22,7 +23,7 @@ func NewCatalogService() *CatalogService {
 	}
 }
 
-func (s *CatalogService) GetProduct(ctx context.Context, params oas.GetProductParams) (oas.GetProductRes, error) {
+func (s *CatalogService) GetProduct(ctx context.Context, params oas.GetProductParams) (*domain.Product, error) {
 	pbReq := catalogv1.GetProductRequest_builder{Id: proto.String(params.ID)}.Build()
 
 	pbRes, err := s.Client.GetProduct(ctx, connect.NewRequest(pbReq))
@@ -31,18 +32,19 @@ func (s *CatalogService) GetProduct(ctx context.Context, params oas.GetProductPa
 		return nil, err
 	}
 
-	response := oas.GetProductOK{
-		Product: oas.Product{
-			ID:               pbRes.Msg.GetProduct().GetId(),
-			Sn:               pbRes.Msg.GetProduct().GetSn(),
-			Name:             pbRes.Msg.GetProduct().GetName(),
-			ProductGroupSn:   pbRes.Msg.GetProduct().GetProductGroupSn(),
-			ProductGroupName: pbRes.Msg.GetProduct().GetProductGroupName(),
-			Description:      oas.OptString{Value: pbRes.Msg.GetProduct().GetDescription(), Set: true},
-			ImageURL:         oas.OptString{},
+	product := domain.Product{
+		Id:               pbRes.Msg.GetProduct().GetId(),
+		Sn:               pbRes.Msg.GetProduct().GetSn(),
+		Name:             pbRes.Msg.GetProduct().GetName(),
+		Description:      pbRes.Msg.GetProduct().GetDescription(),
+		ProductGroupId:   pbRes.Msg.GetProduct().GetProductGroupSn(),
+		ProductGroupName: pbRes.Msg.GetProduct().GetProductGroupName(),
+		SalesUnitOfMeasurement: domain.UnitOfMeasurement{
+			Id:               pbRes.Msg.GetProduct().GetSalesUnitOfMeasurement().GetId(),
+			ConversionFactor: pbRes.Msg.GetProduct().GetSalesUnitOfMeasurement().GetConversionFactor(),
 		},
 	}
 
-	return &response, nil
+	return &product, nil
 
 }

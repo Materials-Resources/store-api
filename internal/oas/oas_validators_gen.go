@@ -96,6 +96,29 @@ func (s *GetOrderOK) Validate() error {
 	return nil
 }
 
+func (s *GetProductOK) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Product.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "product",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
 func (s *GetQuoteOK) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -408,6 +431,29 @@ func (s *OrderSummary) Validate() error {
 	return nil
 }
 
+func (s *Product) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.SalesUnitOfMeasurement.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "sales_unit_of_measurement",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
 func (s *PurchaseSummary) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -588,6 +634,23 @@ func (s *SearchProductsOK) Validate() error {
 		if s.Products == nil {
 			return errors.New("nil is invalid value")
 		}
+		var failures []validate.FieldError
+		for i, elem := range s.Products {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
@@ -647,6 +710,29 @@ func (s SearchProductsReqFilters) Validate() error {
 		}
 	}
 
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *UnitOfMeasurement) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := (validate.Float{}).Validate(float64(s.ConversionFactor)); err != nil {
+			return errors.Wrap(err, "float")
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "conversion_factor",
+			Error: err,
+		})
+	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
 	}
