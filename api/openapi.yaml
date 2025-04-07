@@ -765,6 +765,7 @@ components:
         - delivery_instructions
         - shipping_address
         - items
+        - packing_lists
         - total
       type: object
       properties:
@@ -797,6 +798,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OrderItem'
+        packing_lists:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackingListSummary'
     OrderItem:
       required:
         - product_sn

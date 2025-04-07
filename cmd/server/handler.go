@@ -333,6 +333,11 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 		return nil, fmt.Errorf("user is not authorized to access this branch")
 	}
 
+	packingLists, err := h.service.Order.ListPackingListsByOrder(ctx, params.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	response := oas.GetOrderOK{
 		Order: oas.Order{
 			ID:              pbRes.Msg.GetOrder().GetId(),
@@ -346,6 +351,13 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 			ShippingAddress: oas.Address{},
 			Total:           0,
 		},
+	}
+
+	for _, packingList := range packingLists {
+		response.Order.PackingLists = append(response.Order.PackingLists, oas.PackingListSummary{
+			InvoiceID:    packingList.InvoiceId,
+			DateInvoiced: packingList.DateInvoiced,
+		})
 	}
 
 	response.Order.SetShippingAddress(oas.Address{

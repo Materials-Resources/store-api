@@ -2514,9 +2514,17 @@ func (s *Order) encodeFields(e *jx.Encoder) {
 		}
 		e.ArrEnd()
 	}
+	{
+		e.FieldStart("packing_lists")
+		e.ArrStart()
+		for _, elem := range s.PackingLists {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
 }
 
-var jsonFieldsNameOfOrder = [12]string{
+var jsonFieldsNameOfOrder = [13]string{
 	0:  "id",
 	1:  "contact_id",
 	2:  "branch_id",
@@ -2529,6 +2537,7 @@ var jsonFieldsNameOfOrder = [12]string{
 	9:  "shipping_address",
 	10: "total",
 	11: "items",
+	12: "packing_lists",
 }
 
 // Decode decodes Order from json.
@@ -2684,6 +2693,24 @@ func (s *Order) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"items\"")
 			}
+		case "packing_lists":
+			requiredBitSet[1] |= 1 << 4
+			if err := func() error {
+				s.PackingLists = make([]PackingListSummary, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem PackingListSummary
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.PackingLists = append(s.PackingLists, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"packing_lists\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -2695,7 +2722,7 @@ func (s *Order) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
 		0b01111111,
-		0b00001111,
+		0b00011111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

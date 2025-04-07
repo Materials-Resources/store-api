@@ -882,18 +882,19 @@ func (o OptString) Or(d string) string {
 
 // Ref: #/components/schemas/Order
 type Order struct {
-	ID                   string      `json:"id"`
-	ContactID            string      `json:"contact_id"`
-	BranchID             string      `json:"branch_id"`
-	PurchaseOrder        string      `json:"purchase_order"`
-	Status               OrderStatus `json:"status"`
-	DateCreated          time.Time   `json:"date_created"`
-	DateRequested        time.Time   `json:"date_requested"`
-	Taker                OptString   `json:"taker"`
-	DeliveryInstructions string      `json:"delivery_instructions"`
-	ShippingAddress      Address     `json:"shipping_address"`
-	Total                float64     `json:"total"`
-	Items                []OrderItem `json:"items"`
+	ID                   string               `json:"id"`
+	ContactID            string               `json:"contact_id"`
+	BranchID             string               `json:"branch_id"`
+	PurchaseOrder        string               `json:"purchase_order"`
+	Status               OrderStatus          `json:"status"`
+	DateCreated          time.Time            `json:"date_created"`
+	DateRequested        time.Time            `json:"date_requested"`
+	Taker                OptString            `json:"taker"`
+	DeliveryInstructions string               `json:"delivery_instructions"`
+	ShippingAddress      Address              `json:"shipping_address"`
+	Total                float64              `json:"total"`
+	Items                []OrderItem          `json:"items"`
+	PackingLists         []PackingListSummary `json:"packing_lists"`
 }
 
 // GetID returns the value of ID.
@@ -956,6 +957,11 @@ func (s *Order) GetItems() []OrderItem {
 	return s.Items
 }
 
+// GetPackingLists returns the value of PackingLists.
+func (s *Order) GetPackingLists() []PackingListSummary {
+	return s.PackingLists
+}
+
 // SetID sets the value of ID.
 func (s *Order) SetID(val string) {
 	s.ID = val
@@ -1014,6 +1020,11 @@ func (s *Order) SetTotal(val float64) {
 // SetItems sets the value of Items.
 func (s *Order) SetItems(val []OrderItem) {
 	s.Items = val
+}
+
+// SetPackingLists sets the value of PackingLists.
+func (s *Order) SetPackingLists(val []PackingListSummary) {
+	s.PackingLists = val
 }
 
 // Ref: #/components/schemas/OrderItem
