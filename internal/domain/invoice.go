@@ -5,6 +5,7 @@ import "time"
 type InvoiceSummary struct {
 	Id           string
 	OrderId      string
-	Total        float64
+	PaidAmount   float64
+	TotalAmount  float64
 	DateInvoiced time.Time
 }

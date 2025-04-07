@@ -1827,12 +1827,17 @@ func (s *InvoiceSummary) encodeFields(e *jx.Encoder) {
 		e.FieldStart("date_invoiced")
 		json.EncodeDateTime(e, s.DateInvoiced)
 	}
+	{
+		e.FieldStart("total_amount")
+		e.Float64(s.TotalAmount)
+	}
 }
 
-var jsonFieldsNameOfInvoiceSummary = [3]string{
+var jsonFieldsNameOfInvoiceSummary = [4]string{
 	0: "id",
 	1: "order_id",
 	2: "date_invoiced",
+	3: "total_amount",
 }
 
 // Decode decodes InvoiceSummary from json.
@@ -1880,6 +1885,18 @@ func (s *InvoiceSummary) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"date_invoiced\"")
 			}
+		case "total_amount":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Float64()
+				s.TotalAmount = float64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"total_amount\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -1890,7 +1907,7 @@ func (s *InvoiceSummary) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000111,
+		0b00001111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

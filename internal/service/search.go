@@ -74,7 +74,7 @@ func (s *Search) SearchProducts(ctx context.Context, req *oas.SearchProductsReq)
 			ID:          pbProduct.GetId(),
 			Sn:          pbProduct.GetSn(),
 			Name:        pbProduct.GetName(),
-			Description: oas.NewOptString(pbProduct.GetDescription()),
+			Description: pbProduct.GetDescription(),
 			ImageURL:    oas.OptString{},
 		})
 	}

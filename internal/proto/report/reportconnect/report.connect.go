@@ -36,11 +36,15 @@ const (
 	// ReportServiceGetInvoiceProcedure is the fully-qualified name of the ReportService's GetInvoice
 	// RPC.
 	ReportServiceGetInvoiceProcedure = "/report.v1.ReportService/GetInvoice"
+	// ReportServiceGetPackingListProcedure is the fully-qualified name of the ReportService's
+	// GetPackingList RPC.
+	ReportServiceGetPackingListProcedure = "/report.v1.ReportService/GetPackingList"
 )
 
 // ReportServiceClient is a client for the report.v1.ReportService service.
 type ReportServiceClient interface {
 	GetInvoice(context.Context, *connect.Request[report.GetInvoiceRequest]) (*connect.ServerStreamForClient[report.GetInvoiceResponse], error)
+	GetPackingList(context.Context, *connect.Request[report.GetPackingListRequest]) (*connect.ServerStreamForClient[report.GetPackingListResponse], error)
 }
 
 // NewReportServiceClient constructs a client for the report.v1.ReportService service. By default,
@@ -60,12 +64,19 @@ func NewReportServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(reportServiceMethods.ByName("GetInvoice")),
 			connect.WithClientOptions(opts...),
 		),
+		getPackingList: connect.NewClient[report.GetPackingListRequest, report.GetPackingListResponse](
+			httpClient,
+			baseURL+ReportServiceGetPackingListProcedure,
+			connect.WithSchema(reportServiceMethods.ByName("GetPackingList")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // reportServiceClient implements ReportServiceClient.
 type reportServiceClient struct {
-	getInvoice *connect.Client[report.GetInvoiceRequest, report.GetInvoiceResponse]
+	getInvoice     *connect.Client[report.GetInvoiceRequest, report.GetInvoiceResponse]
+	getPackingList *connect.Client[report.GetPackingListRequest, report.GetPackingListResponse]
 }
 
 // GetInvoice calls report.v1.ReportService.GetInvoice.
@@ -73,9 +84,15 @@ func (c *reportServiceClient) GetInvoice(ctx context.Context, req *connect.Reque
 	return c.getInvoice.CallServerStream(ctx, req)
 }
 
+// GetPackingList calls report.v1.ReportService.GetPackingList.
+func (c *reportServiceClient) GetPackingList(ctx context.Context, req *connect.Request[report.GetPackingListRequest]) (*connect.ServerStreamForClient[report.GetPackingListResponse], error) {
+	return c.getPackingList.CallServerStream(ctx, req)
+}
+
 // ReportServiceHandler is an implementation of the report.v1.ReportService service.
 type ReportServiceHandler interface {
 	GetInvoice(context.Context, *connect.Request[report.GetInvoiceRequest], *connect.ServerStream[report.GetInvoiceResponse]) error
+	GetPackingList(context.Context, *connect.Request[report.GetPackingListRequest], *connect.ServerStream[report.GetPackingListResponse]) error
 }
 
 // NewReportServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -91,10 +108,18 @@ func NewReportServiceHandler(svc ReportServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(reportServiceMethods.ByName("GetInvoice")),
 		connect.WithHandlerOptions(opts...),
 	)
+	reportServiceGetPackingListHandler := connect.NewServerStreamHandler(
+		ReportServiceGetPackingListProcedure,
+		svc.GetPackingList,
+		connect.WithSchema(reportServiceMethods.ByName("GetPackingList")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/report.v1.ReportService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ReportServiceGetInvoiceProcedure:
 			reportServiceGetInvoiceHandler.ServeHTTP(w, r)
+		case ReportServiceGetPackingListProcedure:
+			reportServiceGetPackingListHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -106,4 +131,8 @@ type UnimplementedReportServiceHandler struct{}
 
 func (UnimplementedReportServiceHandler) GetInvoice(context.Context, *connect.Request[report.GetInvoiceRequest], *connect.ServerStream[report.GetInvoiceResponse]) error {
 	return connect.NewError(connect.CodeUnimplemented, errors.New("report.v1.ReportService.GetInvoice is not implemented"))
+}
+
+func (UnimplementedReportServiceHandler) GetPackingList(context.Context, *connect.Request[report.GetPackingListRequest], *connect.ServerStream[report.GetPackingListResponse]) error {
+	return connect.NewError(connect.CodeUnimplemented, errors.New("report.v1.ReportService.GetPackingList is not implemented"))
 }

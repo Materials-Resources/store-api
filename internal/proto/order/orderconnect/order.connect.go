@@ -56,6 +56,9 @@ const (
 	// OrderServiceGetPackingListProcedure is the fully-qualified name of the OrderService's
 	// GetPackingList RPC.
 	OrderServiceGetPackingListProcedure = "/order.v1.OrderService/GetPackingList"
+	// OrderServiceListPackingListsByOrderProcedure is the fully-qualified name of the OrderService's
+	// ListPackingListsByOrder RPC.
+	OrderServiceListPackingListsByOrderProcedure = "/order.v1.OrderService/ListPackingListsByOrder"
 )
 
 // OrderServiceClient is a client for the order.v1.OrderService service.
@@ -77,6 +80,7 @@ type OrderServiceClient interface {
 	GetShipment(context.Context, *connect.Request[order.GetShipmentRequest]) (*connect.Response[order.GetShipmentResponse], error)
 	// GetPackingList returns the packing list for a given invoice id
 	GetPackingList(context.Context, *connect.Request[order.GetPackingListRequest]) (*connect.Response[order.GetPackingListResponse], error)
+	ListPackingListsByOrder(context.Context, *connect.Request[order.ListPackingListsByOrderRequest]) (*connect.Response[order.ListPackingListsByOrderResponse], error)
 }
 
 // NewOrderServiceClient constructs a client for the order.v1.OrderService service. By default, it
@@ -144,20 +148,27 @@ func NewOrderServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(orderServiceMethods.ByName("GetPackingList")),
 			connect.WithClientOptions(opts...),
 		),
+		listPackingListsByOrder: connect.NewClient[order.ListPackingListsByOrderRequest, order.ListPackingListsByOrderResponse](
+			httpClient,
+			baseURL+OrderServiceListPackingListsByOrderProcedure,
+			connect.WithSchema(orderServiceMethods.ByName("ListPackingListsByOrder")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // orderServiceClient implements OrderServiceClient.
 type orderServiceClient struct {
-	listOrders           *connect.Client[order.ListOrdersRequest, order.ListOrdersResponse]
-	getOrder             *connect.Client[order.GetOrderRequest, order.GetOrderResponse]
-	createOrder          *connect.Client[order.CreateOrderRequest, order.CreateOrderResponse]
-	listQuotes           *connect.Client[order.ListQuotesRequest, order.ListQuotesResponse]
-	getQuote             *connect.Client[order.GetQuoteRequest, order.GetQuoteResponse]
-	createQuote          *connect.Client[order.CreateQuoteRequest, order.CreateQuoteResponse]
-	listShipmentsByOrder *connect.Client[order.ListShipmentsByOrderRequest, order.ListShipmentsByOrderResponse]
-	getShipment          *connect.Client[order.GetShipmentRequest, order.GetShipmentResponse]
-	getPackingList       *connect.Client[order.GetPackingListRequest, order.GetPackingListResponse]
+	listOrders              *connect.Client[order.ListOrdersRequest, order.ListOrdersResponse]
+	getOrder                *connect.Client[order.GetOrderRequest, order.GetOrderResponse]
+	createOrder             *connect.Client[order.CreateOrderRequest, order.CreateOrderResponse]
+	listQuotes              *connect.Client[order.ListQuotesRequest, order.ListQuotesResponse]
+	getQuote                *connect.Client[order.GetQuoteRequest, order.GetQuoteResponse]
+	createQuote             *connect.Client[order.CreateQuoteRequest, order.CreateQuoteResponse]
+	listShipmentsByOrder    *connect.Client[order.ListShipmentsByOrderRequest, order.ListShipmentsByOrderResponse]
+	getShipment             *connect.Client[order.GetShipmentRequest, order.GetShipmentResponse]
+	getPackingList          *connect.Client[order.GetPackingListRequest, order.GetPackingListResponse]
+	listPackingListsByOrder *connect.Client[order.ListPackingListsByOrderRequest, order.ListPackingListsByOrderResponse]
 }
 
 // ListOrders calls order.v1.OrderService.ListOrders.
@@ -205,6 +216,11 @@ func (c *orderServiceClient) GetPackingList(ctx context.Context, req *connect.Re
 	return c.getPackingList.CallUnary(ctx, req)
 }
 
+// ListPackingListsByOrder calls order.v1.OrderService.ListPackingListsByOrder.
+func (c *orderServiceClient) ListPackingListsByOrder(ctx context.Context, req *connect.Request[order.ListPackingListsByOrderRequest]) (*connect.Response[order.ListPackingListsByOrderResponse], error) {
+	return c.listPackingListsByOrder.CallUnary(ctx, req)
+}
+
 // OrderServiceHandler is an implementation of the order.v1.OrderService service.
 type OrderServiceHandler interface {
 	// ListOrders returns a list of orders for a given customer
@@ -224,6 +240,7 @@ type OrderServiceHandler interface {
 	GetShipment(context.Context, *connect.Request[order.GetShipmentRequest]) (*connect.Response[order.GetShipmentResponse], error)
 	// GetPackingList returns the packing list for a given invoice id
 	GetPackingList(context.Context, *connect.Request[order.GetPackingListRequest]) (*connect.Response[order.GetPackingListResponse], error)
+	ListPackingListsByOrder(context.Context, *connect.Request[order.ListPackingListsByOrderRequest]) (*connect.Response[order.ListPackingListsByOrderResponse], error)
 }
 
 // NewOrderServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -287,6 +304,12 @@ func NewOrderServiceHandler(svc OrderServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(orderServiceMethods.ByName("GetPackingList")),
 		connect.WithHandlerOptions(opts...),
 	)
+	orderServiceListPackingListsByOrderHandler := connect.NewUnaryHandler(
+		OrderServiceListPackingListsByOrderProcedure,
+		svc.ListPackingListsByOrder,
+		connect.WithSchema(orderServiceMethods.ByName("ListPackingListsByOrder")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/order.v1.OrderService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case OrderServiceListOrdersProcedure:
@@ -307,6 +330,8 @@ func NewOrderServiceHandler(svc OrderServiceHandler, opts ...connect.HandlerOpti
 			orderServiceGetShipmentHandler.ServeHTTP(w, r)
 		case OrderServiceGetPackingListProcedure:
 			orderServiceGetPackingListHandler.ServeHTTP(w, r)
+		case OrderServiceListPackingListsByOrderProcedure:
+			orderServiceListPackingListsByOrderHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -350,4 +375,8 @@ func (UnimplementedOrderServiceHandler) GetShipment(context.Context, *connect.Re
 
 func (UnimplementedOrderServiceHandler) GetPackingList(context.Context, *connect.Request[order.GetPackingListRequest]) (*connect.Response[order.GetPackingListResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("order.v1.OrderService.GetPackingList is not implemented"))
+}
+
+func (UnimplementedOrderServiceHandler) ListPackingListsByOrder(context.Context, *connect.Request[order.ListPackingListsByOrderRequest]) (*connect.Response[order.ListPackingListsByOrderResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("order.v1.OrderService.ListPackingListsByOrder is not implemented"))
 }

@@ -598,6 +598,7 @@ type InvoiceSummary struct {
 	ID           string    `json:"id"`
 	OrderID      string    `json:"order_id"`
 	DateInvoiced time.Time `json:"date_invoiced"`
+	TotalAmount  float64   `json:"total_amount"`
 }
 
 // GetID returns the value of ID.
@@ -615,6 +616,11 @@ func (s *InvoiceSummary) GetDateInvoiced() time.Time {
 	return s.DateInvoiced
 }
 
+// GetTotalAmount returns the value of TotalAmount.
+func (s *InvoiceSummary) GetTotalAmount() float64 {
+	return s.TotalAmount
+}
+
 // SetID sets the value of ID.
 func (s *InvoiceSummary) SetID(val string) {
 	s.ID = val
@@ -628,6 +634,11 @@ func (s *InvoiceSummary) SetOrderID(val string) {
 // SetDateInvoiced sets the value of DateInvoiced.
 func (s *InvoiceSummary) SetDateInvoiced(val time.Time) {
 	s.DateInvoiced = val
+}
+
+// SetTotalAmount sets the value of TotalAmount.
+func (s *InvoiceSummary) SetTotalAmount(val float64) {
+	s.TotalAmount = val
 }
 
 type ListCustomerBranchesOK struct {

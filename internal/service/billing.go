@@ -36,6 +36,8 @@ func (s *BillingService) GetInvoicesByOrder(ctx context.Context, orderId string)
 			Id:           invoice.GetId(),
 			OrderId:      invoice.GetOrderId(),
 			DateInvoiced: invoice.GetDateInvoiced().AsTime(),
+			TotalAmount:  invoice.GetTotalAmount(),
+			PaidAmount:   invoice.GetPaidAmount(),
 		})
 
 	}

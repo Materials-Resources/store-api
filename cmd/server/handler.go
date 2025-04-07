@@ -66,6 +66,7 @@ func (h Handler) GetOrderInvoices(ctx context.Context, params oas.GetOrderInvoic
 			ID:           invoice.Id,
 			OrderID:      invoice.OrderId,
 			DateInvoiced: invoice.DateInvoiced,
+			TotalAmount:  invoice.TotalAmount,
 		})
 	}
 	return res, nil
