@@ -73,10 +73,6 @@ type Handler interface {
 	//
 	// GET /account/branches
 	ListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) (ListCustomerBranchesRes, error)
-	// ListOrderPackingList implements ListOrderPackingList operation.
-	//
-	// GET /account/order/{id}/packinglist
-	ListOrderPackingList(ctx context.Context, params ListOrderPackingListParams) (*ListOrderPackingListOK, error)
 	// ListOrders implements listOrders operation.
 	//
 	// Get a list of orders.

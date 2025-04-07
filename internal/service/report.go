@@ -21,6 +21,34 @@ func NewReportService() *ReportService {
 	}
 }
 
+func (s *ReportService) GetPackingList(ctx context.Context, id string) (io.ReadCloser, error) {
+	pbReq := reportv1.GetPackingListRequest_builder{Id: proto.String(id)}.Build()
+
+	stream, err := s.client.GetPackingList(ctx, connect.NewRequest(pbReq))
+	if err != nil {
+		return nil, err
+	}
+
+	pr, pw := io.Pipe()
+
+	// Process the stream in a goroutine
+	go func() {
+		defer pw.Close()
+
+		// Read chunks from the stream and write to the pipe
+		for stream.Receive() {
+			// Write the chunk to the pipe
+			_, err = pw.Write(stream.Msg().GetContent())
+			if err != nil {
+				pw.CloseWithError(err)
+				return
+			}
+		}
+	}()
+
+	return pr, nil
+}
+
 func (s *ReportService) GetInvoice(ctx context.Context, id string) (io.ReadCloser, error) {
 	pbReq := reportv1.GetInvoiceRequest_builder{Id: proto.String(id)}.Build()
 

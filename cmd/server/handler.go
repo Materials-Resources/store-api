@@ -4,6 +4,7 @@ import (
 	"connectrpc.com/connect"
 	"context"
 	"fmt"
+	"github.com/materials-resources/store-api/internal/domain"
 	"github.com/materials-resources/store-api/internal/mailer"
 	"github.com/materials-resources/store-api/internal/oas"
 	customerv1 "github.com/materials-resources/store-api/internal/proto/customer"
@@ -39,25 +40,12 @@ type Handler struct {
 }
 
 func (h Handler) GetPackingListReport(ctx context.Context, params oas.GetPackingListReportParams) (oas.GetPackingListReportRes, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h Handler) ListOrderPackingList(ctx context.Context, params oas.ListOrderPackingListParams) (*oas.ListOrderPackingListOK, error) {
-	packingLists, err := h.service.Order.ListPackingListsByOrder(ctx, params.ID)
-
+	data, err := h.service.Report.GetPackingList(ctx, params.ID)
 	if err != nil {
 		return nil, err
 	}
-	res := &oas.ListOrderPackingListOK{}
-	for _, packingList := range packingLists {
-		res.PackingLists = append(res.PackingLists, oas.PackingListSummary{
-			InvoiceID:    packingList.InvoiceId,
-			DateInvoiced: packingList.DateInvoiced,
-		})
-	}
-	return res, nil
 
+	return &oas.GetPackingListReportOK{Data: data}, nil
 }
 
 func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) error {
@@ -228,7 +216,7 @@ func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (o
 			ContactID:     pbOrder.GetContactId(),
 			BranchID:      pbOrder.GetBranchId(),
 			PurchaseOrder: pbOrder.GetPurchaseOrder(),
-			Status:        convertOrderStatus(pbOrder.GetStatus()),
+			//Status:        convertOrderStatus(pbOrder.GetStatus()),
 			DateCreated:   pbOrder.GetDateCreated().AsTime(),
 			DateRequested: pbOrder.GetDateRequested().AsTime(),
 		})
@@ -322,14 +310,13 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 	if err != nil {
 		return nil, err
 	}
-	pbReq := orderv1.GetOrderRequest_builder{Id: proto.String(params.ID)}.Build()
-	pbRes, err := h.service.Order.Client.GetOrder(ctx, connect.NewRequest(pbReq))
+	order, err := h.service.Order.GetOrder(ctx, params.ID)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if pbRes.Msg.GetOrder().GetBranchId() != userSession.Profile.BranchID {
+	if order.BranchId != userSession.Profile.BranchID {
 		return nil, fmt.Errorf("user is not authorized to access this branch")
 	}
 
@@ -338,52 +325,51 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 		return nil, err
 	}
 
-	response := oas.GetOrderOK{
-		Order: oas.Order{
-			ID:              pbRes.Msg.GetOrder().GetId(),
-			ContactID:       pbRes.Msg.GetOrder().GetContactId(),
-			BranchID:        pbRes.Msg.GetOrder().GetBranchId(),
-			PurchaseOrder:   pbRes.Msg.GetOrder().GetPurchaseOrder(),
-			Status:          convertOrderStatus(pbRes.Msg.GetOrder().GetStatus()),
-			DateCreated:     pbRes.Msg.GetOrder().GetDateCreated().AsTime(),
-			DateRequested:   pbRes.Msg.GetOrder().GetDateRequested().AsTime(),
-			Taker:           oas.NewOptString(""),
-			ShippingAddress: oas.Address{},
-			Total:           0,
+	oapiOrder := oas.Order{
+		ID:            order.Id,
+		ContactID:     order.ContactId,
+		BranchID:      order.BranchId,
+		PurchaseOrder: order.PurchaseOrder,
+		Status:        mapOrderStatus(order.Status),
+		DateCreated:   order.DateCreated,
+		DateRequested: order.DateRequested,
+		Taker:         oas.NewOptString(order.Taker),
+		ShippingAddress: oas.Address{
+			Name:       order.ShippingAddress.Name,
+			LineOne:    order.ShippingAddress.LineOne,
+			LineTwo:    order.ShippingAddress.LineTwo,
+			City:       order.ShippingAddress.City,
+			State:      order.ShippingAddress.State,
+			PostalCode: order.ShippingAddress.PostalCode,
+			Country:    order.ShippingAddress.Country,
 		},
+		Total: 0,
 	}
 
 	for _, packingList := range packingLists {
-		response.Order.PackingLists = append(response.Order.PackingLists, oas.PackingListSummary{
+		oapiOrder.PackingLists = append(oapiOrder.PackingLists, oas.PackingListSummary{
 			InvoiceID:    packingList.InvoiceId,
 			DateInvoiced: packingList.DateInvoiced,
 		})
 	}
 
-	response.Order.SetShippingAddress(oas.Address{
-		ID:         "",
-		Name:       pbRes.Msg.GetOrder().GetShippingAddress().GetName(),
-		LineOne:    pbRes.Msg.GetOrder().GetShippingAddress().GetLineOne(),
-		LineTwo:    pbRes.Msg.GetOrder().GetShippingAddress().GetLineTwo(),
-		City:       pbRes.Msg.GetOrder().GetShippingAddress().GetCity(),
-		State:      pbRes.Msg.GetOrder().GetShippingAddress().GetState(),
-		PostalCode: pbRes.Msg.GetOrder().GetShippingAddress().GetPostalCode(),
-		Country:    pbRes.Msg.GetOrder().GetShippingAddress().GetCountry(),
-	})
-
-	for _, item := range pbRes.Msg.GetOrder().GetOrderItems() {
-		response.Order.Items = append(response.Order.Items, oas.OrderItem{
-			ProductSn:           item.GetProductSn(),
-			ProductName:         item.GetProductName(),
-			ProductID:           item.GetProductId(),
-			CustomerProductSn:   item.GetCustomerProductSn(),
-			OrderedQuantity:     item.GetOrderedQuantity(),
-			ShippedQuantity:     item.GetShippedQuantity(),
-			BackOrderedQuantity: item.GetBackOrderedQuantity(),
-			UnitType:            item.GetUnitType(),
-			UnitPrice:           item.GetUnitPrice(),
-			TotalPrice:          item.GetTotalPrice(),
+	for _, item := range order.Items {
+		oapiOrder.Items = append(oapiOrder.Items, oas.OrderItem{
+			ProductID:         item.ProductId,
+			ProductSn:         item.ProductSn,
+			ProductName:       item.ProductName,
+			CustomerProductSn: item.CustomerProductSn,
+			OrderedQuantity:   item.OrderedQuantity,
+			ShippedQuantity:   item.ShippedQuantity,
+			RemainingQuantity: item.RemainingQuantity,
+			UnitType:          item.UnitType.Id,
+			UnitPrice:         item.UnitPrice,
+			TotalPrice:        item.TotalPrice,
 		})
+	}
+
+	response := oas.GetOrderOK{
+		Order: oapiOrder,
 	}
 
 	return &response, nil
@@ -414,18 +400,16 @@ func (h Handler) GetProduct(ctx context.Context, params oas.GetProductParams) (o
 	return &res, err
 }
 
-func convertOrderStatus(status orderv1.OrderStatus) oas.OrderStatus {
+func mapOrderStatus(status domain.OrderStatus) oas.OrderStatus {
 	switch status {
-	case orderv1.OrderStatus_ORDER_STATUS_COMPLETED:
+	case domain.OrderStatusCompleted:
 		return oas.OrderStatusCompleted
-	case orderv1.OrderStatus_ORDER_STATUS_PENDING_APPROVAL:
+	case domain.OrderStatusPendingApproval:
 		return oas.OrderStatusPendingApproval
-	case orderv1.OrderStatus_ORDER_STATUS_APPROVED:
+	case domain.OrderStatusApproved:
 		return oas.OrderStatusApproved
-	case orderv1.OrderStatus_ORDER_STATUS_CANCELLED:
+	case domain.OrderStatusCancelled:
 		return oas.OrderStatusCancelled
-	case orderv1.OrderStatus_ORDER_STATUS_UNSPECIFIED:
-		return oas.OrderStatusUnspecified
 	default:
 		return oas.OrderStatusUnspecified
 	}

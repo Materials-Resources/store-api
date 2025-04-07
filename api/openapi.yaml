@@ -215,30 +215,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/InvoiceSummary'
-  /account/order/{id}/packinglist:
-    get:
-      operationId: ListOrderPackingList
-      tags:
-        - order
-      security: [ ]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: "Packing Lists"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  packing_lists:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/PackingListSummary'
   /account/quotes:
     post:
       summary: Create a new quote
@@ -810,6 +786,7 @@ components:
         - customer_product_sn
         - ordered_quantity
         - shipped_quantity
+        - remaining_quantity
         - unit_type
         - unit_price
         - total_price
@@ -828,6 +805,9 @@ components:
           x-go-type: float64
           type: number
         shipped_quantity:
+          x-go-type: float64
+          type: number
+        remaining_quantity:
           x-go-type: float64
           type: number
         unit_type:

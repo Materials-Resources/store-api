@@ -75,56 +75,60 @@ func (s *Order) GetQuote(ctx context.Context, req oas.GetQuoteParams) (*oas.GetQ
 	return &response, nil
 }
 
-func (s *Order) GetOrder(ctx context.Context, req oas.GetOrderParams) (oas.GetOrderRes, error) {
-	pbReq := orderv1.GetOrderRequest_builder{Id: proto.String(req.ID)}.Build()
+func (s *Order) GetOrder(ctx context.Context, orderId string) (*domain.Order, error) {
+	pbReq := orderv1.GetOrderRequest_builder{Id: proto.String(orderId)}.Build()
 	pbRes, err := s.Client.GetOrder(ctx, connect.NewRequest(pbReq))
 
 	if err != nil {
 		return nil, err
 	}
 
-	response := oas.GetOrderOK{
-		Order: oas.Order{
-			ID:              pbRes.Msg.GetOrder().GetId(),
-			ContactID:       pbRes.Msg.GetOrder().GetContactId(),
-			BranchID:        pbRes.Msg.GetOrder().GetBranchId(),
-			PurchaseOrder:   pbRes.Msg.GetOrder().GetPurchaseOrder(),
-			Status:          convertOrderStatus(pbRes.Msg.GetOrder().GetStatus()),
-			DateCreated:     pbRes.Msg.GetOrder().GetDateCreated().AsTime(),
-			DateRequested:   pbRes.Msg.GetOrder().GetDateRequested().AsTime(),
-			Taker:           oas.NewOptString(""),
-			ShippingAddress: oas.Address{},
-			Total:           0,
-		},
+	order := &domain.Order{
+		Id:              pbRes.Msg.GetOrder().GetId(),
+		ContactId:       pbRes.Msg.GetOrder().GetContactId(),
+		BranchId:        pbRes.Msg.GetOrder().GetBranchId(),
+		PurchaseOrder:   pbRes.Msg.GetOrder().GetPurchaseOrder(),
+		Status:          convertOrderStatus(pbRes.Msg.GetOrder().GetStatus()),
+		DateCreated:     pbRes.Msg.GetOrder().GetDateCreated().AsTime(),
+		DateRequested:   pbRes.Msg.GetOrder().GetDateRequested().AsTime(),
+		Taker:           pbRes.Msg.GetOrder().GetTaker(),
+		ShippingAddress: domain.Address{},
 	}
 
-	response.Order.SetShippingAddress(oas.Address{
-		ID:         "",
-		Name:       pbRes.Msg.GetOrder().GetShippingAddress().GetName(),
-		LineOne:    pbRes.Msg.GetOrder().GetShippingAddress().GetLineOne(),
-		LineTwo:    pbRes.Msg.GetOrder().GetShippingAddress().GetLineTwo(),
-		City:       pbRes.Msg.GetOrder().GetShippingAddress().GetCity(),
-		State:      pbRes.Msg.GetOrder().GetShippingAddress().GetState(),
-		PostalCode: pbRes.Msg.GetOrder().GetShippingAddress().GetPostalCode(),
-		Country:    pbRes.Msg.GetOrder().GetShippingAddress().GetCountry(),
-	})
-
-	for _, item := range pbRes.Msg.GetOrder().GetOrderItems() {
-		response.Order.Items = append(response.Order.Items, oas.OrderItem{
-			ProductSn:           item.GetProductSn(),
-			ProductName:         item.GetProductName(),
-			ProductID:           item.GetProductId(),
-			CustomerProductSn:   item.GetCustomerProductSn(),
-			OrderedQuantity:     item.GetOrderedQuantity(),
-			ShippedQuantity:     item.GetShippedQuantity(),
-			BackOrderedQuantity: item.GetBackOrderedQuantity(),
-			UnitType:            item.GetUnitType(),
-			UnitPrice:           item.GetUnitPrice(),
-			TotalPrice:          item.GetTotalPrice(),
-		})
+	if pbRes.Msg.GetOrder().GetShippingAddress() != nil {
+		order.ShippingAddress = domain.Address{
+			Name:       pbRes.Msg.GetOrder().GetShippingAddress().GetName(),
+			LineOne:    pbRes.Msg.GetOrder().GetShippingAddress().GetLineOne(),
+			LineTwo:    pbRes.Msg.GetOrder().GetShippingAddress().GetLineTwo(),
+			City:       pbRes.Msg.GetOrder().GetShippingAddress().GetCity(),
+			State:      pbRes.Msg.GetOrder().GetShippingAddress().GetState(),
+			PostalCode: pbRes.Msg.GetOrder().GetShippingAddress().GetPostalCode(),
+			Country:    pbRes.Msg.GetOrder().GetShippingAddress().GetCountry(),
+		}
 	}
 
-	return &response, nil
+	for _, itemPb := range pbRes.Msg.GetOrder().GetOrderItems() {
+
+		item := &domain.OrderItem{
+
+			ProductId:         itemPb.GetProductId(),
+			ProductSn:         itemPb.GetProductSn(),
+			ProductName:       itemPb.GetProductName(),
+			CustomerProductSn: itemPb.GetCustomerProductSn(),
+			OrderedQuantity:   itemPb.GetOrderedQuantity(),
+			ShippedQuantity:   itemPb.GetShippedQuantity(),
+			RemainingQuantity: itemPb.GetRemainingQuantity(),
+			UnitType: domain.UnitOfMeasurement{
+				Id: itemPb.GetUnitType(),
+			},
+			UnitPrice:  itemPb.GetUnitPrice(),
+			TotalPrice: itemPb.GetTotalPrice(),
+		}
+
+		order.Items = append(order.Items, item)
+	}
+
+	return order, nil
 }
 
 func (s *Order) ListOrders(ctx context.Context, req oas.ListOrdersParams) (*oas.ListOrdersOK, error) {
@@ -148,7 +152,7 @@ func (s *Order) ListOrders(ctx context.Context, req oas.ListOrdersParams) (*oas.
 			ContactID:     pbOrder.GetContactId(),
 			BranchID:      pbOrder.GetBranchId(),
 			PurchaseOrder: pbOrder.GetPurchaseOrder(),
-			Status:        convertOrderStatus(pbOrder.GetStatus()),
+			//Status:        convertOrderStatus(pbOrder.GetStatus()),
 			DateCreated:   pbOrder.GetDateCreated().AsTime(),
 			DateRequested: pbOrder.GetDateRequested().AsTime(),
 		})
@@ -210,20 +214,20 @@ func (s *Order) ListPackingListsByOrder(ctx context.Context, orderId string) ([]
 
 }
 
-func convertOrderStatus(status orderv1.OrderStatus) oas.OrderStatus {
+func convertOrderStatus(status orderv1.OrderStatus) domain.OrderStatus {
 	switch status {
 	case orderv1.OrderStatus_ORDER_STATUS_COMPLETED:
-		return oas.OrderStatusCompleted
+		return domain.OrderStatusCompleted
 	case orderv1.OrderStatus_ORDER_STATUS_PENDING_APPROVAL:
-		return oas.OrderStatusPendingApproval
+		return domain.OrderStatusPendingApproval
 	case orderv1.OrderStatus_ORDER_STATUS_APPROVED:
-		return oas.OrderStatusApproved
+		return domain.OrderStatusApproved
 	case orderv1.OrderStatus_ORDER_STATUS_CANCELLED:
-		return oas.OrderStatusCancelled
+		return domain.OrderStatusCancelled
 	case orderv1.OrderStatus_ORDER_STATUS_UNSPECIFIED:
-		return oas.OrderStatusUnspecified
+		return domain.OrderStatusUnspecified
 	default:
-		return oas.OrderStatusUnspecified
+		return domain.OrderStatusUnspecified
 	}
 }
 

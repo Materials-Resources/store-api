@@ -229,62 +229,26 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							return
 						}
 						switch elem[0] {
-						case '/': // Prefix: "/"
+						case '/': // Prefix: "/invoices"
 
-							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+							if l := len("/invoices"); len(elem) >= l && elem[0:l] == "/invoices" {
 								elem = elem[l:]
 							} else {
 								break
 							}
 
 							if len(elem) == 0 {
-								break
-							}
-							switch elem[0] {
-							case 'i': // Prefix: "invoices"
-
-								if l := len("invoices"); len(elem) >= l && elem[0:l] == "invoices" {
-									elem = elem[l:]
-								} else {
-									break
+								// Leaf node.
+								switch r.Method {
+								case "GET":
+									s.handleGetOrderInvoicesRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "GET")
 								}
 
-								if len(elem) == 0 {
-									// Leaf node.
-									switch r.Method {
-									case "GET":
-										s.handleGetOrderInvoicesRequest([1]string{
-											args[0],
-										}, elemIsEscaped, w, r)
-									default:
-										s.notAllowed(w, r, "GET")
-									}
-
-									return
-								}
-
-							case 'p': // Prefix: "packinglist"
-
-								if l := len("packinglist"); len(elem) >= l && elem[0:l] == "packinglist" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch r.Method {
-									case "GET":
-										s.handleListOrderPackingListRequest([1]string{
-											args[0],
-										}, elemIsEscaped, w, r)
-									default:
-										s.notAllowed(w, r, "GET")
-									}
-
-									return
-								}
-
+								return
 							}
 
 						}
@@ -765,66 +729,28 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 						switch elem[0] {
-						case '/': // Prefix: "/"
+						case '/': // Prefix: "/invoices"
 
-							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+							if l := len("/invoices"); len(elem) >= l && elem[0:l] == "/invoices" {
 								elem = elem[l:]
 							} else {
 								break
 							}
 
 							if len(elem) == 0 {
-								break
-							}
-							switch elem[0] {
-							case 'i': // Prefix: "invoices"
-
-								if l := len("invoices"); len(elem) >= l && elem[0:l] == "invoices" {
-									elem = elem[l:]
-								} else {
-									break
+								// Leaf node.
+								switch method {
+								case "GET":
+									r.name = GetOrderInvoicesOperation
+									r.summary = ""
+									r.operationID = "getOrderInvoices"
+									r.pathPattern = "/account/order/{id}/invoices"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
 								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch method {
-									case "GET":
-										r.name = GetOrderInvoicesOperation
-										r.summary = ""
-										r.operationID = "getOrderInvoices"
-										r.pathPattern = "/account/order/{id}/invoices"
-										r.args = args
-										r.count = 1
-										return r, true
-									default:
-										return
-									}
-								}
-
-							case 'p': // Prefix: "packinglist"
-
-								if l := len("packinglist"); len(elem) >= l && elem[0:l] == "packinglist" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch method {
-									case "GET":
-										r.name = ListOrderPackingListOperation
-										r.summary = ""
-										r.operationID = "ListOrderPackingList"
-										r.pathPattern = "/account/order/{id}/packinglist"
-										r.args = args
-										r.count = 1
-										return r, true
-									default:
-										return
-									}
-								}
-
 							}
 
 						}

@@ -674,20 +674,6 @@ func (s *ListCustomerBranchesOK) SetBranches(val []Branch) {
 
 func (*ListCustomerBranchesOK) listCustomerBranchesRes() {}
 
-type ListOrderPackingListOK struct {
-	PackingLists []PackingListSummary `json:"packing_lists"`
-}
-
-// GetPackingLists returns the value of PackingLists.
-func (s *ListOrderPackingListOK) GetPackingLists() []PackingListSummary {
-	return s.PackingLists
-}
-
-// SetPackingLists sets the value of PackingLists.
-func (s *ListOrderPackingListOK) SetPackingLists(val []PackingListSummary) {
-	s.PackingLists = val
-}
-
 type ListOrdersOK struct {
 	TotalRecords int            `json:"total_records"`
 	Orders       []OrderSummary `json:"orders"`
@@ -1035,6 +1021,7 @@ type OrderItem struct {
 	CustomerProductSn   string  `json:"customer_product_sn"`
 	OrderedQuantity     float64 `json:"ordered_quantity"`
 	ShippedQuantity     float64 `json:"shipped_quantity"`
+	RemainingQuantity   float64 `json:"remaining_quantity"`
 	UnitType            string  `json:"unit_type"`
 	UnitPrice           float64 `json:"unit_price"`
 	TotalPrice          float64 `json:"total_price"`
@@ -1069,6 +1056,11 @@ func (s *OrderItem) GetOrderedQuantity() float64 {
 // GetShippedQuantity returns the value of ShippedQuantity.
 func (s *OrderItem) GetShippedQuantity() float64 {
 	return s.ShippedQuantity
+}
+
+// GetRemainingQuantity returns the value of RemainingQuantity.
+func (s *OrderItem) GetRemainingQuantity() float64 {
+	return s.RemainingQuantity
 }
 
 // GetUnitType returns the value of UnitType.
@@ -1119,6 +1111,11 @@ func (s *OrderItem) SetOrderedQuantity(val float64) {
 // SetShippedQuantity sets the value of ShippedQuantity.
 func (s *OrderItem) SetShippedQuantity(val float64) {
 	s.ShippedQuantity = val
+}
+
+// SetRemainingQuantity sets the value of RemainingQuantity.
+func (s *OrderItem) SetRemainingQuantity(val float64) {
+	s.RemainingQuantity = val
 }
 
 // SetUnitType sets the value of UnitType.
