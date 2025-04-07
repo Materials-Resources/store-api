@@ -5,6 +5,7 @@ import (
 	"connectrpc.com/otelconnect"
 	"context"
 	"github.com/materials-resources/store-api/app"
+	"github.com/materials-resources/store-api/internal/domain"
 	"github.com/materials-resources/store-api/internal/oas"
 	orderv1 "github.com/materials-resources/store-api/internal/proto/order"
 	"github.com/materials-resources/store-api/internal/proto/order/orderconnect"
@@ -182,6 +183,31 @@ func (s *Order) ListQuotes(ctx context.Context, req oas.ListQuotesParams) (*oas.
 	}
 
 	return &response, nil
+}
+
+func (s *Order) ListPackingListsByOrder(ctx context.Context, orderId string) ([]*domain.PackingListSummary, error) {
+	pbReq := orderv1.ListPackingListsByOrderRequest_builder{
+		OrderId: proto.String(orderId),
+	}.Build()
+
+	pbRes, err := s.Client.ListPackingListsByOrder(ctx, connect.NewRequest(pbReq))
+
+	if err != nil {
+		return nil, err
+	}
+
+	var packingLists []*domain.PackingListSummary
+
+	for _, pbPackingList := range pbRes.Msg.GetPackingLists() {
+		packingLists = append(packingLists, &domain.PackingListSummary{
+			InvoiceId:    pbPackingList.GetInvoiceId(),
+			OrderId:      pbPackingList.GetOrderId(),
+			DateInvoiced: pbPackingList.GetDateInvoiced().AsTime(),
+		})
+	}
+
+	return packingLists, nil
+
 }
 
 func convertOrderStatus(status orderv1.OrderStatus) oas.OrderStatus {

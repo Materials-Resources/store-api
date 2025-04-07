@@ -462,6 +462,7 @@ func (*ErrorStatusCode) createQuoteRes()          {}
 func (*ErrorStatusCode) getActiveBranchesRes()    {}
 func (*ErrorStatusCode) getInvoiceReportRes()     {}
 func (*ErrorStatusCode) getOrderRes()             {}
+func (*ErrorStatusCode) getPackingListReportRes() {}
 func (*ErrorStatusCode) getProductRes()           {}
 func (*ErrorStatusCode) getQuoteRes()             {}
 func (*ErrorStatusCode) listCustomerBranchesRes() {}
@@ -541,6 +542,22 @@ func (*GetOrderOK) getOrderRes() {}
 type GetOrderUnauthorized struct{}
 
 func (*GetOrderUnauthorized) getOrderRes() {}
+
+type GetPackingListReportOK struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s GetPackingListReportOK) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+func (*GetPackingListReportOK) getPackingListReportRes() {}
 
 // GetProductNotFound is response for GetProduct operation.
 type GetProductNotFound struct{}
@@ -656,6 +673,20 @@ func (s *ListCustomerBranchesOK) SetBranches(val []Branch) {
 }
 
 func (*ListCustomerBranchesOK) listCustomerBranchesRes() {}
+
+type ListOrderPackingListOK struct {
+	PackingLists []PackingListSummary `json:"packing_lists"`
+}
+
+// GetPackingLists returns the value of PackingLists.
+func (s *ListOrderPackingListOK) GetPackingLists() []PackingListSummary {
+	return s.PackingLists
+}
+
+// SetPackingLists sets the value of PackingLists.
+func (s *ListOrderPackingListOK) SetPackingLists(val []PackingListSummary) {
+	s.PackingLists = val
+}
 
 type ListOrdersOK struct {
 	TotalRecords int            `json:"total_records"`
@@ -1241,6 +1272,32 @@ func (s *OrderSummary) SetDateCreated(val time.Time) {
 // SetDateRequested sets the value of DateRequested.
 func (s *OrderSummary) SetDateRequested(val time.Time) {
 	s.DateRequested = val
+}
+
+// Ref: #/components/schemas/PackingListSummary
+type PackingListSummary struct {
+	InvoiceID    string    `json:"invoice_id"`
+	DateInvoiced time.Time `json:"date_invoiced"`
+}
+
+// GetInvoiceID returns the value of InvoiceID.
+func (s *PackingListSummary) GetInvoiceID() string {
+	return s.InvoiceID
+}
+
+// GetDateInvoiced returns the value of DateInvoiced.
+func (s *PackingListSummary) GetDateInvoiced() time.Time {
+	return s.DateInvoiced
+}
+
+// SetInvoiceID sets the value of InvoiceID.
+func (s *PackingListSummary) SetInvoiceID(val string) {
+	s.InvoiceID = val
+}
+
+// SetDateInvoiced sets the value of DateInvoiced.
+func (s *PackingListSummary) SetDateInvoiced(val time.Time) {
+	s.DateInvoiced = val
 }
 
 // Ref: #/components/schemas/PageMetadata

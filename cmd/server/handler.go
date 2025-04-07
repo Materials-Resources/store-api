@@ -1,10 +1,9 @@
 package main
 
 import (
+	"connectrpc.com/connect"
 	"context"
 	"fmt"
-
-	"connectrpc.com/connect"
 	"github.com/materials-resources/store-api/internal/mailer"
 	"github.com/materials-resources/store-api/internal/oas"
 	customerv1 "github.com/materials-resources/store-api/internal/proto/customer"
@@ -37,6 +36,28 @@ type Handler struct {
 	service        service.Service
 	z              *zitadel.Client
 	mailer         mailer.Mailer
+}
+
+func (h Handler) GetPackingListReport(ctx context.Context, params oas.GetPackingListReportParams) (oas.GetPackingListReportRes, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (h Handler) ListOrderPackingList(ctx context.Context, params oas.ListOrderPackingListParams) (*oas.ListOrderPackingListOK, error) {
+	packingLists, err := h.service.Order.ListPackingListsByOrder(ctx, params.ID)
+
+	if err != nil {
+		return nil, err
+	}
+	res := &oas.ListOrderPackingListOK{}
+	for _, packingList := range packingLists {
+		res.PackingLists = append(res.PackingLists, oas.PackingListSummary{
+			InvoiceID:    packingList.InvoiceId,
+			DateInvoiced: packingList.DateInvoiced,
+		})
+	}
+	return res, nil
+
 }
 
 func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) error {

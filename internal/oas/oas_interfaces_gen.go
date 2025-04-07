@@ -17,6 +17,10 @@ type GetOrderRes interface {
 	getOrderRes()
 }
 
+type GetPackingListReportRes interface {
+	getPackingListReportRes()
+}
+
 type GetProductRes interface {
 	getProductRes()
 }

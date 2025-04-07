@@ -215,6 +215,30 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/InvoiceSummary'
+  /account/order/{id}/packinglist:
+    get:
+      operationId: ListOrderPackingList
+      tags:
+        - order
+      security: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Packing Lists"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  packing_lists:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PackingListSummary'
   /account/quotes:
     post:
       summary: Create a new quote
@@ -387,6 +411,33 @@ paths:
       responses:
         '200':
           description: "Invoice report document"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /account/packinglist/{id}/report:
+    get:
+      security: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Get packing list report by ID
+      operationId: getPackingListReport
+      tags:
+        - account
+      responses:
+        '200':
+          description: "Packing list report document"
           content:
             application/pdf:
               schema:
@@ -603,6 +654,17 @@ components:
           type: number
           x-go-type: float64
 
+    PackingListSummary:
+      required:
+        - invoice_id
+        - date_invoiced
+      type: object
+      properties:
+        invoice_id:
+          type: string
+        date_invoiced:
+          type: string
+          format: date-time
     Address:
       required:
         - id

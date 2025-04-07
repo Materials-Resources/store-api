@@ -43,6 +43,12 @@ type Handler interface {
 	//
 	// GET /account/order/{id}/invoices
 	GetOrderInvoices(ctx context.Context, params GetOrderInvoicesParams) (*GetOrderInvoicesOK, error)
+	// GetPackingListReport implements getPackingListReport operation.
+	//
+	// Get packing list report by ID.
+	//
+	// GET /account/packinglist/{id}/report
+	GetPackingListReport(ctx context.Context, params GetPackingListReportParams) (GetPackingListReportRes, error)
 	// GetProduct implements getProduct operation.
 	//
 	// Get a product by ID.
@@ -67,6 +73,10 @@ type Handler interface {
 	//
 	// GET /account/branches
 	ListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) (ListCustomerBranchesRes, error)
+	// ListOrderPackingList implements ListOrderPackingList operation.
+	//
+	// GET /account/order/{id}/packinglist
+	ListOrderPackingList(ctx context.Context, params ListOrderPackingListParams) (*ListOrderPackingListOK, error)
 	// ListOrders implements listOrders operation.
 	//
 	// Get a list of orders.
