@@ -63,24 +63,6 @@ func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) error {
 	return nil
 }
 
-func (h Handler) GetOrderInvoices(ctx context.Context, params oas.GetOrderInvoicesParams) (*oas.GetOrderInvoicesOK, error) {
-	invoices, err := h.service.Billing.GetInvoicesByOrder(ctx, params.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	res := &oas.GetOrderInvoicesOK{}
-	for _, invoice := range invoices {
-		res.Invoices = append(res.Invoices, oas.InvoiceSummary{
-			ID:           invoice.Id,
-			OrderID:      invoice.OrderId,
-			DateInvoiced: invoice.DateInvoiced,
-			TotalAmount:  invoice.TotalAmount,
-		})
-	}
-	return res, nil
-}
-
 func (h Handler) GetInvoiceReport(ctx context.Context, params oas.GetInvoiceReportParams) (oas.GetInvoiceReportRes,
 	error) {
 	data, err := h.service.Report.GetInvoice(ctx, params.ID)
@@ -194,31 +176,27 @@ func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (o
 	if err != nil {
 		return nil, err
 	}
-	pbReq := orderv1.ListOrdersRequest_builder{
-		Page:     proto.Int32(int32(params.Page)),
-		PageSize: proto.Int32(int32(params.PageSize)),
-		BranchId: proto.String(userSession.Profile.BranchID),
-	}.Build()
 
-	pbRes, err := h.service.Order.Client.ListOrders(ctx, connect.NewRequest(pbReq))
+	orders, total, err := h.service.Order.ListOrders(ctx, int32(params.Page), int32(params.PageSize),
+		userSession.Profile.BranchID)
 
 	if err != nil {
 		return nil, err
 	}
 
 	response := oas.ListOrdersOK{
-		TotalRecords: int(pbRes.Msg.GetTotalRecords()),
+		TotalRecords: int(total),
 	}
 
-	for _, pbOrder := range pbRes.Msg.GetOrders() {
+	for _, order := range orders {
 		response.Orders = append(response.Orders, oas.OrderSummary{
-			ID:            pbOrder.GetId(),
-			ContactID:     pbOrder.GetContactId(),
-			BranchID:      pbOrder.GetBranchId(),
-			PurchaseOrder: pbOrder.GetPurchaseOrder(),
-			//Status:        convertOrderStatus(pbOrder.GetStatus()),
-			DateCreated:   pbOrder.GetDateCreated().AsTime(),
-			DateRequested: pbOrder.GetDateRequested().AsTime(),
+			ID:            order.Id,
+			BranchID:      order.BranchId,
+			ContactID:     order.ContactId,
+			PurchaseOrder: order.PurchaseOrder,
+			Status:        mapOrderStatus(order.Status),
+			DateCreated:   order.DateCreated,
+			DateRequested: order.DateRequested,
 		})
 	}
 	return &response, nil
@@ -325,6 +303,8 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 		return nil, err
 	}
 
+	invoices, err := h.service.Billing.GetInvoicesByOrder(ctx, params.ID)
+
 	oapiOrder := oas.Order{
 		ID:            order.Id,
 		ContactID:     order.ContactId,
@@ -343,13 +323,21 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 			PostalCode: order.ShippingAddress.PostalCode,
 			Country:    order.ShippingAddress.Country,
 		},
-		Total: 0,
 	}
 
 	for _, packingList := range packingLists {
 		oapiOrder.PackingLists = append(oapiOrder.PackingLists, oas.PackingListSummary{
 			InvoiceID:    packingList.InvoiceId,
 			DateInvoiced: packingList.DateInvoiced,
+		})
+	}
+
+	for _, invoice := range invoices {
+		oapiOrder.Invoices = append(oapiOrder.Invoices, oas.InvoiceSummary{
+			ID:           invoice.Id,
+			DateInvoiced: invoice.DateInvoiced,
+			TotalAmount:  invoice.TotalAmount,
+			PaidAmount:   invoice.PaidAmount,
 		})
 	}
 

@@ -503,20 +503,6 @@ func (s GetInvoiceReportOK) Read(p []byte) (n int, err error) {
 
 func (*GetInvoiceReportOK) getInvoiceReportRes() {}
 
-type GetOrderInvoicesOK struct {
-	Invoices []InvoiceSummary `json:"invoices"`
-}
-
-// GetInvoices returns the value of Invoices.
-func (s *GetOrderInvoicesOK) GetInvoices() []InvoiceSummary {
-	return s.Invoices
-}
-
-// SetInvoices sets the value of Invoices.
-func (s *GetOrderInvoicesOK) SetInvoices(val []InvoiceSummary) {
-	s.Invoices = val
-}
-
 // GetOrderNotFound is response for GetOrder operation.
 type GetOrderNotFound struct{}
 
@@ -615,6 +601,7 @@ type InvoiceSummary struct {
 	ID           string    `json:"id"`
 	OrderID      string    `json:"order_id"`
 	DateInvoiced time.Time `json:"date_invoiced"`
+	PaidAmount   float64   `json:"paid_amount"`
 	TotalAmount  float64   `json:"total_amount"`
 }
 
@@ -631,6 +618,11 @@ func (s *InvoiceSummary) GetOrderID() string {
 // GetDateInvoiced returns the value of DateInvoiced.
 func (s *InvoiceSummary) GetDateInvoiced() time.Time {
 	return s.DateInvoiced
+}
+
+// GetPaidAmount returns the value of PaidAmount.
+func (s *InvoiceSummary) GetPaidAmount() float64 {
+	return s.PaidAmount
 }
 
 // GetTotalAmount returns the value of TotalAmount.
@@ -651,6 +643,11 @@ func (s *InvoiceSummary) SetOrderID(val string) {
 // SetDateInvoiced sets the value of DateInvoiced.
 func (s *InvoiceSummary) SetDateInvoiced(val time.Time) {
 	s.DateInvoiced = val
+}
+
+// SetPaidAmount sets the value of PaidAmount.
+func (s *InvoiceSummary) SetPaidAmount(val float64) {
+	s.PaidAmount = val
 }
 
 // SetTotalAmount sets the value of TotalAmount.
@@ -881,6 +878,7 @@ type Order struct {
 	Total                float64              `json:"total"`
 	Items                []OrderItem          `json:"items"`
 	PackingLists         []PackingListSummary `json:"packing_lists"`
+	Invoices             []InvoiceSummary     `json:"invoices"`
 }
 
 // GetID returns the value of ID.
@@ -948,6 +946,11 @@ func (s *Order) GetPackingLists() []PackingListSummary {
 	return s.PackingLists
 }
 
+// GetInvoices returns the value of Invoices.
+func (s *Order) GetInvoices() []InvoiceSummary {
+	return s.Invoices
+}
+
 // SetID sets the value of ID.
 func (s *Order) SetID(val string) {
 	s.ID = val
@@ -1011,6 +1014,11 @@ func (s *Order) SetItems(val []OrderItem) {
 // SetPackingLists sets the value of PackingLists.
 func (s *Order) SetPackingLists(val []PackingListSummary) {
 	s.PackingLists = val
+}
+
+// SetInvoices sets the value of Invoices.
+func (s *Order) SetInvoices(val []InvoiceSummary) {
+	s.Invoices = val
 }
 
 // Ref: #/components/schemas/OrderItem

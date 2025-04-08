@@ -11,7 +11,6 @@ const (
 	GetActiveBranchesOperation    OperationName = "GetActiveBranches"
 	GetInvoiceReportOperation     OperationName = "GetInvoiceReport"
 	GetOrderOperation             OperationName = "GetOrder"
-	GetOrderInvoicesOperation     OperationName = "GetOrderInvoices"
 	GetPackingListReportOperation OperationName = "GetPackingListReport"
 	GetProductOperation           OperationName = "GetProduct"
 	GetQuoteOperation             OperationName = "GetQuote"

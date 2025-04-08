@@ -11,6 +11,15 @@ const (
 )
 
 type OrderStatus int
+type OrderSummary struct {
+	Id            string
+	ContactId     string
+	BranchId      string
+	PurchaseOrder string
+	Status        OrderStatus
+	DateCreated   time.Time
+	DateRequested time.Time
+}
 type Order struct {
 	Id            string
 	ContactId     string

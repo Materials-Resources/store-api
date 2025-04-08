@@ -39,10 +39,6 @@ type Handler interface {
 	//
 	// GET /account/order/{id}
 	GetOrder(ctx context.Context, params GetOrderParams) (GetOrderRes, error)
-	// GetOrderInvoices implements getOrderInvoices operation.
-	//
-	// GET /account/order/{id}/invoices
-	GetOrderInvoices(ctx context.Context, params GetOrderInvoicesParams) (*GetOrderInvoicesOK, error)
 	// GetPackingListReport implements getPackingListReport operation.
 	//
 	// Get packing list report by ID.

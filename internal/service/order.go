@@ -131,33 +131,34 @@ func (s *Order) GetOrder(ctx context.Context, orderId string) (*domain.Order, er
 	return order, nil
 }
 
-func (s *Order) ListOrders(ctx context.Context, req oas.ListOrdersParams) (*oas.ListOrdersOK, error) {
+func (s *Order) ListOrders(ctx context.Context, page, pageSize int32, branchId string) ([]*domain.OrderSummary, int32,
+	error) {
 	pbReq := orderv1.ListOrdersRequest_builder{
-		Page:     proto.Int32(int32(req.Page)),
-		PageSize: proto.Int32(int32(req.PageSize)),
-		BranchId: proto.String("100039"),
+		Page:     proto.Int32(page),
+		PageSize: proto.Int32(pageSize),
+		BranchId: proto.String(branchId),
 	}.Build()
 
 	pbRes, err := s.Client.ListOrders(ctx, connect.NewRequest(pbReq))
 
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	response := oas.ListOrdersOK{}
+	var orders []*domain.OrderSummary
 
 	for _, pbOrder := range pbRes.Msg.GetOrders() {
-		response.Orders = append(response.Orders, oas.OrderSummary{
-			ID:            pbOrder.GetId(),
-			ContactID:     pbOrder.GetContactId(),
-			BranchID:      pbOrder.GetBranchId(),
+		orders = append(orders, &domain.OrderSummary{
+			Id:            pbOrder.GetId(),
+			ContactId:     pbOrder.GetContactId(),
+			BranchId:      pbOrder.GetBranchId(),
 			PurchaseOrder: pbOrder.GetPurchaseOrder(),
-			//Status:        convertOrderStatus(pbOrder.GetStatus()),
+			Status:        convertOrderStatus(pbOrder.GetStatus()),
 			DateCreated:   pbOrder.GetDateCreated().AsTime(),
 			DateRequested: pbOrder.GetDateRequested().AsTime(),
 		})
 	}
-	return &response, nil
+	return orders, pbRes.Msg.GetTotalRecords(), nil
 }
 
 func (s *Order) ListQuotes(ctx context.Context, req oas.ListQuotesParams) (*oas.ListQuotesOK, error) {
