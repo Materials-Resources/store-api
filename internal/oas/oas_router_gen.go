@@ -83,54 +83,35 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 					if len(elem) == 0 {
 						switch r.Method {
+						case "GET":
+							s.handleListCustomerBranchesRequest([0]string{}, elemIsEscaped, w, r)
 						case "PUT":
 							s.handleSetActiveBranchRequest([0]string{}, elemIsEscaped, w, r)
 						default:
-							s.notAllowed(w, r, "PUT")
+							s.notAllowed(w, r, "GET,PUT")
 						}
 
 						return
 					}
 					switch elem[0] {
-					case 'e': // Prefix: "es"
+					case 'e': // Prefix: "es/active"
 
-						if l := len("es"); len(elem) >= l && elem[0:l] == "es" {
+						if l := len("es/active"); len(elem) >= l && elem[0:l] == "es/active" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
+							// Leaf node.
 							switch r.Method {
 							case "GET":
-								s.handleListCustomerBranchesRequest([0]string{}, elemIsEscaped, w, r)
+								s.handleGetActiveBranchesRequest([0]string{}, elemIsEscaped, w, r)
 							default:
 								s.notAllowed(w, r, "GET")
 							}
 
 							return
-						}
-						switch elem[0] {
-						case '/': // Prefix: "/active"
-
-							if l := len("/active"); len(elem) >= l && elem[0:l] == "/active" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							if len(elem) == 0 {
-								// Leaf node.
-								switch r.Method {
-								case "GET":
-									s.handleGetActiveBranchesRequest([0]string{}, elemIsEscaped, w, r)
-								default:
-									s.notAllowed(w, r, "GET")
-								}
-
-								return
-							}
-
 						}
 
 					}
@@ -540,6 +521,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 					if len(elem) == 0 {
 						switch method {
+						case "GET":
+							r.name = ListCustomerBranchesOperation
+							r.summary = "Get available branches for customer"
+							r.operationID = "listCustomerBranches"
+							r.pathPattern = "/account/branch"
+							r.args = args
+							r.count = 0
+							return r, true
 						case "PUT":
 							r.name = SetActiveBranchOperation
 							r.summary = "Set active branch for current user"
@@ -553,53 +542,28 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 					switch elem[0] {
-					case 'e': // Prefix: "es"
+					case 'e': // Prefix: "es/active"
 
-						if l := len("es"); len(elem) >= l && elem[0:l] == "es" {
+						if l := len("es/active"); len(elem) >= l && elem[0:l] == "es/active" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
+							// Leaf node.
 							switch method {
 							case "GET":
-								r.name = ListCustomerBranchesOperation
-								r.summary = "Get available branches for customer"
-								r.operationID = "listCustomerBranches"
-								r.pathPattern = "/account/branches"
+								r.name = GetActiveBranchesOperation
+								r.summary = "Get active branch for user"
+								r.operationID = "getActiveBranches"
+								r.pathPattern = "/account/branches/active"
 								r.args = args
 								r.count = 0
 								return r, true
 							default:
 								return
 							}
-						}
-						switch elem[0] {
-						case '/': // Prefix: "/active"
-
-							if l := len("/active"); len(elem) >= l && elem[0:l] == "/active" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							if len(elem) == 0 {
-								// Leaf node.
-								switch method {
-								case "GET":
-									r.name = GetActiveBranchesOperation
-									r.summary = "Get active branch for user"
-									r.operationID = "getActiveBranches"
-									r.pathPattern = "/account/branches/active"
-									r.args = args
-									r.count = 0
-									return r, true
-								default:
-									return
-								}
-							}
-
 						}
 
 					}

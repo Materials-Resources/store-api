@@ -166,9 +166,23 @@ func (h Handler) GetRecentPurchases(ctx context.Context) (*oas.GetRecentPurchase
 
 }
 
-func (h Handler) ListCustomerBranches(ctx context.Context, params oas.ListCustomerBranchesParams) (oas.ListCustomerBranchesRes, error) {
-	//TODO implement me
-	panic("implement me")
+func (h Handler) ListCustomerBranches(ctx context.Context) (oas.ListCustomerBranchesRes, error) {
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+	branches, err := h.service.Customer.ListBranches(ctx, userSession.Profile.ContactID)
+	if err != nil {
+		return nil, err
+	}
+	response := oas.ListCustomerBranchesOK{}
+	for _, branch := range branches {
+		response.Branches = append(response.Branches, oas.Branch{
+			ID:   branch.Id,
+			Name: branch.Name,
+		})
+	}
+	return &response, nil
 }
 
 func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (oas.ListOrdersRes, error) {

@@ -1467,14 +1467,14 @@ func (s *Server) handleGetRecentPurchasesRequest(args [0]string, argsEscaped boo
 //
 // Get available branches for customer.
 //
-// GET /account/branches
+// GET /account/branch
 func (s *Server) handleListCustomerBranchesRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listCustomerBranches"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/account/branches"),
+		semconv.HTTPRouteKey.String("/account/branch"),
 	}
 
 	// Start a span for this request.
@@ -1581,16 +1581,6 @@ func (s *Server) handleListCustomerBranchesRequest(args [0]string, argsEscaped b
 			return
 		}
 	}
-	params, err := decodeListCustomerBranchesParams(args, argsEscaped, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		defer recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
 
 	var response ListCustomerBranchesRes
 	if m := s.cfg.Middleware; m != nil {
@@ -1600,18 +1590,13 @@ func (s *Server) handleListCustomerBranchesRequest(args [0]string, argsEscaped b
 			OperationSummary: "Get available branches for customer",
 			OperationID:      "listCustomerBranches",
 			Body:             nil,
-			Params: middleware.Parameters{
-				{
-					Name: "contact_id",
-					In:   "query",
-				}: params.ContactID,
-			},
-			Raw: r,
+			Params:           middleware.Parameters{},
+			Raw:              r,
 		}
 
 		type (
 			Request  = struct{}
-			Params   = ListCustomerBranchesParams
+			Params   = struct{}
 			Response = ListCustomerBranchesRes
 		)
 		response, err = middleware.HookMiddleware[
@@ -1621,14 +1606,14 @@ func (s *Server) handleListCustomerBranchesRequest(args [0]string, argsEscaped b
 		](
 			m,
 			mreq,
-			unpackListCustomerBranchesParams,
+			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ListCustomerBranches(ctx, params)
+				response, err = s.h.ListCustomerBranches(ctx)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.ListCustomerBranches(ctx, params)
+		response, err = s.h.ListCustomerBranches(ctx)
 	}
 	if err != nil {
 		defer recordError("Internal", err)

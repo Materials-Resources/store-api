@@ -67,8 +67,8 @@ type Handler interface {
 	//
 	// Get available branches for customer.
 	//
-	// GET /account/branches
-	ListCustomerBranches(ctx context.Context, params ListCustomerBranchesParams) (ListCustomerBranchesRes, error)
+	// GET /account/branch
+	ListCustomerBranches(ctx context.Context) (ListCustomerBranchesRes, error)
 	// ListOrders implements listOrders operation.
 	//
 	// Get a list of orders.

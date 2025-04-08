@@ -18,6 +18,28 @@ security:
   - BearerAuth: []
 paths:
   /account/branch:
+    get:
+      summary: Get available branches for customer
+      operationId: listCustomerBranches
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  branches:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Branch'
+
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     put:
       summary: Set active branch for current user
       operationId: setActiveBranch
@@ -81,35 +103,6 @@ paths:
                 properties:
                   branch:
                     $ref: '#/components/schemas/Branch'
-        default:
-          description: General Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /account/branches:
-    get:
-      summary: Get available branches for customer
-      operationId: listCustomerBranches
-      parameters:
-        - name: contact_id
-          in: query
-          required: true
-          schema:
-              type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  branches:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Branch'
-
         default:
           description: General Error
           content:
