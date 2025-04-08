@@ -6,7 +6,7 @@ type UserSession struct {
 }
 
 type Profile struct {
-	ID        string
+	UserID    string
 	Email     string
 	ContactID string
 	BranchID  string

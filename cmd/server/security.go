@@ -34,6 +34,7 @@ func (s SecurityHandler) HandleBearerAuth(ctx context.Context, operationName oas
 	}
 
 	userSession.Profile = &session.Profile{
+		UserID:    claims.Subject,
 		ContactID: claims.Metadata.ContactID,
 		BranchID:  claims.Metadata.BranchID,
 	}

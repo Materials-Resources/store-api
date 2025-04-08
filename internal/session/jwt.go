@@ -9,6 +9,7 @@ import (
 
 type JWTClaims struct {
 	Metadata struct {
+		UserID    string
 		ContactID string `json:"contact_id"`
 		BranchID  string `json:"branch_id"`
 	} `json:"urn:zitadel:iam:user:metadata"`

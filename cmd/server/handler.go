@@ -57,7 +57,6 @@ func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) error {
 	}
 	err := h.mailer.Send("smallegan@emrsinc.com", "smallegan@emrsinc.com", "contact_request.tmpl", d)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil
@@ -255,11 +254,13 @@ func (h Handler) SearchProducts(ctx context.Context, req *oas.SearchProductsReq)
 }
 
 func (h Handler) SetActiveBranch(ctx context.Context, req *oas.SetActiveBranchReq) (oas.SetActiveBranchRes, error) {
-	// check if user can access this branch
-	// get user id from token
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	// update the branch
-	err := h.z.ChangeUserBranchId(ctx, "295379791043934934", req.GetBranchID())
+	err = h.z.ChangeUserBranchId(ctx, userSession.Profile.UserID, req.GetBranchID())
 	if err != nil {
 		return nil, err
 	}
