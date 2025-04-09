@@ -455,6 +455,7 @@ func (*ErrorStatusCode) getPackingListReportRes() {}
 func (*ErrorStatusCode) getProductRes()           {}
 func (*ErrorStatusCode) getQuoteRes()             {}
 func (*ErrorStatusCode) listCustomerBranchesRes() {}
+func (*ErrorStatusCode) listInvoicesRes()         {}
 func (*ErrorStatusCode) listOrdersRes()           {}
 func (*ErrorStatusCode) listQuotesRes()           {}
 func (*ErrorStatusCode) searchProductsRes()       {}
@@ -673,6 +674,8 @@ func (s *ListInvoicesOK) GetInvoices() []InvoiceSummary {
 func (s *ListInvoicesOK) SetInvoices(val []InvoiceSummary) {
 	s.Invoices = val
 }
+
+func (*ListInvoicesOK) listInvoicesRes() {}
 
 type ListOrdersOK struct {
 	TotalRecords int            `json:"total_records"`

@@ -74,7 +74,7 @@ type Handler interface {
 	// Get a list of invoices.
 	//
 	// GET /account/invoice
-	ListInvoices(ctx context.Context, params ListInvoicesParams) (*ListInvoicesOK, error)
+	ListInvoices(ctx context.Context, params ListInvoicesParams) (ListInvoicesRes, error)
 	// ListOrders implements listOrders operation.
 	//
 	// Get a list of orders.

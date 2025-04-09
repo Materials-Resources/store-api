@@ -33,6 +33,10 @@ type ListCustomerBranchesRes interface {
 	listCustomerBranchesRes()
 }
 
+type ListInvoicesRes interface {
+	listInvoicesRes()
+}
+
 type ListOrdersRes interface {
 	listOrdersRes()
 }

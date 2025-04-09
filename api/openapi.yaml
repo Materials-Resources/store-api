@@ -364,6 +364,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/InvoiceSummary'
+        default:
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /account/invoice/{id}/report:
     get:
       security: []

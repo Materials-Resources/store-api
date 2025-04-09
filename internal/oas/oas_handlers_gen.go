@@ -1778,7 +1778,7 @@ func (s *Server) handleListInvoicesRequest(args [0]string, argsEscaped bool, w h
 		return
 	}
 
-	var response *ListInvoicesOK
+	var response ListInvoicesRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -1802,7 +1802,7 @@ func (s *Server) handleListInvoicesRequest(args [0]string, argsEscaped bool, w h
 		type (
 			Request  = struct{}
 			Params   = ListInvoicesParams
-			Response = *ListInvoicesOK
+			Response = ListInvoicesRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
