@@ -340,6 +340,107 @@ func decodeGetQuoteParams(args [1]string, argsEscaped bool, r *http.Request) (pa
 	return params, nil
 }
 
+// GetRecentPurchasesParams is parameters of getRecentPurchases operation.
+type GetRecentPurchasesParams struct {
+	Page     int
+	PageSize int
+}
+
+func unpackGetRecentPurchasesParams(packed middleware.Parameters) (params GetRecentPurchasesParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "page",
+			In:   "query",
+		}
+		params.Page = packed[key].(int)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "page_size",
+			In:   "query",
+		}
+		params.PageSize = packed[key].(int)
+	}
+	return params
+}
+
+func decodeGetRecentPurchasesParams(args [0]string, argsEscaped bool, r *http.Request) (params GetRecentPurchasesParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode query: page.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToInt(val)
+				if err != nil {
+					return err
+				}
+
+				params.Page = c
+				return nil
+			}); err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "page",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: page_size.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "page_size",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToInt(val)
+				if err != nil {
+					return err
+				}
+
+				params.PageSize = c
+				return nil
+			}); err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "page_size",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // ListOrdersParams is parameters of listOrders operation.
 type ListOrdersParams struct {
 	Page     int

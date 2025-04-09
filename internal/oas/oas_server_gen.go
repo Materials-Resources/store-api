@@ -62,7 +62,7 @@ type Handler interface {
 	// Get recent purchases for customer.
 	//
 	// GET /account/recent-purchases
-	GetRecentPurchases(ctx context.Context) (*GetRecentPurchasesOK, error)
+	GetRecentPurchases(ctx context.Context, params GetRecentPurchasesParams) (*GetRecentPurchasesOK, error)
 	// ListCustomerBranches implements listCustomerBranches operation.
 	//
 	// Get available branches for customer.

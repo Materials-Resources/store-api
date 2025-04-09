@@ -23,7 +23,7 @@ func NewHandler(service service.Service, sessionManager *session.Manager) Handle
 	if err != nil {
 		panic(err)
 	}
-	m := mailer.New("smtp.materialsresources.or", 25, "", "", "noreply@materialsresources.org")
+	m := mailer.New("smtp.materialsresources.org", 25, "", "", "noreply@materialsresources.org")
 	return Handler{
 		sessionManager: sessionManager,
 		z:              z,
@@ -135,14 +135,15 @@ func (h Handler) GetQuote(ctx context.Context, params oas.GetQuoteParams) (oas.G
 	return res, err
 }
 
-func (h Handler) GetRecentPurchases(ctx context.Context) (*oas.GetRecentPurchasesOK, error) {
+func (h Handler) GetRecentPurchases(ctx context.Context, params oas.GetRecentPurchasesParams) (*oas.GetRecentPurchasesOK, error) {
 	userSession, err := h.sessionManager.GetUserSession(ctx)
 	if err != nil {
 		return nil, err
 	}
 	pbReq := customerv1.GetRecentPurchasesByBranchRequest_builder{
-		Id:    proto.String(userSession.Profile.BranchID),
-		Limit: proto.Int32(10),
+		Id:       proto.String(userSession.Profile.BranchID),
+		PageSize: proto.Int32(int32(params.PageSize)),
+		Page:     proto.Int32(int32(params.Page)),
 	}.Build()
 	pbRes, err := h.service.Customer.Client.GetRecentPurchasesByBranch(ctx, connect.NewRequest(pbReq))
 	if err != nil {
@@ -340,6 +341,8 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 			PostalCode: order.ShippingAddress.PostalCode,
 			Country:    order.ShippingAddress.Country,
 		},
+		PackingLists: make([]oas.PackingListSummary, 0),
+		Invoices:     make([]oas.InvoiceSummary, 0),
 	}
 
 	for _, packingList := range packingLists {

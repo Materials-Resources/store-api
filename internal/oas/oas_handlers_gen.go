@@ -1414,6 +1414,16 @@ func (s *Server) handleGetRecentPurchasesRequest(args [0]string, argsEscaped boo
 			return
 		}
 	}
+	params, err := decodeGetRecentPurchasesParams(args, argsEscaped, r)
+	if err != nil {
+		err = &ogenerrors.DecodeParamsError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		defer recordError("DecodeParams", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
 
 	var response *GetRecentPurchasesOK
 	if m := s.cfg.Middleware; m != nil {
@@ -1423,13 +1433,22 @@ func (s *Server) handleGetRecentPurchasesRequest(args [0]string, argsEscaped boo
 			OperationSummary: "Get recent purchases for customer",
 			OperationID:      "getRecentPurchases",
 			Body:             nil,
-			Params:           middleware.Parameters{},
-			Raw:              r,
+			Params: middleware.Parameters{
+				{
+					Name: "page",
+					In:   "query",
+				}: params.Page,
+				{
+					Name: "page_size",
+					In:   "query",
+				}: params.PageSize,
+			},
+			Raw: r,
 		}
 
 		type (
 			Request  = struct{}
-			Params   = struct{}
+			Params   = GetRecentPurchasesParams
 			Response = *GetRecentPurchasesOK
 		)
 		response, err = middleware.HookMiddleware[
@@ -1439,14 +1458,14 @@ func (s *Server) handleGetRecentPurchasesRequest(args [0]string, argsEscaped boo
 		](
 			m,
 			mreq,
-			nil,
+			unpackGetRecentPurchasesParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.GetRecentPurchases(ctx)
+				response, err = s.h.GetRecentPurchases(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.GetRecentPurchases(ctx)
+		response, err = s.h.GetRecentPurchases(ctx, params)
 	}
 	if err != nil {
 		defer recordError("Internal", err)

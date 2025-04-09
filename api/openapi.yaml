@@ -397,6 +397,17 @@ paths:
       operationId: getRecentPurchases
       tags:
         - account
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: page_size
+          in: query
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: "List of recent purchases"
