@@ -199,13 +199,10 @@ paths:
             schema:
               type: object
               required:
-                - purchase_order
                 - notes
                 - date_requested
                 - items
               properties:
-                purchase_order:
-                  type: string
                 notes:
                   type: string
                 date_requested:

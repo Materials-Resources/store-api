@@ -148,7 +148,9 @@ func (h Handler) GetRecentPurchases(ctx context.Context) (*oas.GetRecentPurchase
 	if err != nil {
 		return nil, err
 	}
-	response := oas.GetRecentPurchasesOK{}
+	response := oas.GetRecentPurchasesOK{
+		Purchases: make([]oas.PurchaseSummary, 0),
+	}
 
 	for _, purchase := range pbRes.Msg.GetItems() {
 		response.Purchases = append(response.Purchases, oas.PurchaseSummary{
