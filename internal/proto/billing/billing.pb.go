@@ -1807,6 +1807,203 @@ func (b0 GetInvoiceResponse_builder) Build() *GetInvoiceResponse {
 	return m0
 }
 
+type GetInvoicesByBranchRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_BranchId    *string                `protobuf:"bytes,1,opt,name=branch_id,json=branchId"`
+	xxx_hidden_Page        int32                  `protobuf:"varint,2,opt,name=page"`
+	xxx_hidden_PageSize    int32                  `protobuf:"varint,3,opt,name=page_size,json=pageSize"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *GetInvoicesByBranchRequest) Reset() {
+	*x = GetInvoicesByBranchRequest{}
+	mi := &file_billing_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetInvoicesByBranchRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetInvoicesByBranchRequest) ProtoMessage() {}
+
+func (x *GetInvoicesByBranchRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_billing_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *GetInvoicesByBranchRequest) GetBranchId() string {
+	if x != nil {
+		if x.xxx_hidden_BranchId != nil {
+			return *x.xxx_hidden_BranchId
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *GetInvoicesByBranchRequest) GetPage() int32 {
+	if x != nil {
+		return x.xxx_hidden_Page
+	}
+	return 0
+}
+
+func (x *GetInvoicesByBranchRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.xxx_hidden_PageSize
+	}
+	return 0
+}
+
+func (x *GetInvoicesByBranchRequest) SetBranchId(v string) {
+	x.xxx_hidden_BranchId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *GetInvoicesByBranchRequest) SetPage(v int32) {
+	x.xxx_hidden_Page = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *GetInvoicesByBranchRequest) SetPageSize(v int32) {
+	x.xxx_hidden_PageSize = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *GetInvoicesByBranchRequest) HasBranchId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *GetInvoicesByBranchRequest) HasPage() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *GetInvoicesByBranchRequest) HasPageSize() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *GetInvoicesByBranchRequest) ClearBranchId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_BranchId = nil
+}
+
+func (x *GetInvoicesByBranchRequest) ClearPage() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Page = 0
+}
+
+func (x *GetInvoicesByBranchRequest) ClearPageSize() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_PageSize = 0
+}
+
+type GetInvoicesByBranchRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	BranchId *string
+	Page     *int32
+	PageSize *int32
+}
+
+func (b0 GetInvoicesByBranchRequest_builder) Build() *GetInvoicesByBranchRequest {
+	m0 := &GetInvoicesByBranchRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.BranchId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_BranchId = b.BranchId
+	}
+	if b.Page != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Page = *b.Page
+	}
+	if b.PageSize != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_PageSize = *b.PageSize
+	}
+	return m0
+}
+
+type GetInvoicesByBranchResponse struct {
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Invoices *[]*InvoiceSummary     `protobuf:"bytes,1,rep,name=invoices"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *GetInvoicesByBranchResponse) Reset() {
+	*x = GetInvoicesByBranchResponse{}
+	mi := &file_billing_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetInvoicesByBranchResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetInvoicesByBranchResponse) ProtoMessage() {}
+
+func (x *GetInvoicesByBranchResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_billing_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *GetInvoicesByBranchResponse) GetInvoices() []*InvoiceSummary {
+	if x != nil {
+		if x.xxx_hidden_Invoices != nil {
+			return *x.xxx_hidden_Invoices
+		}
+	}
+	return nil
+}
+
+func (x *GetInvoicesByBranchResponse) SetInvoices(v []*InvoiceSummary) {
+	x.xxx_hidden_Invoices = &v
+}
+
+type GetInvoicesByBranchResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Invoices []*InvoiceSummary
+}
+
+func (b0 GetInvoicesByBranchResponse_builder) Build() *GetInvoicesByBranchResponse {
+	m0 := &GetInvoicesByBranchResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Invoices = &b.Invoices
+	return m0
+}
+
 type Invoice_Item struct {
 	state                                protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ProductId                 *string                `protobuf:"bytes,1,opt,name=product_id,json=productId"`
@@ -1829,7 +2026,7 @@ type Invoice_Item struct {
 
 func (x *Invoice_Item) Reset() {
 	*x = Invoice_Item{}
-	mi := &file_billing_proto_msgTypes[9]
+	mi := &file_billing_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1841,7 +2038,7 @@ func (x *Invoice_Item) String() string {
 func (*Invoice_Item) ProtoMessage() {}
 
 func (x *Invoice_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_billing_proto_msgTypes[9]
+	mi := &file_billing_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2382,60 +2579,84 @@ var file_billing_proto_rawDesc = string([]byte{
 	0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a,
 	0x07, 0x69, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13,
 	0x2e, 0x62, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x2e, 0x49, 0x6e, 0x76, 0x6f,
-	0x69, 0x63, 0x65, 0x52, 0x07, 0x69, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x32, 0xc2, 0x01, 0x0a,
-	0x0e, 0x42, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12,
-	0x63, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x73, 0x42, 0x79,
-	0x4f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x25, 0x2e, 0x62, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x2e,
-	0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x73, 0x42, 0x79,
-	0x4f, 0x72, 0x64, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x62,
-	0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x76,
-	0x6f, 0x69, 0x63, 0x65, 0x73, 0x42, 0x79, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4b, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69,
-	0x63, 0x65, 0x12, 0x1d, 0x2e, 0x62, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x2e,
-	0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x1e, 0x2e, 0x62, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x2e, 0x47,
-	0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x42, 0x08, 0x92, 0x03, 0x05, 0xd2, 0x3e, 0x02, 0x10, 0x03, 0x62, 0x08, 0x65, 0x64, 0x69,
-	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x70, 0xe8, 0x07,
+	0x69, 0x63, 0x65, 0x52, 0x07, 0x69, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x22, 0x6a, 0x0a, 0x1a,
+	0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x73, 0x42, 0x79, 0x42, 0x72, 0x61,
+	0x6e, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x62, 0x72,
+	0x61, 0x6e, 0x63, 0x68, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x62,
+	0x72, 0x61, 0x6e, 0x63, 0x68, 0x49, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x61, 0x67, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x70, 0x61, 0x67, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x70,
+	0x61, 0x67, 0x65, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08,
+	0x70, 0x61, 0x67, 0x65, 0x53, 0x69, 0x7a, 0x65, 0x22, 0x55, 0x0a, 0x1b, 0x47, 0x65, 0x74, 0x49,
+	0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x73, 0x42, 0x79, 0x42, 0x72, 0x61, 0x6e, 0x63, 0x68, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x36, 0x0a, 0x08, 0x69, 0x6e, 0x76, 0x6f, 0x69,
+	0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x62, 0x69, 0x6c, 0x6c,
+	0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x2e, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x53, 0x75,
+	0x6d, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x08, 0x69, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x73, 0x32,
+	0xaa, 0x02, 0x0a, 0x0e, 0x42, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x53, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x12, 0x63, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65,
+	0x73, 0x42, 0x79, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x25, 0x2e, 0x62, 0x69, 0x6c, 0x6c, 0x69,
+	0x6e, 0x67, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65,
+	0x73, 0x42, 0x79, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x26, 0x2e, 0x62, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74,
+	0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x73, 0x42, 0x79, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4b, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x49, 0x6e,
+	0x76, 0x6f, 0x69, 0x63, 0x65, 0x12, 0x1d, 0x2e, 0x62, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x2e,
+	0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x1e, 0x2e, 0x62, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x2e, 0x76,
+	0x31, 0x2e, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x13, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69,
+	0x63, 0x65, 0x73, 0x42, 0x79, 0x42, 0x72, 0x61, 0x6e, 0x63, 0x68, 0x12, 0x26, 0x2e, 0x62, 0x69,
+	0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f,
+	0x69, 0x63, 0x65, 0x73, 0x42, 0x79, 0x42, 0x72, 0x61, 0x6e, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x62, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31,
+	0x2e, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x73, 0x42, 0x79, 0x42, 0x72,
+	0x61, 0x6e, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x08, 0x92, 0x03,
+	0x05, 0xd2, 0x3e, 0x02, 0x10, 0x03, 0x62, 0x08, 0x65, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x70, 0xe8, 0x07,
 })
 
-var file_billing_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_billing_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_billing_proto_goTypes = []any{
-	(*UnitOfMeasurement)(nil),          // 0: billing.v1.UnitOfMeasurement
-	(*Address)(nil),                    // 1: billing.v1.Address
-	(*InvoiceSummary)(nil),             // 2: billing.v1.InvoiceSummary
-	(*InvoiceTotals)(nil),              // 3: billing.v1.InvoiceTotals
-	(*Invoice)(nil),                    // 4: billing.v1.Invoice
-	(*GetInvoicesByOrderRequest)(nil),  // 5: billing.v1.GetInvoicesByOrderRequest
-	(*GetInvoicesByOrderResponse)(nil), // 6: billing.v1.GetInvoicesByOrderResponse
-	(*GetInvoiceRequest)(nil),          // 7: billing.v1.GetInvoiceRequest
-	(*GetInvoiceResponse)(nil),         // 8: billing.v1.GetInvoiceResponse
-	(*Invoice_Item)(nil),               // 9: billing.v1.Invoice.Item
-	(*timestamppb.Timestamp)(nil),      // 10: google.protobuf.Timestamp
+	(*UnitOfMeasurement)(nil),           // 0: billing.v1.UnitOfMeasurement
+	(*Address)(nil),                     // 1: billing.v1.Address
+	(*InvoiceSummary)(nil),              // 2: billing.v1.InvoiceSummary
+	(*InvoiceTotals)(nil),               // 3: billing.v1.InvoiceTotals
+	(*Invoice)(nil),                     // 4: billing.v1.Invoice
+	(*GetInvoicesByOrderRequest)(nil),   // 5: billing.v1.GetInvoicesByOrderRequest
+	(*GetInvoicesByOrderResponse)(nil),  // 6: billing.v1.GetInvoicesByOrderResponse
+	(*GetInvoiceRequest)(nil),           // 7: billing.v1.GetInvoiceRequest
+	(*GetInvoiceResponse)(nil),          // 8: billing.v1.GetInvoiceResponse
+	(*GetInvoicesByBranchRequest)(nil),  // 9: billing.v1.GetInvoicesByBranchRequest
+	(*GetInvoicesByBranchResponse)(nil), // 10: billing.v1.GetInvoicesByBranchResponse
+	(*Invoice_Item)(nil),                // 11: billing.v1.Invoice.Item
+	(*timestamppb.Timestamp)(nil),       // 12: google.protobuf.Timestamp
 }
 var file_billing_proto_depIdxs = []int32{
-	10, // 0: billing.v1.InvoiceSummary.date_invoiced:type_name -> google.protobuf.Timestamp
-	10, // 1: billing.v1.Invoice.date_invoiced:type_name -> google.protobuf.Timestamp
-	10, // 2: billing.v1.Invoice.date_ordered:type_name -> google.protobuf.Timestamp
+	12, // 0: billing.v1.InvoiceSummary.date_invoiced:type_name -> google.protobuf.Timestamp
+	12, // 1: billing.v1.Invoice.date_invoiced:type_name -> google.protobuf.Timestamp
+	12, // 2: billing.v1.Invoice.date_ordered:type_name -> google.protobuf.Timestamp
 	1,  // 3: billing.v1.Invoice.billing_address:type_name -> billing.v1.Address
 	1,  // 4: billing.v1.Invoice.shipping_address:type_name -> billing.v1.Address
-	10, // 5: billing.v1.Invoice.terms_due_date:type_name -> google.protobuf.Timestamp
-	10, // 6: billing.v1.Invoice.terms_discount_due_date:type_name -> google.protobuf.Timestamp
+	12, // 5: billing.v1.Invoice.terms_due_date:type_name -> google.protobuf.Timestamp
+	12, // 6: billing.v1.Invoice.terms_discount_due_date:type_name -> google.protobuf.Timestamp
 	3,  // 7: billing.v1.Invoice.totals:type_name -> billing.v1.InvoiceTotals
-	9,  // 8: billing.v1.Invoice.items:type_name -> billing.v1.Invoice.Item
+	11, // 8: billing.v1.Invoice.items:type_name -> billing.v1.Invoice.Item
 	2,  // 9: billing.v1.GetInvoicesByOrderResponse.invoices:type_name -> billing.v1.InvoiceSummary
 	4,  // 10: billing.v1.GetInvoiceResponse.invoice:type_name -> billing.v1.Invoice
-	0,  // 11: billing.v1.Invoice.Item.sales_unit_of_measurement:type_name -> billing.v1.UnitOfMeasurement
-	0,  // 12: billing.v1.Invoice.Item.purchase_unit_of_measurement:type_name -> billing.v1.UnitOfMeasurement
-	5,  // 13: billing.v1.BillingService.GetInvoicesByOrder:input_type -> billing.v1.GetInvoicesByOrderRequest
-	7,  // 14: billing.v1.BillingService.GetInvoice:input_type -> billing.v1.GetInvoiceRequest
-	6,  // 15: billing.v1.BillingService.GetInvoicesByOrder:output_type -> billing.v1.GetInvoicesByOrderResponse
-	8,  // 16: billing.v1.BillingService.GetInvoice:output_type -> billing.v1.GetInvoiceResponse
-	15, // [15:17] is the sub-list for method output_type
-	13, // [13:15] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	2,  // 11: billing.v1.GetInvoicesByBranchResponse.invoices:type_name -> billing.v1.InvoiceSummary
+	0,  // 12: billing.v1.Invoice.Item.sales_unit_of_measurement:type_name -> billing.v1.UnitOfMeasurement
+	0,  // 13: billing.v1.Invoice.Item.purchase_unit_of_measurement:type_name -> billing.v1.UnitOfMeasurement
+	5,  // 14: billing.v1.BillingService.GetInvoicesByOrder:input_type -> billing.v1.GetInvoicesByOrderRequest
+	7,  // 15: billing.v1.BillingService.GetInvoice:input_type -> billing.v1.GetInvoiceRequest
+	9,  // 16: billing.v1.BillingService.GetInvoicesByBranch:input_type -> billing.v1.GetInvoicesByBranchRequest
+	6,  // 17: billing.v1.BillingService.GetInvoicesByOrder:output_type -> billing.v1.GetInvoicesByOrderResponse
+	8,  // 18: billing.v1.BillingService.GetInvoice:output_type -> billing.v1.GetInvoiceResponse
+	10, // 19: billing.v1.BillingService.GetInvoicesByBranch:output_type -> billing.v1.GetInvoicesByBranchResponse
+	17, // [17:20] is the sub-list for method output_type
+	14, // [14:17] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_billing_proto_init() }
@@ -2449,7 +2670,7 @@ func file_billing_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_billing_proto_rawDesc), len(file_billing_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

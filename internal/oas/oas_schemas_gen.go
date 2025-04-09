@@ -660,6 +660,20 @@ func (s *ListCustomerBranchesOK) SetBranches(val []Branch) {
 
 func (*ListCustomerBranchesOK) listCustomerBranchesRes() {}
 
+type ListInvoicesOK struct {
+	Invoices []InvoiceSummary `json:"invoices"`
+}
+
+// GetInvoices returns the value of Invoices.
+func (s *ListInvoicesOK) GetInvoices() []InvoiceSummary {
+	return s.Invoices
+}
+
+// SetInvoices sets the value of Invoices.
+func (s *ListInvoicesOK) SetInvoices(val []InvoiceSummary) {
+	s.Invoices = val
+}
+
 type ListOrdersOK struct {
 	TotalRecords int            `json:"total_records"`
 	Orders       []OrderSummary `json:"orders"`

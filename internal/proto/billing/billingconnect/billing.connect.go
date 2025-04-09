@@ -39,6 +39,9 @@ const (
 	// BillingServiceGetInvoiceProcedure is the fully-qualified name of the BillingService's GetInvoice
 	// RPC.
 	BillingServiceGetInvoiceProcedure = "/billing.v1.BillingService/GetInvoice"
+	// BillingServiceGetInvoicesByBranchProcedure is the fully-qualified name of the BillingService's
+	// GetInvoicesByBranch RPC.
+	BillingServiceGetInvoicesByBranchProcedure = "/billing.v1.BillingService/GetInvoicesByBranch"
 )
 
 // BillingServiceClient is a client for the billing.v1.BillingService service.
@@ -46,6 +49,7 @@ type BillingServiceClient interface {
 	// GetInvoicesByOrder returns all invoices for a given order
 	GetInvoicesByOrder(context.Context, *connect.Request[billing.GetInvoicesByOrderRequest]) (*connect.Response[billing.GetInvoicesByOrderResponse], error)
 	GetInvoice(context.Context, *connect.Request[billing.GetInvoiceRequest]) (*connect.Response[billing.GetInvoiceResponse], error)
+	GetInvoicesByBranch(context.Context, *connect.Request[billing.GetInvoicesByBranchRequest]) (*connect.Response[billing.GetInvoicesByBranchResponse], error)
 }
 
 // NewBillingServiceClient constructs a client for the billing.v1.BillingService service. By
@@ -71,13 +75,20 @@ func NewBillingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(billingServiceMethods.ByName("GetInvoice")),
 			connect.WithClientOptions(opts...),
 		),
+		getInvoicesByBranch: connect.NewClient[billing.GetInvoicesByBranchRequest, billing.GetInvoicesByBranchResponse](
+			httpClient,
+			baseURL+BillingServiceGetInvoicesByBranchProcedure,
+			connect.WithSchema(billingServiceMethods.ByName("GetInvoicesByBranch")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // billingServiceClient implements BillingServiceClient.
 type billingServiceClient struct {
-	getInvoicesByOrder *connect.Client[billing.GetInvoicesByOrderRequest, billing.GetInvoicesByOrderResponse]
-	getInvoice         *connect.Client[billing.GetInvoiceRequest, billing.GetInvoiceResponse]
+	getInvoicesByOrder  *connect.Client[billing.GetInvoicesByOrderRequest, billing.GetInvoicesByOrderResponse]
+	getInvoice          *connect.Client[billing.GetInvoiceRequest, billing.GetInvoiceResponse]
+	getInvoicesByBranch *connect.Client[billing.GetInvoicesByBranchRequest, billing.GetInvoicesByBranchResponse]
 }
 
 // GetInvoicesByOrder calls billing.v1.BillingService.GetInvoicesByOrder.
@@ -90,11 +101,17 @@ func (c *billingServiceClient) GetInvoice(ctx context.Context, req *connect.Requ
 	return c.getInvoice.CallUnary(ctx, req)
 }
 
+// GetInvoicesByBranch calls billing.v1.BillingService.GetInvoicesByBranch.
+func (c *billingServiceClient) GetInvoicesByBranch(ctx context.Context, req *connect.Request[billing.GetInvoicesByBranchRequest]) (*connect.Response[billing.GetInvoicesByBranchResponse], error) {
+	return c.getInvoicesByBranch.CallUnary(ctx, req)
+}
+
 // BillingServiceHandler is an implementation of the billing.v1.BillingService service.
 type BillingServiceHandler interface {
 	// GetInvoicesByOrder returns all invoices for a given order
 	GetInvoicesByOrder(context.Context, *connect.Request[billing.GetInvoicesByOrderRequest]) (*connect.Response[billing.GetInvoicesByOrderResponse], error)
 	GetInvoice(context.Context, *connect.Request[billing.GetInvoiceRequest]) (*connect.Response[billing.GetInvoiceResponse], error)
+	GetInvoicesByBranch(context.Context, *connect.Request[billing.GetInvoicesByBranchRequest]) (*connect.Response[billing.GetInvoicesByBranchResponse], error)
 }
 
 // NewBillingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -116,12 +133,20 @@ func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(billingServiceMethods.ByName("GetInvoice")),
 		connect.WithHandlerOptions(opts...),
 	)
+	billingServiceGetInvoicesByBranchHandler := connect.NewUnaryHandler(
+		BillingServiceGetInvoicesByBranchProcedure,
+		svc.GetInvoicesByBranch,
+		connect.WithSchema(billingServiceMethods.ByName("GetInvoicesByBranch")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/billing.v1.BillingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BillingServiceGetInvoicesByOrderProcedure:
 			billingServiceGetInvoicesByOrderHandler.ServeHTTP(w, r)
 		case BillingServiceGetInvoiceProcedure:
 			billingServiceGetInvoiceHandler.ServeHTTP(w, r)
+		case BillingServiceGetInvoicesByBranchProcedure:
+			billingServiceGetInvoicesByBranchHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -137,4 +162,8 @@ func (UnimplementedBillingServiceHandler) GetInvoicesByOrder(context.Context, *c
 
 func (UnimplementedBillingServiceHandler) GetInvoice(context.Context, *connect.Request[billing.GetInvoiceRequest]) (*connect.Response[billing.GetInvoiceResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("billing.v1.BillingService.GetInvoice is not implemented"))
+}
+
+func (UnimplementedBillingServiceHandler) GetInvoicesByBranch(context.Context, *connect.Request[billing.GetInvoicesByBranchRequest]) (*connect.Response[billing.GetInvoicesByBranchResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("billing.v1.BillingService.GetInvoicesByBranch is not implemented"))
 }

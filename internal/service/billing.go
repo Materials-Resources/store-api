@@ -43,3 +43,28 @@ func (s *BillingService) GetInvoicesByOrder(ctx context.Context, orderId string)
 	}
 	return invoices, nil
 }
+
+func (s *BillingService) GetInvoicesByBranch(ctx context.Context, branchId string, page,
+	pageSize int32) ([]*domain.InvoiceSummary,
+	error) {
+	pbReq := billingv1.GetInvoicesByBranchRequest_builder{
+		BranchId: proto.String(branchId), Page: proto.Int32(page),
+		PageSize: proto.Int32(pageSize),
+	}.Build()
+
+	pbRes, err := s.client.GetInvoicesByBranch(ctx, connect.NewRequest(pbReq))
+	if err != nil {
+		return nil, err
+	}
+	var invoices []*domain.InvoiceSummary
+	for _, invoice := range pbRes.Msg.GetInvoices() {
+		invoices = append(invoices, &domain.InvoiceSummary{
+			Id:           invoice.GetId(),
+			OrderId:      invoice.GetOrderId(),
+			DateInvoiced: invoice.GetDateInvoiced().AsTime(),
+			TotalAmount:  invoice.GetTotalAmount(),
+			PaidAmount:   invoice.GetPaidAmount(),
+		})
+	}
+	return invoices, nil
+}

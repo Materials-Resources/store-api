@@ -337,6 +337,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /account/invoice:
+    get:
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+      summary: Get a list of invoices
+      operationId: listInvoices
+      tags:
+        - account
+      responses:
+        '200':
+          description: "List of invoice summaries for account"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invoices:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InvoiceSummary'
   /account/invoice/{id}/report:
     get:
       security: []

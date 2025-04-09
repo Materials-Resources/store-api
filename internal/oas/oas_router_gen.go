@@ -116,47 +116,68 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 					}
 
-				case 'i': // Prefix: "invoice/"
+				case 'i': // Prefix: "invoice"
 
-					if l := len("invoice/"); len(elem) >= l && elem[0:l] == "invoice/" {
+					if l := len("invoice"); len(elem) >= l && elem[0:l] == "invoice" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
-					// Param: "id"
-					// Match until "/"
-					idx := strings.IndexByte(elem, '/')
-					if idx < 0 {
-						idx = len(elem)
-					}
-					args[0] = elem[:idx]
-					elem = elem[idx:]
-
 					if len(elem) == 0 {
-						break
+						switch r.Method {
+						case "GET":
+							s.handleListInvoicesRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
 					}
 					switch elem[0] {
-					case '/': // Prefix: "/report"
+					case '/': // Prefix: "/"
 
-						if l := len("/report"); len(elem) >= l && elem[0:l] == "/report" {
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
+						// Param: "id"
+						// Match until "/"
+						idx := strings.IndexByte(elem, '/')
+						if idx < 0 {
+							idx = len(elem)
+						}
+						args[0] = elem[:idx]
+						elem = elem[idx:]
+
 						if len(elem) == 0 {
-							// Leaf node.
-							switch r.Method {
-							case "GET":
-								s.handleGetInvoiceReportRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							default:
-								s.notAllowed(w, r, "GET")
+							break
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/report"
+
+							if l := len("/report"); len(elem) >= l && elem[0:l] == "/report" {
+								elem = elem[l:]
+							} else {
+								break
 							}
 
-							return
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "GET":
+									s.handleGetInvoiceReportRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "GET")
+								}
+
+								return
+							}
+
 						}
 
 					}
@@ -568,49 +589,74 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 					}
 
-				case 'i': // Prefix: "invoice/"
+				case 'i': // Prefix: "invoice"
 
-					if l := len("invoice/"); len(elem) >= l && elem[0:l] == "invoice/" {
+					if l := len("invoice"); len(elem) >= l && elem[0:l] == "invoice" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
-					// Param: "id"
-					// Match until "/"
-					idx := strings.IndexByte(elem, '/')
-					if idx < 0 {
-						idx = len(elem)
-					}
-					args[0] = elem[:idx]
-					elem = elem[idx:]
-
 					if len(elem) == 0 {
-						break
+						switch method {
+						case "GET":
+							r.name = ListInvoicesOperation
+							r.summary = "Get a list of invoices"
+							r.operationID = "listInvoices"
+							r.pathPattern = "/account/invoice"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
 					}
 					switch elem[0] {
-					case '/': // Prefix: "/report"
+					case '/': // Prefix: "/"
 
-						if l := len("/report"); len(elem) >= l && elem[0:l] == "/report" {
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
+						// Param: "id"
+						// Match until "/"
+						idx := strings.IndexByte(elem, '/')
+						if idx < 0 {
+							idx = len(elem)
+						}
+						args[0] = elem[:idx]
+						elem = elem[idx:]
+
 						if len(elem) == 0 {
-							// Leaf node.
-							switch method {
-							case "GET":
-								r.name = GetInvoiceReportOperation
-								r.summary = "Get invoice report by ID"
-								r.operationID = "getInvoiceReport"
-								r.pathPattern = "/account/invoice/{id}/report"
-								r.args = args
-								r.count = 1
-								return r, true
-							default:
-								return
+							break
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/report"
+
+							if l := len("/report"); len(elem) >= l && elem[0:l] == "/report" {
+								elem = elem[l:]
+							} else {
+								break
 							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch method {
+								case "GET":
+									r.name = GetInvoiceReportOperation
+									r.summary = "Get invoice report by ID"
+									r.operationID = "getInvoiceReport"
+									r.pathPattern = "/account/invoice/{id}/report"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
+								}
+							}
+
 						}
 
 					}

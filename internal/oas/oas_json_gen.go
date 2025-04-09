@@ -1954,6 +1954,80 @@ func (s *ListCustomerBranchesOK) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
+func (s *ListInvoicesOK) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *ListInvoicesOK) encodeFields(e *jx.Encoder) {
+	{
+		if s.Invoices != nil {
+			e.FieldStart("invoices")
+			e.ArrStart()
+			for _, elem := range s.Invoices {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
+		}
+	}
+}
+
+var jsonFieldsNameOfListInvoicesOK = [1]string{
+	0: "invoices",
+}
+
+// Decode decodes ListInvoicesOK from json.
+func (s *ListInvoicesOK) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode ListInvoicesOK to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "invoices":
+			if err := func() error {
+				s.Invoices = make([]InvoiceSummary, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem InvoiceSummary
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Invoices = append(s.Invoices, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"invoices\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode ListInvoicesOK")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *ListInvoicesOK) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *ListInvoicesOK) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s *ListOrdersOK) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)

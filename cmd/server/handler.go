@@ -39,6 +39,36 @@ type Handler struct {
 	mailer         mailer.Mailer
 }
 
+func (h Handler) ListInvoices(ctx context.Context, params oas.ListInvoicesParams) (*oas.ListInvoicesOK, error) {
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	invoices, err := h.service.Billing.GetInvoicesByBranch(ctx, userSession.Profile.BranchID, int32(params.Page.Or(1)),
+		int32(params.PageSize.Or(10)))
+
+	if err != nil {
+		return nil, err
+	}
+
+	respone := &oas.ListInvoicesOK{
+		Invoices: make([]oas.InvoiceSummary, 0),
+	}
+
+	for _, invoice := range invoices {
+		respone.Invoices = append(respone.Invoices, oas.InvoiceSummary{
+			ID:           invoice.Id,
+			OrderID:      invoice.OrderId,
+			DateInvoiced: invoice.DateInvoiced,
+			TotalAmount:  invoice.TotalAmount,
+			PaidAmount:   invoice.PaidAmount,
+		})
+	}
+	return respone, nil
+
+}
+
 func (h Handler) GetPackingListReport(ctx context.Context, params oas.GetPackingListReportParams) (oas.GetPackingListReportRes, error) {
 	data, err := h.service.Report.GetPackingList(ctx, params.ID)
 	if err != nil {

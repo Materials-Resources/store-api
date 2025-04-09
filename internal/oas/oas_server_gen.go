@@ -69,6 +69,12 @@ type Handler interface {
 	//
 	// GET /account/branch
 	ListCustomerBranches(ctx context.Context) (ListCustomerBranchesRes, error)
+	// ListInvoices implements listInvoices operation.
+	//
+	// Get a list of invoices.
+	//
+	// GET /account/invoice
+	ListInvoices(ctx context.Context, params ListInvoicesParams) (*ListInvoicesOK, error)
 	// ListOrders implements listOrders operation.
 	//
 	// Get a list of orders.
