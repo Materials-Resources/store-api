@@ -359,7 +359,12 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - invoices
+                  - total_records
                 properties:
+                  total_records:
+                    type: integer
                   invoices:
                     type: array
                     items:

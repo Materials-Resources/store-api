@@ -39,7 +39,7 @@ type Handler struct {
 	mailer         mailer.Mailer
 }
 
-func (h Handler) ListInvoices(ctx context.Context, params oas.ListInvoicesParams) (*oas.ListInvoicesOK, error) {
+func (h Handler) ListInvoices(ctx context.Context, params oas.ListInvoicesParams) (oas.ListInvoicesRes, error) {
 	userSession, err := h.sessionManager.GetUserSession(ctx)
 	if err != nil {
 		return nil, err
