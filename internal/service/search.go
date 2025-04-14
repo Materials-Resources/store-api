@@ -3,6 +3,7 @@ package service
 import (
 	"connectrpc.com/connect"
 	"context"
+	"github.com/materials-resources/store-api/app"
 	"github.com/materials-resources/store-api/internal/oas"
 	searchv1 "github.com/materials-resources/store-api/internal/proto/search"
 	"github.com/materials-resources/store-api/internal/proto/search/searchconnect"
@@ -14,10 +15,14 @@ type Search struct {
 	Client searchconnect.SearchServiceClient
 }
 
-func NewSearchService() *Search {
+func NewSearchService(a *app.App) *Search {
+	otelInterceptor, err := newInterceptor(a.Otel.GetTracerProvider(), a.Otel.GetMeterProvider(), a.Otel.GetTextMapPropagator())
+	if err != nil {
+		a.Logger.Fatal().Str("service", "search").Err(err).Msg("could not create otel interceptor")
+	}
 	return &Search{
 		Client: searchconnect.NewSearchServiceClient(http.DefaultClient,
-			"http://localhost:8081", connect.WithGRPC()),
+			a.Config.Services.SearchUrl, connect.WithInterceptors(otelInterceptor), connect.WithGRPC()),
 	}
 }
 

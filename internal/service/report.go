@@ -3,6 +3,7 @@ package service
 import (
 	"connectrpc.com/connect"
 	"context"
+	"github.com/materials-resources/store-api/app"
 	reportv1 "github.com/materials-resources/store-api/internal/proto/report"
 	"github.com/materials-resources/store-api/internal/proto/report/reportconnect"
 	"google.golang.org/protobuf/proto"
@@ -14,10 +15,14 @@ type ReportService struct {
 	client reportconnect.ReportServiceClient
 }
 
-func NewReportService() *ReportService {
+func NewReportService(a *app.App) *ReportService {
+	otelInterceptor, err := newInterceptor(a.Otel.GetTracerProvider(), a.Otel.GetMeterProvider(), a.Otel.GetTextMapPropagator())
+	if err != nil {
+		a.Logger.Fatal().Str("service", "report").Err(err).Msg("could not create otel interceptor")
+	}
 	return &ReportService{
 		client: reportconnect.NewReportServiceClient(http.DefaultClient,
-			"http://localhost:8083", connect.WithGRPC()),
+			a.Config.Services.ReportUrl, connect.WithInterceptors(otelInterceptor), connect.WithGRPC()),
 	}
 }
 

@@ -3,6 +3,7 @@ package service
 import (
 	"connectrpc.com/connect"
 	"context"
+	"github.com/materials-resources/store-api/app"
 	"github.com/materials-resources/store-api/internal/domain"
 	customerv1 "github.com/materials-resources/store-api/internal/proto/customer"
 	"github.com/materials-resources/store-api/internal/proto/customer/customerconnect"
@@ -14,9 +15,14 @@ type CustomerService struct {
 	Client customerconnect.CustomerServiceClient
 }
 
-func NewCustomerService() *CustomerService {
+func NewCustomerService(a *app.App) *CustomerService {
+	otelInterceptor, err := newInterceptor(a.Otel.GetTracerProvider(), a.Otel.GetMeterProvider(), a.Otel.GetTextMapPropagator())
+	if err != nil {
+		a.Logger.Fatal().Str("service", "customer").Err(err).Msg("could not create otel interceptor")
+	}
 	return &CustomerService{
-		Client: customerconnect.NewCustomerServiceClient(http.DefaultClient, "http://localhost:8082", connect.WithGRPC()),
+		Client: customerconnect.NewCustomerServiceClient(http.DefaultClient, a.Config.Services.CustomerUrl, connect.WithInterceptors(otelInterceptor),
+			connect.WithGRPC()),
 	}
 }
 

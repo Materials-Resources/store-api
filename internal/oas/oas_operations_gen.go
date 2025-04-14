@@ -8,7 +8,7 @@ type OperationName = string
 const (
 	ContactUsOperation            OperationName = "ContactUs"
 	CreateQuoteOperation          OperationName = "CreateQuote"
-	GetActiveBranchesOperation    OperationName = "GetActiveBranches"
+	GetActiveBranchOperation      OperationName = "GetActiveBranch"
 	GetInvoiceReportOperation     OperationName = "GetInvoiceReport"
 	GetOrderOperation             OperationName = "GetOrder"
 	GetPackingListReportOperation OperationName = "GetPackingListReport"

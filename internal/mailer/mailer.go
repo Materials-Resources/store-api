@@ -3,6 +3,7 @@ package mailer
 import (
 	"bytes"
 	"embed"
+	"github.com/materials-resources/store-api/app"
 	mail "gopkg.in/gomail.v2"
 	"html/template"
 	"time"
@@ -17,12 +18,13 @@ type Mailer struct {
 }
 
 // New initializes a new Mailer
-func New(host string, port int, username, password, sender string) Mailer {
-	dialer := mail.NewDialer(host, port, username, password)
+func New(a *app.App) Mailer {
+
+	dialer := mail.NewDialer(a.Config.Mailer.Host, a.Config.Mailer.Port, a.Config.Mailer.Username, a.Config.Mailer.Password)
 
 	return Mailer{
 		dialer: dialer,
-		sender: sender,
+		sender: a.Config.Mailer.Sender,
 	}
 }
 

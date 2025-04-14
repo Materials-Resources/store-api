@@ -28,7 +28,7 @@ func NewOtel(cfg config.Config) (*Otel, error) {
 		return nil, err
 	}
 
-	tp := newTracerProvider(exp, cfg.Otel.ServiceName, cfg.Env)
+	tp := newTracerProvider(exp, cfg.Telemetry.ServiceName, cfg.Env)
 	mp := newMeterProvider()
 	tmp := newTextMapPropagator()
 	return &Otel{

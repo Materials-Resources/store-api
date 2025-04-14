@@ -4,6 +4,7 @@ import (
 	"connectrpc.com/connect"
 	"context"
 	"fmt"
+	"github.com/materials-resources/store-api/app"
 	"github.com/materials-resources/store-api/internal/domain"
 	"github.com/materials-resources/store-api/internal/mailer"
 	"github.com/materials-resources/store-api/internal/oas"
@@ -18,12 +19,11 @@ import (
 
 var _ oas.Handler = (*Handler)(nil)
 
-func NewHandler(service service.Service, sessionManager *session.Manager) Handler {
+func NewHandler(a *app.App, service service.Service, sessionManager *session.Manager, m mailer.Mailer) Handler {
 	z, err := zitadel.NewZitadelClient()
 	if err != nil {
-		panic(err)
+		a.Logger.Fatal().Err(err).Msg("could not create zitadel client")
 	}
-	m := mailer.New("smtp.materialsresources.org", 25, "", "", "noreply@materialsresources.org")
 	return Handler{
 		sessionManager: sessionManager,
 		z:              z,
@@ -78,7 +78,7 @@ func (h Handler) GetPackingListReport(ctx context.Context, params oas.GetPacking
 	return &oas.GetPackingListReportOK{Data: data}, nil
 }
 
-func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) error {
+func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) (oas.ContactUsRes, error) {
 	d := map[string]any{
 		"Organization": req.GetOrganization(),
 		"Name":         req.GetName(),
@@ -87,9 +87,9 @@ func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) error {
 	}
 	err := h.mailer.Send("smallegan@emrsinc.com", "smallegan@emrsinc.com", "contact_request.tmpl", d)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &oas.ContactUsOK{}, nil
 }
 
 func (h Handler) GetInvoiceReport(ctx context.Context, params oas.GetInvoiceReportParams) (oas.GetInvoiceReportRes,
@@ -103,7 +103,7 @@ func (h Handler) GetInvoiceReport(ctx context.Context, params oas.GetInvoiceRepo
 	}, nil
 }
 
-func (h Handler) GetActiveBranches(ctx context.Context) (oas.GetActiveBranchesRes, error) {
+func (h Handler) GetActiveBranch(ctx context.Context) (oas.GetActiveBranchRes, error) {
 	userSession, err := h.sessionManager.GetUserSession(ctx)
 	if err != nil {
 		return nil, err
@@ -116,7 +116,7 @@ func (h Handler) GetActiveBranches(ctx context.Context) (oas.GetActiveBranchesRe
 	if err != nil {
 		return nil, err
 	}
-	response := oas.GetActiveBranchesOK{
+	response := oas.GetActiveBranchOK{
 		Branch: oas.Branch{
 			ID:   pbRes.Msg.GetBranch().GetId(),
 			Name: pbRes.Msg.GetBranch().GetName(),
@@ -130,42 +130,42 @@ func (h Handler) GetQuote(ctx context.Context, params oas.GetQuoteParams) (oas.G
 	if err != nil {
 		return nil, err
 	}
-	pbReq := orderv1.GetQuoteRequest_builder{Id: proto.String(params.ID)}.Build()
-	pbRes, err := h.service.Order.Client.GetQuote(ctx, connect.NewRequest(pbReq))
+	quote, err := h.service.Order.GetQuote(ctx, params.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	if pbRes.Msg.GetQuote().GetBranch().GetId() != userSession.Profile.BranchID {
+	if quote.BranchId != userSession.Profile.BranchID {
 		return nil, fmt.Errorf("user is not authorized to access this branch")
 	}
 
-	response := oas.GetQuoteOK{
-		Quote: oas.Quote{
-			ID:            pbRes.Msg.GetQuote().GetId(),
-			PurchaseOrder: pbRes.Msg.GetQuote().GetPurchaseOrder(),
-			Status:        convertQuoteStatus(pbRes.Msg.GetQuote().GetStatus()),
-			DateCreated:   pbRes.Msg.GetQuote().GetDateCreated().AsTime(),
-		},
+	oapiQuote := oas.Quote{
+		ID:            quote.Id,
+		PurchaseOrder: quote.PurchaseOrder,
+		Status:        mapQuoteStatus(quote.Status),
+		DateCreated:   quote.DateCreated,
 	}
 
-	for _, item := range pbRes.Msg.GetQuote().GetItems() {
-		response.Quote.Items = append(response.Quote.Items, oas.QuoteItem{
-			ProductID:         item.GetProductId(),
-			ProductSn:         item.GetProductSn(),
-			ProductName:       item.GetProductName(),
-			CustomerProductSn: item.GetCustomerProductSn(),
-			UnitPrice:         item.GetUnitPrice(),
-			UnitType:          item.GetUnitType(),
-			OrderedQuantity:   item.GetOrderedQuantity(),
-			TotalPrice:        item.GetTotalPrice(),
+	for _, item := range quote.Items {
+		oapiQuote.Items = append(oapiQuote.Items, oas.QuoteItem{
+			ProductID:         item.ProductId,
+			ProductSn:         item.ProductSn,
+			ProductName:       item.ProductName,
+			CustomerProductSn: item.CustomerProductSn,
+			UnitPrice:         item.UnitPrice,
+			UnitType:          item.UnitType.Id,
+			OrderedQuantity:   item.OrderedQuantity,
+			TotalPrice:        item.TotalPrice,
 		})
 	}
-	res, err := h.service.Order.GetQuote(ctx, params)
-	return res, err
+
+	response := oas.GetQuoteOK{
+		Quote: oapiQuote,
+	}
+	return &response, err
 }
 
-func (h Handler) GetRecentPurchases(ctx context.Context, params oas.GetRecentPurchasesParams) (*oas.GetRecentPurchasesOK, error) {
+func (h Handler) GetRecentPurchases(ctx context.Context, params oas.GetRecentPurchasesParams) (oas.GetRecentPurchasesRes, error) {
 	userSession, err := h.sessionManager.GetUserSession(ctx)
 	if err != nil {
 		return nil, err
@@ -253,32 +253,28 @@ func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (o
 	if err != nil {
 		return nil, err
 	}
-	pbReq := orderv1.ListQuotesRequest_builder{
-		Page:     proto.Int32(int32(params.Page)),
-		PageSize: proto.Int32(int32(params.PageSize)),
-		BranchId: proto.String(userSession.Profile.BranchID),
-	}.Build()
 
-	pbRes, err := h.service.Order.Client.ListQuotes(ctx, connect.NewRequest(pbReq))
+	quotes, total, err := h.service.Order.ListQuotes(ctx, int32(params.Page), int32(params.PageSize), userSession.Profile.BranchID)
 	if err != nil {
 		return nil, err
 	}
 
 	response := oas.ListQuotesOK{
-		TotalRecords: int(pbRes.Msg.GetTotalRecords()),
+		TotalRecords: int(total),
 	}
 
-	for _, pbQuote := range pbRes.Msg.GetQuotes() {
+	for _, quote := range quotes {
 		response.Quotes = append(response.Quotes, oas.QuoteSummary{
-			ID:            pbQuote.GetId(),
-			BranchID:      pbQuote.GetBranch().GetId(),
-			ContactID:     pbQuote.GetContact().GetId(),
-			PurchaseOrder: pbQuote.GetPurchaseOrder(),
-			Status:        convertQuoteStatus(pbQuote.GetStatus()),
-			DateCreated:   pbQuote.GetDateCreated().AsTime(),
-			DateExpires:   pbQuote.GetDateExpires().AsTime(),
+			ID:            quote.Id,
+			BranchID:      quote.BranchId,
+			ContactID:     quote.ContactId,
+			PurchaseOrder: quote.PurchaseOrder,
+			Status:        mapQuoteStatus(quote.Status),
+			DateCreated:   quote.DateCreated,
+			DateExpires:   quote.DateExpires,
 		})
 	}
+
 	return &response, err
 }
 
@@ -450,6 +446,23 @@ func mapOrderStatus(status domain.OrderStatus) oas.OrderStatus {
 		return oas.OrderStatusCancelled
 	default:
 		return oas.OrderStatusUnspecified
+	}
+}
+
+func mapQuoteStatus(status domain.QuoteStatus) oas.QuoteStatus {
+	switch status {
+	case domain.QuoteStatusApproved:
+		return oas.QuoteStatusApproved
+	case domain.QuoteStatusCancelled:
+		return oas.QuoteStatusCancelled
+	case domain.QuoteStatusPendingApproval:
+		return oas.QuoteStatusPendingApproval
+	case domain.QuoteStatusExpired:
+		return oas.QuoteStatusExpired
+	case domain.QuoteStatusUnspecified:
+		return oas.QuoteStatusUnspecified
+	default:
+		return oas.QuoteStatusUnspecified
 	}
 }
 

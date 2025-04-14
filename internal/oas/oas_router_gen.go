@@ -106,7 +106,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							// Leaf node.
 							switch r.Method {
 							case "GET":
-								s.handleGetActiveBranchesRequest([0]string{}, elemIsEscaped, w, r)
+								s.handleGetActiveBranchRequest([0]string{}, elemIsEscaped, w, r)
 							default:
 								s.notAllowed(w, r, "GET")
 							}
@@ -116,9 +116,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 					}
 
-				case 'i': // Prefix: "invoice"
+				case 'i': // Prefix: "invoices"
 
-					if l := len("invoice"); len(elem) >= l && elem[0:l] == "invoice" {
+					if l := len("invoices"); len(elem) >= l && elem[0:l] == "invoices" {
 						elem = elem[l:]
 					} else {
 						break
@@ -182,9 +182,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 					}
 
-				case 'o': // Prefix: "order"
+				case 'o': // Prefix: "orders"
 
-					if l := len("order"); len(elem) >= l && elem[0:l] == "order" {
+					if l := len("orders"); len(elem) >= l && elem[0:l] == "orders" {
 						elem = elem[l:]
 					} else {
 						break
@@ -575,9 +575,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							// Leaf node.
 							switch method {
 							case "GET":
-								r.name = GetActiveBranchesOperation
+								r.name = GetActiveBranchOperation
 								r.summary = "Get active branch for user"
-								r.operationID = "getActiveBranches"
+								r.operationID = "getActiveBranch"
 								r.pathPattern = "/account/branches/active"
 								r.args = args
 								r.count = 0
@@ -589,9 +589,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 					}
 
-				case 'i': // Prefix: "invoice"
+				case 'i': // Prefix: "invoices"
 
-					if l := len("invoice"); len(elem) >= l && elem[0:l] == "invoice" {
+					if l := len("invoices"); len(elem) >= l && elem[0:l] == "invoices" {
 						elem = elem[l:]
 					} else {
 						break
@@ -603,7 +603,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = ListInvoicesOperation
 							r.summary = "Get a list of invoices"
 							r.operationID = "listInvoices"
-							r.pathPattern = "/account/invoice"
+							r.pathPattern = "/account/invoices"
 							r.args = args
 							r.count = 0
 							return r, true
@@ -648,7 +648,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = GetInvoiceReportOperation
 									r.summary = "Get invoice report by ID"
 									r.operationID = "getInvoiceReport"
-									r.pathPattern = "/account/invoice/{id}/report"
+									r.pathPattern = "/account/invoices/{id}/report"
 									r.args = args
 									r.count = 1
 									return r, true
@@ -661,9 +661,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 					}
 
-				case 'o': // Prefix: "order"
+				case 'o': // Prefix: "orders"
 
-					if l := len("order"); len(elem) >= l && elem[0:l] == "order" {
+					if l := len("orders"); len(elem) >= l && elem[0:l] == "orders" {
 						elem = elem[l:]
 					} else {
 						break
@@ -675,7 +675,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = ListOrdersOperation
 							r.summary = "Get a list of orders"
 							r.operationID = "listOrders"
-							r.pathPattern = "/account/order"
+							r.pathPattern = "/account/orders"
 							r.args = args
 							r.count = 0
 							return r, true
@@ -708,7 +708,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = GetOrderOperation
 								r.summary = "Get an order by ID"
 								r.operationID = "getOrder"
-								r.pathPattern = "/account/order/{id}"
+								r.pathPattern = "/account/orders/{id}"
 								r.args = args
 								r.count = 1
 								return r, true

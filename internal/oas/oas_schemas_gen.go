@@ -3,11 +3,16 @@
 package oas
 
 import (
+	"fmt"
 	"io"
 	"time"
 
 	"github.com/go-faster/errors"
 )
+
+func (s *ErrorStatusCode) Error() string {
+	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
+}
 
 // Ref: #/components/schemas/Address
 type Address struct {
@@ -209,6 +214,8 @@ func (s *Branch) SetName(val string) {
 // ContactUsOK is response for ContactUs operation.
 type ContactUsOK struct{}
 
+func (*ContactUsOK) contactUsRes() {}
+
 type ContactUsReq struct {
 	Name         string `json:"name"`
 	Organization string `json:"organization"`
@@ -350,6 +357,11 @@ func (s *CreateQuoteReqItemsItem) SetQuantity(val float64) {
 	s.Quantity = val
 }
 
+// CreateQuoteUnauthorized is response for CreateQuote operation.
+type CreateQuoteUnauthorized struct{}
+
+func (*CreateQuoteUnauthorized) createQuoteRes() {}
+
 type CreateQuoteUnprocessableEntity struct {
 	// List of validation errors.
 	Errors []CreateQuoteUnprocessableEntityErrorsItem `json:"errors"`
@@ -447,35 +459,78 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
 }
 
-func (*ErrorStatusCode) createQuoteRes()          {}
-func (*ErrorStatusCode) getActiveBranchesRes()    {}
-func (*ErrorStatusCode) getInvoiceReportRes()     {}
-func (*ErrorStatusCode) getOrderRes()             {}
-func (*ErrorStatusCode) getPackingListReportRes() {}
-func (*ErrorStatusCode) getProductRes()           {}
-func (*ErrorStatusCode) getQuoteRes()             {}
-func (*ErrorStatusCode) listCustomerBranchesRes() {}
-func (*ErrorStatusCode) listInvoicesRes()         {}
-func (*ErrorStatusCode) listOrdersRes()           {}
-func (*ErrorStatusCode) listQuotesRes()           {}
-func (*ErrorStatusCode) searchProductsRes()       {}
-func (*ErrorStatusCode) setActiveBranchRes()      {}
+// Form validation errors.
+// Ref: #/components/schemas/FormValidationError
+type FormValidationError struct {
+	// List of validation errors.
+	Errors []FormValidationErrorErrorsItem `json:"errors"`
+}
 
-type GetActiveBranchesOK struct {
+// GetErrors returns the value of Errors.
+func (s *FormValidationError) GetErrors() []FormValidationErrorErrorsItem {
+	return s.Errors
+}
+
+// SetErrors sets the value of Errors.
+func (s *FormValidationError) SetErrors(val []FormValidationErrorErrorsItem) {
+	s.Errors = val
+}
+
+func (*FormValidationError) contactUsRes()      {}
+func (*FormValidationError) searchProductsRes() {}
+
+type FormValidationErrorErrorsItem struct {
+	// The field where the validation error occurred.
+	Field OptString `json:"field"`
+	// A descriptive error message.
+	Message OptString `json:"message"`
+}
+
+// GetField returns the value of Field.
+func (s *FormValidationErrorErrorsItem) GetField() OptString {
+	return s.Field
+}
+
+// GetMessage returns the value of Message.
+func (s *FormValidationErrorErrorsItem) GetMessage() OptString {
+	return s.Message
+}
+
+// SetField sets the value of Field.
+func (s *FormValidationErrorErrorsItem) SetField(val OptString) {
+	s.Field = val
+}
+
+// SetMessage sets the value of Message.
+func (s *FormValidationErrorErrorsItem) SetMessage(val OptString) {
+	s.Message = val
+}
+
+type GetActiveBranchOK struct {
 	Branch Branch `json:"branch"`
 }
 
 // GetBranch returns the value of Branch.
-func (s *GetActiveBranchesOK) GetBranch() Branch {
+func (s *GetActiveBranchOK) GetBranch() Branch {
 	return s.Branch
 }
 
 // SetBranch sets the value of Branch.
-func (s *GetActiveBranchesOK) SetBranch(val Branch) {
+func (s *GetActiveBranchOK) SetBranch(val Branch) {
 	s.Branch = val
 }
 
-func (*GetActiveBranchesOK) getActiveBranchesRes() {}
+func (*GetActiveBranchOK) getActiveBranchRes() {}
+
+// GetActiveBranchUnauthorized is response for GetActiveBranch operation.
+type GetActiveBranchUnauthorized struct{}
+
+func (*GetActiveBranchUnauthorized) getActiveBranchRes() {}
+
+// GetInvoiceReportNotFound is response for GetInvoiceReport operation.
+type GetInvoiceReportNotFound struct{}
+
+func (*GetInvoiceReportNotFound) getInvoiceReportRes() {}
 
 type GetInvoiceReportOK struct {
 	Data io.Reader
@@ -492,6 +547,11 @@ func (s GetInvoiceReportOK) Read(p []byte) (n int, err error) {
 }
 
 func (*GetInvoiceReportOK) getInvoiceReportRes() {}
+
+// GetInvoiceReportUnauthorized is response for GetInvoiceReport operation.
+type GetInvoiceReportUnauthorized struct{}
+
+func (*GetInvoiceReportUnauthorized) getInvoiceReportRes() {}
 
 // GetOrderNotFound is response for GetOrder operation.
 type GetOrderNotFound struct{}
@@ -519,6 +579,11 @@ type GetOrderUnauthorized struct{}
 
 func (*GetOrderUnauthorized) getOrderRes() {}
 
+// GetPackingListReportNotFound is response for GetPackingListReport operation.
+type GetPackingListReportNotFound struct{}
+
+func (*GetPackingListReportNotFound) getPackingListReportRes() {}
+
 type GetPackingListReportOK struct {
 	Data io.Reader
 }
@@ -534,6 +599,11 @@ func (s GetPackingListReportOK) Read(p []byte) (n int, err error) {
 }
 
 func (*GetPackingListReportOK) getPackingListReportRes() {}
+
+// GetPackingListReportUnauthorized is response for GetPackingListReport operation.
+type GetPackingListReportUnauthorized struct{}
+
+func (*GetPackingListReportUnauthorized) getPackingListReportRes() {}
 
 // GetProductNotFound is response for GetProduct operation.
 type GetProductNotFound struct{}
@@ -556,6 +626,11 @@ func (s *GetProductOK) SetProduct(val Product) {
 
 func (*GetProductOK) getProductRes() {}
 
+// GetQuoteNotFound is response for GetQuote operation.
+type GetQuoteNotFound struct{}
+
+func (*GetQuoteNotFound) getQuoteRes() {}
+
 type GetQuoteOK struct {
 	Quote Quote `json:"quote"`
 }
@@ -572,6 +647,16 @@ func (s *GetQuoteOK) SetQuote(val Quote) {
 
 func (*GetQuoteOK) getQuoteRes() {}
 
+// GetQuoteUnauthorized is response for GetQuote operation.
+type GetQuoteUnauthorized struct{}
+
+func (*GetQuoteUnauthorized) getQuoteRes() {}
+
+// GetRecentPurchasesNotFound is response for GetRecentPurchases operation.
+type GetRecentPurchasesNotFound struct{}
+
+func (*GetRecentPurchasesNotFound) getRecentPurchasesRes() {}
+
 type GetRecentPurchasesOK struct {
 	Purchases []PurchaseSummary `json:"purchases"`
 }
@@ -585,6 +670,13 @@ func (s *GetRecentPurchasesOK) GetPurchases() []PurchaseSummary {
 func (s *GetRecentPurchasesOK) SetPurchases(val []PurchaseSummary) {
 	s.Purchases = val
 }
+
+func (*GetRecentPurchasesOK) getRecentPurchasesRes() {}
+
+// GetRecentPurchasesUnauthorized is response for GetRecentPurchases operation.
+type GetRecentPurchasesUnauthorized struct{}
+
+func (*GetRecentPurchasesUnauthorized) getRecentPurchasesRes() {}
 
 // Ref: #/components/schemas/InvoiceSummary
 type InvoiceSummary struct {
@@ -661,13 +753,29 @@ func (s *ListCustomerBranchesOK) SetBranches(val []Branch) {
 
 func (*ListCustomerBranchesOK) listCustomerBranchesRes() {}
 
+// ListCustomerBranchesUnauthorized is response for ListCustomerBranches operation.
+type ListCustomerBranchesUnauthorized struct{}
+
+func (*ListCustomerBranchesUnauthorized) listCustomerBranchesRes() {}
+
 type ListInvoicesOK struct {
-	Invoices []InvoiceSummary `json:"invoices"`
+	TotalRecords int              `json:"total_records"`
+	Invoices     []InvoiceSummary `json:"invoices"`
+}
+
+// GetTotalRecords returns the value of TotalRecords.
+func (s *ListInvoicesOK) GetTotalRecords() int {
+	return s.TotalRecords
 }
 
 // GetInvoices returns the value of Invoices.
 func (s *ListInvoicesOK) GetInvoices() []InvoiceSummary {
 	return s.Invoices
+}
+
+// SetTotalRecords sets the value of TotalRecords.
+func (s *ListInvoicesOK) SetTotalRecords(val int) {
+	s.TotalRecords = val
 }
 
 // SetInvoices sets the value of Invoices.
@@ -676,6 +784,11 @@ func (s *ListInvoicesOK) SetInvoices(val []InvoiceSummary) {
 }
 
 func (*ListInvoicesOK) listInvoicesRes() {}
+
+// ListInvoicesUnauthorized is response for ListInvoices operation.
+type ListInvoicesUnauthorized struct{}
+
+func (*ListInvoicesUnauthorized) listInvoicesRes() {}
 
 type ListOrdersOK struct {
 	TotalRecords int            `json:"total_records"`
@@ -704,6 +817,11 @@ func (s *ListOrdersOK) SetOrders(val []OrderSummary) {
 
 func (*ListOrdersOK) listOrdersRes() {}
 
+// ListOrdersUnauthorized is response for ListOrders operation.
+type ListOrdersUnauthorized struct{}
+
+func (*ListOrdersUnauthorized) listOrdersRes() {}
+
 type ListQuotesOK struct {
 	TotalRecords int            `json:"total_records"`
 	Quotes       []QuoteSummary `json:"quotes"`
@@ -730,6 +848,11 @@ func (s *ListQuotesOK) SetQuotes(val []QuoteSummary) {
 }
 
 func (*ListQuotesOK) listQuotesRes() {}
+
+// ListQuotesUnauthorized is response for ListQuotes operation.
+type ListQuotesUnauthorized struct{}
+
+func (*ListQuotesUnauthorized) listQuotesRes() {}
 
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {

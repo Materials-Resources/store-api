@@ -3,6 +3,7 @@ package service
 import (
 	"connectrpc.com/connect"
 	"context"
+	"github.com/materials-resources/store-api/app"
 	"github.com/materials-resources/store-api/internal/domain"
 	billingv1 "github.com/materials-resources/store-api/internal/proto/billing"
 	"github.com/materials-resources/store-api/internal/proto/billing/billingconnect"
@@ -14,10 +15,14 @@ type BillingService struct {
 	client billingconnect.BillingServiceClient
 }
 
-func NewBillingService() *BillingService {
+func NewBillingService(a *app.App) *BillingService {
+	otelInterceptor, err := newInterceptor(a.Otel.GetTracerProvider(), a.Otel.GetMeterProvider(), a.Otel.GetTextMapPropagator())
+	if err != nil {
+		a.Logger.Fatal().Str("service", "billing").Err(err).Msg("could not create otel interceptor")
+	}
 	return &BillingService{
 		client: billingconnect.NewBillingServiceClient(http.DefaultClient,
-			"http://localhost:8082", connect.WithGRPC()),
+			a.Config.Services.BillingUrl, connect.WithInterceptors(otelInterceptor), connect.WithGRPC()),
 	}
 }
 

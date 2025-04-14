@@ -3,6 +3,7 @@ package service
 import (
 	"connectrpc.com/connect"
 	"context"
+	"github.com/materials-resources/store-api/app"
 	"github.com/materials-resources/store-api/internal/domain"
 	"github.com/materials-resources/store-api/internal/oas"
 	catalogv1 "github.com/materials-resources/store-api/internal/proto/catalog"
@@ -15,10 +16,15 @@ type CatalogService struct {
 	Client catalogconnect.CatalogServiceClient
 }
 
-func NewCatalogService() *CatalogService {
+func NewCatalogService(a *app.App) *CatalogService {
+	otelInterceptor, err := newInterceptor(a.Otel.GetTracerProvider(), a.Otel.GetMeterProvider(), a.Otel.GetTextMapPropagator())
+	if err != nil {
+		a.Logger.Fatal().Str("service", "catalog").Err(err).Msg("could not create otel interceptor")
+	}
 	return &CatalogService{
 		Client: catalogconnect.NewCatalogServiceClient(http.DefaultClient,
-			"http://localhost:8082",
+			a.Config.Services.CatalogUrl,
+			connect.WithInterceptors(otelInterceptor),
 			connect.WithGRPC()),
 	}
 }

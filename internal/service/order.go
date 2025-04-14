@@ -2,18 +2,12 @@ package service
 
 import (
 	"connectrpc.com/connect"
-	"connectrpc.com/otelconnect"
 	"context"
 	"github.com/materials-resources/store-api/app"
 	"github.com/materials-resources/store-api/internal/domain"
-	"github.com/materials-resources/store-api/internal/oas"
 	orderv1 "github.com/materials-resources/store-api/internal/proto/order"
 	"github.com/materials-resources/store-api/internal/proto/order/orderconnect"
-	"go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/protobuf/proto"
-	"log"
 	"net/http"
 )
 
@@ -21,58 +15,51 @@ type Order struct {
 	Client orderconnect.OrderServiceClient
 }
 
-func newInterceptor(tp trace.TracerProvider, mp metric.MeterProvider, p propagation.TextMapPropagator) (connect.Interceptor, error) {
-	return otelconnect.NewInterceptor(
-		otelconnect.WithTracerProvider(tp),
-		otelconnect.WithMeterProvider(mp),
-		otelconnect.WithPropagator(p),
-	)
-}
-
 func NewOrderService(a *app.App) *Order {
 	otelInterceptor, err := newInterceptor(a.Otel.GetTracerProvider(), a.Otel.GetMeterProvider(), a.Otel.GetTextMapPropagator())
 	if err != nil {
-		log.Fatal(err)
+		a.Logger.Fatal().Str("service", "order").Err(err).Msg("could not create otel interceptor")
 	}
 
 	return &Order{
 		Client: orderconnect.NewOrderServiceClient(http.DefaultClient,
-			"http://localhost:8082",
+			a.Config.Services.OrderUrl,
 			connect.WithInterceptors(otelInterceptor),
 			connect.WithGRPC()),
 	}
 }
 
-func (s *Order) GetQuote(ctx context.Context, req oas.GetQuoteParams) (*oas.GetQuoteOK, error) {
-	pbReq := orderv1.GetQuoteRequest_builder{Id: proto.String(req.ID)}.Build()
+func (s *Order) GetQuote(ctx context.Context, id string) (*domain.Quote, error) {
+	pbReq := orderv1.GetQuoteRequest_builder{Id: proto.String(id)}.Build()
 	pbRes, err := s.Client.GetQuote(ctx, connect.NewRequest(pbReq))
 	if err != nil {
 		return nil, err
 	}
 
-	response := oas.GetQuoteOK{
-		Quote: oas.Quote{
-			ID:            pbRes.Msg.GetQuote().GetId(),
-			PurchaseOrder: pbRes.Msg.GetQuote().GetPurchaseOrder(),
-			Status:        convertQuoteStatus(pbRes.Msg.GetQuote().GetStatus()),
-			DateCreated:   pbRes.Msg.GetQuote().GetDateCreated().AsTime(),
-		},
+	quote := &domain.Quote{
+		Id:            pbRes.Msg.GetQuote().GetId(),
+		BranchId:      pbRes.Msg.GetQuote().GetBranch().GetId(),
+		PurchaseOrder: pbRes.Msg.GetQuote().GetPurchaseOrder(),
+		Status:        convertQuoteStatus(pbRes.Msg.GetQuote().GetStatus()),
+		DateCreated:   pbRes.Msg.GetQuote().GetDateCreated().AsTime(),
 	}
 
-	for _, item := range pbRes.Msg.GetQuote().GetItems() {
-		response.Quote.Items = append(response.Quote.Items, oas.QuoteItem{
-			ProductID:         item.GetProductId(),
-			ProductSn:         item.GetProductSn(),
-			ProductName:       item.GetProductName(),
-			CustomerProductSn: item.GetCustomerProductSn(),
-			UnitPrice:         item.GetUnitPrice(),
-			UnitType:          item.GetUnitType(),
-			OrderedQuantity:   item.GetOrderedQuantity(),
-			TotalPrice:        item.GetTotalPrice(),
+	for _, itemPb := range pbRes.Msg.GetQuote().GetItems() {
+		quote.Items = append(quote.Items, &domain.QuoteItem{
+			ProductId:         itemPb.GetProductId(),
+			ProductSn:         itemPb.GetProductSn(),
+			ProductName:       itemPb.GetProductName(),
+			CustomerProductSn: itemPb.GetCustomerProductSn(),
+			UnitPrice:         itemPb.GetUnitPrice(),
+			UnitType: domain.UnitOfMeasurement{
+				Id: itemPb.GetUnitType(),
+			},
+			OrderedQuantity: itemPb.GetOrderedQuantity(),
+			TotalPrice:      itemPb.GetTotalPrice(),
 		})
 	}
 
-	return &response, nil
+	return quote, nil
 }
 
 func (s *Order) GetOrder(ctx context.Context, orderId string) (*domain.Order, error) {
@@ -161,25 +148,24 @@ func (s *Order) ListOrders(ctx context.Context, page, pageSize int32, branchId s
 	return orders, pbRes.Msg.GetTotalRecords(), nil
 }
 
-func (s *Order) ListQuotes(ctx context.Context, req oas.ListQuotesParams) (*oas.ListQuotesOK, error) {
+func (s *Order) ListQuotes(ctx context.Context, page, pageSize int32, branchId string) ([]*domain.QuoteSummary, int32, error) {
 	pbReq := orderv1.ListQuotesRequest_builder{
-		Page:     proto.Int32(int32(req.Page)),
-		PageSize: proto.Int32(int32(req.PageSize)),
-		BranchId: proto.String("100039"),
+		Page:     proto.Int32(page),
+		PageSize: proto.Int32(pageSize),
+		BranchId: proto.String(branchId),
 	}.Build()
 
 	pbRes, err := s.Client.ListQuotes(ctx, connect.NewRequest(pbReq))
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	response := oas.ListQuotesOK{}
-
+	var quotes []*domain.QuoteSummary
 	for _, pbQuote := range pbRes.Msg.GetQuotes() {
-		response.Quotes = append(response.Quotes, oas.QuoteSummary{
-			ID:            pbQuote.GetId(),
-			BranchID:      pbQuote.GetBranch().GetId(),
-			ContactID:     pbQuote.GetContact().GetId(),
+		quotes = append(quotes, &domain.QuoteSummary{
+			Id:            pbQuote.GetId(),
+			BranchId:      pbQuote.GetBranch().GetId(),
+			ContactId:     pbQuote.GetContact().GetId(),
 			PurchaseOrder: pbQuote.GetPurchaseOrder(),
 			Status:        convertQuoteStatus(pbQuote.GetStatus()),
 			DateCreated:   pbQuote.GetDateCreated().AsTime(),
@@ -187,7 +173,7 @@ func (s *Order) ListQuotes(ctx context.Context, req oas.ListQuotesParams) (*oas.
 		})
 	}
 
-	return &response, nil
+	return quotes, pbRes.Msg.GetTotalRecords(), nil
 }
 
 func (s *Order) ListPackingListsByOrder(ctx context.Context, orderId string) ([]*domain.PackingListSummary, error) {
@@ -232,19 +218,19 @@ func convertOrderStatus(status orderv1.OrderStatus) domain.OrderStatus {
 	}
 }
 
-func convertQuoteStatus(status orderv1.QuoteStatus) oas.QuoteStatus {
+func convertQuoteStatus(status orderv1.QuoteStatus) domain.QuoteStatus {
 	switch status {
 	case orderv1.QuoteStatus_QUOTE_STATUS_APPROVED:
-		return oas.QuoteStatusApproved
+		return domain.QuoteStatusApproved
 	case orderv1.QuoteStatus_QUOTE_STATUS_CANCELLED:
-		return oas.QuoteStatusCancelled
+		return domain.QuoteStatusCancelled
 	case orderv1.QuoteStatus_QUOTE_STATUS_PENDING_APPROVAL:
-		return oas.QuoteStatusPendingApproval
+		return domain.QuoteStatusPendingApproval
 	case orderv1.QuoteStatus_QUOTE_STATUS_EXPIRED:
-		return oas.QuoteStatusExpired
+		return domain.QuoteStatusExpired
 	case orderv1.QuoteStatus_QUOTE_STATUS_UNSPECIFIED:
-		return oas.QuoteStatusUnspecified
+		return domain.QuoteStatusUnspecified
 	default:
-		return oas.QuoteStatusUnspecified
+		return domain.QuoteStatusUnspecified
 	}
 }

@@ -8,26 +8,33 @@ import (
 )
 
 type Config struct {
-	Otel struct {
-		ServiceName string
-	}
+	Server    Server    `koanf:"server"`
 	Services  Services  `konanf:"services"`
 	Telemetry Telemetry `konanf:"telemetry"`
+	Mailer    Mailer    `konanf:"mailer"`
 	Env       string
 }
 
+func newConfig() *Config {
+	cfg := &Config{}
+	cfg.Server.SetDefaults()
+	cfg.Services.SetDefaults()
+	cfg.Mailer.SetDefaults()
+	cfg.Telemetry.SetDefaults()
+	return cfg
+}
+
 func ReadConfig() (*Config, error) {
+	cfg := newConfig()
 	var k = koanf.New(".")
 
 	if err := k.Load(file.Provider("config.yaml"), yaml.Parser()); err != nil {
 		return nil, fmt.Errorf("failed to load config: %w", err)
 	}
 
-	var config Config
-
-	if err := k.Unmarshal("", &config); err != nil {
+	if err := k.Unmarshal("", cfg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	return &config, nil
+	return cfg, nil
 }

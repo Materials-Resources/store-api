@@ -13,7 +13,7 @@ type Handler interface {
 	// Send details regarding a contact inquiry.
 	//
 	// POST /contact
-	ContactUs(ctx context.Context, req *ContactUsReq) error
+	ContactUs(ctx context.Context, req *ContactUsReq) (ContactUsRes, error)
 	// CreateQuote implements createQuote operation.
 	//
 	// Create a new quote. The `customer_id` and `contact_id` are extracted from the provided
@@ -21,23 +21,23 @@ type Handler interface {
 	//
 	// POST /account/quotes
 	CreateQuote(ctx context.Context, req *CreateQuoteReq) (CreateQuoteRes, error)
-	// GetActiveBranches implements getActiveBranches operation.
+	// GetActiveBranch implements getActiveBranch operation.
 	//
 	// Get active branch for user.
 	//
 	// GET /account/branches/active
-	GetActiveBranches(ctx context.Context) (GetActiveBranchesRes, error)
+	GetActiveBranch(ctx context.Context) (GetActiveBranchRes, error)
 	// GetInvoiceReport implements getInvoiceReport operation.
 	//
 	// Get invoice report by ID.
 	//
-	// GET /account/invoice/{id}/report
+	// GET /account/invoices/{id}/report
 	GetInvoiceReport(ctx context.Context, params GetInvoiceReportParams) (GetInvoiceReportRes, error)
 	// GetOrder implements getOrder operation.
 	//
 	// Get an order by ID.
 	//
-	// GET /account/order/{id}
+	// GET /account/orders/{id}
 	GetOrder(ctx context.Context, params GetOrderParams) (GetOrderRes, error)
 	// GetPackingListReport implements getPackingListReport operation.
 	//
@@ -62,7 +62,7 @@ type Handler interface {
 	// Get recent purchases for customer.
 	//
 	// GET /account/recent-purchases
-	GetRecentPurchases(ctx context.Context, params GetRecentPurchasesParams) (*GetRecentPurchasesOK, error)
+	GetRecentPurchases(ctx context.Context, params GetRecentPurchasesParams) (GetRecentPurchasesRes, error)
 	// ListCustomerBranches implements listCustomerBranches operation.
 	//
 	// Get available branches for customer.
@@ -73,13 +73,13 @@ type Handler interface {
 	//
 	// Get a list of invoices.
 	//
-	// GET /account/invoice
+	// GET /account/invoices
 	ListInvoices(ctx context.Context, params ListInvoicesParams) (ListInvoicesRes, error)
 	// ListOrders implements listOrders operation.
 	//
 	// Get a list of orders.
 	//
-	// GET /account/order
+	// GET /account/orders
 	ListOrders(ctx context.Context, params ListOrdersParams) (ListOrdersRes, error)
 	// ListQuotes implements listQuotes operation.
 	//
@@ -99,6 +99,10 @@ type Handler interface {
 	//
 	// PUT /account/branch
 	SetActiveBranch(ctx context.Context, req *SetActiveBranchReq) (SetActiveBranchRes, error)
+	// NewError creates *ErrorStatusCode from error returned by handler.
+	//
+	// Used for common default response.
+	NewError(ctx context.Context, err error) *ErrorStatusCode
 }
 
 // Server implements http server based on OpenAPI v3 specification and

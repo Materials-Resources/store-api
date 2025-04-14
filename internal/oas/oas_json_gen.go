@@ -1234,28 +1234,182 @@ func (s *Error) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *GetActiveBranchesOK) Encode(e *jx.Encoder) {
+func (s *FormValidationError) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *GetActiveBranchesOK) encodeFields(e *jx.Encoder) {
+func (s *FormValidationError) encodeFields(e *jx.Encoder) {
+	{
+		if s.Errors != nil {
+			e.FieldStart("errors")
+			e.ArrStart()
+			for _, elem := range s.Errors {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
+		}
+	}
+}
+
+var jsonFieldsNameOfFormValidationError = [1]string{
+	0: "errors",
+}
+
+// Decode decodes FormValidationError from json.
+func (s *FormValidationError) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode FormValidationError to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "errors":
+			if err := func() error {
+				s.Errors = make([]FormValidationErrorErrorsItem, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem FormValidationErrorErrorsItem
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Errors = append(s.Errors, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"errors\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode FormValidationError")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *FormValidationError) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *FormValidationError) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *FormValidationErrorErrorsItem) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *FormValidationErrorErrorsItem) encodeFields(e *jx.Encoder) {
+	{
+		if s.Field.Set {
+			e.FieldStart("field")
+			s.Field.Encode(e)
+		}
+	}
+	{
+		if s.Message.Set {
+			e.FieldStart("message")
+			s.Message.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfFormValidationErrorErrorsItem = [2]string{
+	0: "field",
+	1: "message",
+}
+
+// Decode decodes FormValidationErrorErrorsItem from json.
+func (s *FormValidationErrorErrorsItem) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode FormValidationErrorErrorsItem to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "field":
+			if err := func() error {
+				s.Field.Reset()
+				if err := s.Field.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"field\"")
+			}
+		case "message":
+			if err := func() error {
+				s.Message.Reset()
+				if err := s.Message.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"message\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode FormValidationErrorErrorsItem")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *FormValidationErrorErrorsItem) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *FormValidationErrorErrorsItem) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *GetActiveBranchOK) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *GetActiveBranchOK) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("branch")
 		s.Branch.Encode(e)
 	}
 }
 
-var jsonFieldsNameOfGetActiveBranchesOK = [1]string{
+var jsonFieldsNameOfGetActiveBranchOK = [1]string{
 	0: "branch",
 }
 
-// Decode decodes GetActiveBranchesOK from json.
-func (s *GetActiveBranchesOK) Decode(d *jx.Decoder) error {
+// Decode decodes GetActiveBranchOK from json.
+func (s *GetActiveBranchOK) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode GetActiveBranchesOK to nil")
+		return errors.New("invalid: unable to decode GetActiveBranchOK to nil")
 	}
 	var requiredBitSet [1]uint8
 
@@ -1276,7 +1430,7 @@ func (s *GetActiveBranchesOK) Decode(d *jx.Decoder) error {
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode GetActiveBranchesOK")
+		return errors.Wrap(err, "decode GetActiveBranchOK")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
@@ -1293,8 +1447,8 @@ func (s *GetActiveBranchesOK) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfGetActiveBranchesOK) {
-					name = jsonFieldsNameOfGetActiveBranchesOK[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfGetActiveBranchOK) {
+					name = jsonFieldsNameOfGetActiveBranchOK[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -1315,14 +1469,14 @@ func (s *GetActiveBranchesOK) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *GetActiveBranchesOK) MarshalJSON() ([]byte, error) {
+func (s *GetActiveBranchOK) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *GetActiveBranchesOK) UnmarshalJSON(data []byte) error {
+func (s *GetActiveBranchOK) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -1963,19 +2117,22 @@ func (s *ListInvoicesOK) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ListInvoicesOK) encodeFields(e *jx.Encoder) {
 	{
-		if s.Invoices != nil {
-			e.FieldStart("invoices")
-			e.ArrStart()
-			for _, elem := range s.Invoices {
-				elem.Encode(e)
-			}
-			e.ArrEnd()
+		e.FieldStart("total_records")
+		e.Int(s.TotalRecords)
+	}
+	{
+		e.FieldStart("invoices")
+		e.ArrStart()
+		for _, elem := range s.Invoices {
+			elem.Encode(e)
 		}
+		e.ArrEnd()
 	}
 }
 
-var jsonFieldsNameOfListInvoicesOK = [1]string{
-	0: "invoices",
+var jsonFieldsNameOfListInvoicesOK = [2]string{
+	0: "total_records",
+	1: "invoices",
 }
 
 // Decode decodes ListInvoicesOK from json.
@@ -1983,10 +2140,24 @@ func (s *ListInvoicesOK) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ListInvoicesOK to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
+		case "total_records":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Int()
+				s.TotalRecords = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"total_records\"")
+			}
 		case "invoices":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
 				s.Invoices = make([]InvoiceSummary, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -2009,6 +2180,38 @@ func (s *ListInvoicesOK) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode ListInvoicesOK")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000011,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfListInvoicesOK) {
+					name = jsonFieldsNameOfListInvoicesOK[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil

@@ -1,0 +1,13 @@
+mailer:
+  host: smtp.materialsresources.org
+  port: 25
+  sender: "noreply@emrsinc.com"
+services:
+  catalog_url: "http://localhost:8082"
+  customer_url: "http://localhost:8082"
+  order_url: "http://localhost:8082"
+  billing_url: "http://localhost:8082"
+  search_url: "http://localhost:8081"
+  report_url: "http://localhost:8083"
+server:
+  port: 8080
