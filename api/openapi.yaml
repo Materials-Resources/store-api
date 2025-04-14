@@ -473,7 +473,10 @@ paths:
                 type: object
                 required:
                   - purchases
+                  - total_records
                 properties:
+                  total_records:
+                    type: integer
                   purchases:
                     type: array
                     items:

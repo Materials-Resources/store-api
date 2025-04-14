@@ -26,6 +26,34 @@ func NewCustomerService(a *app.App) *CustomerService {
 	}
 }
 
+func (s *CustomerService) GetRecentPurchases(ctx context.Context, page int, pageSize int,
+	branchId string) ([]*domain.PurchaseSummary, int, error) {
+	pbReq := customerv1.GetRecentPurchasesByBranchRequest_builder{
+		Id:       proto.String(branchId),
+		PageSize: proto.Int32(int32(pageSize)),
+		Page:     proto.Int32(int32(page)),
+	}.Build()
+
+	pbRes, err := s.Client.GetRecentPurchasesByBranch(ctx, connect.NewRequest(pbReq))
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var purchases []*domain.PurchaseSummary
+	for _, item := range pbRes.Msg.GetItems() {
+		purchases = append(purchases, &domain.PurchaseSummary{
+			ProductId:          item.GetProductId(),
+			ProductSn:          item.GetProductSn(),
+			ProductName:        item.GetProductName(),
+			ProductDescription: item.GetProductDescription(),
+			OrderedQuantity:    item.GetOrderedQuantity(),
+			UnitType:           item.GetUnitType(),
+		})
+	}
+
+	return purchases, int(pbRes.Msg.GetTotalRecords()), nil
+
+}
 func (s *CustomerService) ListBranches(ctx context.Context, contactId string) ([]*domain.BranchSummary, error) {
 	pbReq := customerv1.GetBranchesForContactRequest_builder{ContactId: proto.String(contactId)}.Build()
 

@@ -658,12 +658,23 @@ type GetRecentPurchasesNotFound struct{}
 func (*GetRecentPurchasesNotFound) getRecentPurchasesRes() {}
 
 type GetRecentPurchasesOK struct {
-	Purchases []PurchaseSummary `json:"purchases"`
+	TotalRecords int               `json:"total_records"`
+	Purchases    []PurchaseSummary `json:"purchases"`
+}
+
+// GetTotalRecords returns the value of TotalRecords.
+func (s *GetRecentPurchasesOK) GetTotalRecords() int {
+	return s.TotalRecords
 }
 
 // GetPurchases returns the value of Purchases.
 func (s *GetRecentPurchasesOK) GetPurchases() []PurchaseSummary {
 	return s.Purchases
+}
+
+// SetTotalRecords sets the value of TotalRecords.
+func (s *GetRecentPurchasesOK) SetTotalRecords(val int) {
+	s.TotalRecords = val
 }
 
 // SetPurchases sets the value of Purchases.

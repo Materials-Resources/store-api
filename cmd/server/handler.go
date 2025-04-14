@@ -170,28 +170,25 @@ func (h Handler) GetRecentPurchases(ctx context.Context, params oas.GetRecentPur
 	if err != nil {
 		return nil, err
 	}
-	pbReq := customerv1.GetRecentPurchasesByBranchRequest_builder{
-		Id:       proto.String(userSession.Profile.BranchID),
-		PageSize: proto.Int32(int32(params.PageSize)),
-		Page:     proto.Int32(int32(params.Page)),
-	}.Build()
-	pbRes, err := h.service.Customer.Client.GetRecentPurchasesByBranch(ctx, connect.NewRequest(pbReq))
-	if err != nil {
-		return nil, err
-	}
-	response := oas.GetRecentPurchasesOK{
-		Purchases: make([]oas.PurchaseSummary, 0),
+
+	purchases, totalRecords, err := h.service.Customer.GetRecentPurchases(ctx, params.Page, params.PageSize, userSession.Profile.BranchID)
+
+	var oapiPurchases []oas.PurchaseSummary
+
+	for _, purchase := range purchases {
+		oapiPurchases = append(oapiPurchases, oas.PurchaseSummary{
+			ProductID:          purchase.ProductId,
+			ProductSn:          purchase.ProductSn,
+			ProductName:        purchase.ProductName,
+			ProductDescription: purchase.ProductDescription,
+			OrderedQuantity:    purchase.OrderedQuantity,
+			UnitOfMeasurement:  purchase.UnitType,
+		})
 	}
 
-	for _, purchase := range pbRes.Msg.GetItems() {
-		response.Purchases = append(response.Purchases, oas.PurchaseSummary{
-			ProductID:          purchase.GetProductId(),
-			ProductSn:          purchase.GetProductSn(),
-			ProductName:        purchase.GetProductName(),
-			ProductDescription: purchase.GetProductDescription(),
-			OrderedQuantity:    purchase.GetOrderedQuantity(),
-			UnitOfMeasurement:  purchase.GetUnitType(),
-		})
+	response := oas.GetRecentPurchasesOK{
+		TotalRecords: totalRecords,
+		Purchases:    oapiPurchases,
 	}
 
 	return &response, nil
