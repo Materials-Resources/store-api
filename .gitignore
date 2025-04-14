@@ -27,6 +27,7 @@ go.work.sum
 .env
 
 key.json
+config.yaml
 
 
 
