@@ -575,12 +575,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Product'
-        '422':
-          description: "Validation Error"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FormValidationError"
         default:
           description: "General Error"
           content:

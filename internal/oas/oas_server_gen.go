@@ -92,7 +92,7 @@ type Handler interface {
 	// Search for products.
 	//
 	// POST /search/products
-	SearchProducts(ctx context.Context, req *SearchProductsReq) (SearchProductsRes, error)
+	SearchProducts(ctx context.Context, req *SearchProductsReq) (*SearchProductsOK, error)
 	// SetActiveBranch implements setActiveBranch operation.
 	//
 	// Set active branch for current user.

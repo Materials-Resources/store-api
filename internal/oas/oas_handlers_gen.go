@@ -2550,7 +2550,7 @@ func (s *Server) handleSearchProductsRequest(args [0]string, argsEscaped bool, w
 		}
 	}()
 
-	var response SearchProductsRes
+	var response *SearchProductsOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -2565,7 +2565,7 @@ func (s *Server) handleSearchProductsRequest(args [0]string, argsEscaped bool, w
 		type (
 			Request  = *SearchProductsReq
 			Params   = struct{}
-			Response = SearchProductsRes
+			Response = *SearchProductsOK
 		)
 		response, err = middleware.HookMiddleware[
 			Request,

@@ -45,19 +45,21 @@ func (h Handler) ListInvoices(ctx context.Context, params oas.ListInvoicesParams
 		return nil, err
 	}
 
-	invoices, err := h.service.Billing.GetInvoicesByBranch(ctx, userSession.Profile.BranchID, int32(params.Page.Or(1)),
+	invoices, totalRecords, err := h.service.Billing.GetInvoicesByBranch(ctx, userSession.Profile.BranchID,
+		int32(params.Page.Or(1)),
 		int32(params.PageSize.Or(10)))
 
 	if err != nil {
 		return nil, err
 	}
 
-	respone := &oas.ListInvoicesOK{
-		Invoices: make([]oas.InvoiceSummary, 0),
+	response := &oas.ListInvoicesOK{
+		TotalRecords: totalRecords,
+		Invoices:     make([]oas.InvoiceSummary, 0),
 	}
 
 	for _, invoice := range invoices {
-		respone.Invoices = append(respone.Invoices, oas.InvoiceSummary{
+		response.Invoices = append(response.Invoices, oas.InvoiceSummary{
 			ID:           invoice.Id,
 			OrderID:      invoice.OrderId,
 			DateInvoiced: invoice.DateInvoiced,
@@ -65,7 +67,7 @@ func (h Handler) ListInvoices(ctx context.Context, params oas.ListInvoicesParams
 			PaidAmount:   invoice.PaidAmount,
 		})
 	}
-	return respone, nil
+	return response, nil
 
 }
 
@@ -173,10 +175,17 @@ func (h Handler) GetRecentPurchases(ctx context.Context, params oas.GetRecentPur
 
 	purchases, totalRecords, err := h.service.Customer.GetRecentPurchases(ctx, params.Page, params.PageSize, userSession.Profile.BranchID)
 
-	var oapiPurchases []oas.PurchaseSummary
+	if err != nil {
+		return nil, err
+	}
+
+	response := oas.GetRecentPurchasesOK{
+		TotalRecords: totalRecords,
+		Purchases:    make([]oas.PurchaseSummary, 0),
+	}
 
 	for _, purchase := range purchases {
-		oapiPurchases = append(oapiPurchases, oas.PurchaseSummary{
+		response.Purchases = append(response.Purchases, oas.PurchaseSummary{
 			ProductID:          purchase.ProductId,
 			ProductSn:          purchase.ProductSn,
 			ProductName:        purchase.ProductName,
@@ -184,11 +193,6 @@ func (h Handler) GetRecentPurchases(ctx context.Context, params oas.GetRecentPur
 			OrderedQuantity:    purchase.OrderedQuantity,
 			UnitOfMeasurement:  purchase.UnitType,
 		})
-	}
-
-	response := oas.GetRecentPurchasesOK{
-		TotalRecords: totalRecords,
-		Purchases:    oapiPurchases,
 	}
 
 	return &response, nil
@@ -275,7 +279,7 @@ func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (o
 	return &response, err
 }
 
-func (h Handler) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (oas.SearchProductsRes, error) {
+func (h Handler) SearchProducts(ctx context.Context, req *oas.SearchProductsReq) (*oas.SearchProductsOK, error) {
 	return h.service.Search.SearchProducts(ctx, req)
 }
 

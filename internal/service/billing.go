@@ -50,7 +50,7 @@ func (s *BillingService) GetInvoicesByOrder(ctx context.Context, orderId string)
 }
 
 func (s *BillingService) GetInvoicesByBranch(ctx context.Context, branchId string, page,
-	pageSize int32) ([]*domain.InvoiceSummary,
+	pageSize int32) ([]*domain.InvoiceSummary, int,
 	error) {
 	pbReq := billingv1.GetInvoicesByBranchRequest_builder{
 		BranchId: proto.String(branchId), Page: proto.Int32(page),
@@ -59,7 +59,7 @@ func (s *BillingService) GetInvoicesByBranch(ctx context.Context, branchId strin
 
 	pbRes, err := s.client.GetInvoicesByBranch(ctx, connect.NewRequest(pbReq))
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	var invoices []*domain.InvoiceSummary
 	for _, invoice := range pbRes.Msg.GetInvoices() {
@@ -71,5 +71,5 @@ func (s *BillingService) GetInvoicesByBranch(ctx context.Context, branchId strin
 			PaidAmount:   invoice.GetPaidAmount(),
 		})
 	}
-	return invoices, nil
+	return invoices, int(pbRes.Msg.GetTotalRecords()), nil
 }

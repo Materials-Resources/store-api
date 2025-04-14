@@ -476,8 +476,7 @@ func (s *FormValidationError) SetErrors(val []FormValidationErrorErrorsItem) {
 	s.Errors = val
 }
 
-func (*FormValidationError) contactUsRes()      {}
-func (*FormValidationError) searchProductsRes() {}
+func (*FormValidationError) contactUsRes() {}
 
 type FormValidationErrorErrorsItem struct {
 	// The field where the validation error occurred.
@@ -2001,8 +2000,6 @@ func (s *SearchProductsOK) SetMetadata(val PageMetadata) {
 func (s *SearchProductsOK) SetProducts(val []Product) {
 	s.Products = val
 }
-
-func (*SearchProductsOK) searchProductsRes() {}
 
 type SearchProductsReq struct {
 	SortBy  OptString                   `json:"sort_by"`

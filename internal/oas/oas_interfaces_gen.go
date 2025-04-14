@@ -53,10 +53,6 @@ type ListQuotesRes interface {
 	listQuotesRes()
 }
 
-type SearchProductsRes interface {
-	searchProductsRes()
-}
-
 type SetActiveBranchRes interface {
 	setActiveBranchRes()
 }
