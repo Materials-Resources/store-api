@@ -50,7 +50,7 @@ lint:
 .PHONY: app/serve
 ## app/serve: Serve the application
 app/serve:
-	go run ./cmd/server
+	go run ./cmd/server --config config.yaml
 
 
 

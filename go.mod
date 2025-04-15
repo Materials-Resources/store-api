@@ -13,6 +13,8 @@ require (
 	github.com/knadh/koanf/providers/file v1.1.2
 	github.com/knadh/koanf/v2 v2.1.2
 	github.com/ogen-go/ogen v1.10.1
+	github.com/rs/zerolog v1.34.0
+	github.com/urfave/cli/v3 v3.1.1
 	github.com/zitadel/oidc/v3 v3.36.1
 	github.com/zitadel/zitadel-go/v3 v3.4.3
 	go.opentelemetry.io/otel v1.35.0
@@ -25,7 +27,6 @@ require (
 	go.uber.org/multierr v1.11.0
 	google.golang.org/protobuf v1.36.5
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
-	gopkg.in/mail.v2 v2.3.1
 )
 
 require (
@@ -50,7 +51,6 @@ require (
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/muhlemmer/gu v0.3.1 // indirect
-	github.com/rs/zerolog v1.34.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/zitadel/logging v0.6.1 // indirect

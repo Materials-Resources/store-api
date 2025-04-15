@@ -26,11 +26,11 @@ func newConfig() *Config {
 	return cfg
 }
 
-func ReadConfig() (*Config, error) {
+func ReadConfig(path string) (*Config, error) {
 	cfg := newConfig()
 	var k = koanf.New(".")
 
-	if err := k.Load(file.Provider("config.yaml"), yaml.Parser()); err != nil {
+	if err := k.Load(file.Provider(path), yaml.Parser()); err != nil {
 		return nil, fmt.Errorf("failed to load config: %w", err)
 	}
 
