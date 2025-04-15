@@ -20,7 +20,7 @@ import (
 var _ oas.Handler = (*Handler)(nil)
 
 func NewHandler(a *app.App, service service.Service, sessionManager *session.Manager, m mailer.Mailer) Handler {
-	z, err := zitadel.NewZitadelClient()
+	z, err := zitadel.NewZitadelClient(a)
 	if err != nil {
 		a.Logger.Fatal().Err(err).Msg("could not create zitadel client")
 	}

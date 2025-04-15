@@ -13,13 +13,13 @@ import (
 )
 
 func main() {
-	sm := session.NewManager("https://auth.materials-resources.com/oauth/v2/keys")
 
 	cfg, err := config.ReadConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
 	a, err := app.New(*cfg)
+	sm := session.NewManager(a)
 	if err != nil {
 		log.Fatal(err)
 	}

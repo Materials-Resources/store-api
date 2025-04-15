@@ -10,8 +10,10 @@ import (
 type Config struct {
 	Server    Server    `koanf:"server"`
 	Services  Services  `konanf:"services"`
+	Session   Session   `konanf:"session"`
 	Telemetry Telemetry `konanf:"telemetry"`
 	Mailer    Mailer    `konanf:"mailer"`
+	Zitadel   Zitadel   `konanf:"zitadel"`
 	Env       string
 }
 

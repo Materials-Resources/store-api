@@ -14,7 +14,6 @@ jobs:
       matrix:
         binary:
           - linux_amd64
-          - linux_arm64
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -82,7 +81,7 @@ jobs:
           containerfiles: Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/arm64,linux/amd64
+          platforms: linux/amd64
           oci: true
       - name: Push image to registry
         uses: redhat-actions/push-to-registry@v2
