@@ -221,6 +221,8 @@ type ContactUsReq struct {
 	Organization string `json:"organization"`
 	Email        string `json:"email"`
 	Message      string `json:"message"`
+	// Phone number in various formats (e.g., 123-456-7890, (123) 456-7890, 123.456.7890).
+	Telephone OptString `json:"telephone"`
 }
 
 // GetName returns the value of Name.
@@ -243,6 +245,11 @@ func (s *ContactUsReq) GetMessage() string {
 	return s.Message
 }
 
+// GetTelephone returns the value of Telephone.
+func (s *ContactUsReq) GetTelephone() OptString {
+	return s.Telephone
+}
+
 // SetName sets the value of Name.
 func (s *ContactUsReq) SetName(val string) {
 	s.Name = val
@@ -261,6 +268,11 @@ func (s *ContactUsReq) SetEmail(val string) {
 // SetMessage sets the value of Message.
 func (s *ContactUsReq) SetMessage(val string) {
 	s.Message = val
+}
+
+// SetTelephone sets the value of Telephone.
+func (s *ContactUsReq) SetTelephone(val OptString) {
+	s.Telephone = val
 }
 
 type CreateQuoteCreated struct {

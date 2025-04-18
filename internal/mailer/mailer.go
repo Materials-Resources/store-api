@@ -13,8 +13,9 @@ import (
 var templateFS embed.FS
 
 type Mailer struct {
-	dialer *mail.Dialer
-	sender string
+	dialer    *mail.Dialer
+	sender    string
+	recipient string
 }
 
 // New initializes a new Mailer
@@ -23,27 +24,28 @@ func New(a *app.App) Mailer {
 	dialer := mail.NewDialer(a.Config.Mailer.Host, a.Config.Mailer.Port, a.Config.Mailer.Username, a.Config.Mailer.Password)
 
 	return Mailer{
-		dialer: dialer,
-		sender: a.Config.Mailer.Sender,
+		dialer:    dialer,
+		sender:    a.Config.Mailer.Sender,
+		recipient: a.Config.Mailer.Recipient,
 	}
 }
 
 // Send sends a new email to the provided recipient with the given template
-func (m Mailer) Send(recipient, replyTo, templateFile string, data any) error {
+func (m Mailer) Send(templateFile string, data any) error {
 
 	tmpl, err := template.New("email").ParseFS(templateFS, "templates/"+templateFile)
 	if err != nil {
 		return err
 	}
 
-	// set subject template
+	// set a subject template
 	subject := new(bytes.Buffer)
 	err = tmpl.ExecuteTemplate(subject, "subject", data)
 	if err != nil {
 		return err
 	}
 
-	// set plain body template
+	// set a plain body template
 	plainBody := new(bytes.Buffer)
 	err = tmpl.ExecuteTemplate(plainBody, "plainBody", data)
 	if err != nil {
@@ -57,9 +59,9 @@ func (m Mailer) Send(recipient, replyTo, templateFile string, data any) error {
 		return err
 	}
 
-	// create message
+	// create a message
 	msg := mail.NewMessage()
-	msg.SetHeader("To", recipient)
+	msg.SetHeader("To", m.recipient)
 	msg.SetHeader("From", m.sender)
 	msg.SetHeader("Subject", subject.String())
 	msg.SetHeader("text/plain", plainBody.String())

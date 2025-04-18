@@ -478,13 +478,20 @@ func (s *ContactUsReq) encodeFields(e *jx.Encoder) {
 		e.FieldStart("message")
 		e.Str(s.Message)
 	}
+	{
+		if s.Telephone.Set {
+			e.FieldStart("telephone")
+			s.Telephone.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfContactUsReq = [4]string{
+var jsonFieldsNameOfContactUsReq = [5]string{
 	0: "name",
 	1: "organization",
 	2: "email",
 	3: "message",
+	4: "telephone",
 }
 
 // Decode decodes ContactUsReq from json.
@@ -543,6 +550,16 @@ func (s *ContactUsReq) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"message\"")
+			}
+		case "telephone":
+			if err := func() error {
+				s.Telephone.Reset()
+				if err := s.Telephone.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"telephone\"")
 			}
 		default:
 			return d.Skip()

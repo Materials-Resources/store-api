@@ -85,9 +85,10 @@ func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) (oas.Cont
 		"Organization": req.GetOrganization(),
 		"Name":         req.GetName(),
 		"Email":        req.GetEmail(),
+		"Telephone":    req.GetTelephone(),
 		"Message":      req.GetMessage(),
 	}
-	err := h.mailer.Send("smallegan@emrsinc.com", "smallegan@emrsinc.com", "contact_request.tmpl", d)
+	err := h.mailer.Send("contact_request.tmpl", d)
 	if err != nil {
 		return nil, err
 	}
