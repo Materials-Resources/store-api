@@ -973,7 +973,7 @@ type Order struct {
 	BranchID             string               `json:"branch_id"`
 	PurchaseOrder        string               `json:"purchase_order"`
 	Status               OrderStatus          `json:"status"`
-	DateCreated          time.Time            `json:"date_created"`
+	DateOrdered          time.Time            `json:"date_ordered"`
 	DateRequested        time.Time            `json:"date_requested"`
 	Taker                OptString            `json:"taker"`
 	DeliveryInstructions string               `json:"delivery_instructions"`
@@ -1009,9 +1009,9 @@ func (s *Order) GetStatus() OrderStatus {
 	return s.Status
 }
 
-// GetDateCreated returns the value of DateCreated.
-func (s *Order) GetDateCreated() time.Time {
-	return s.DateCreated
+// GetDateOrdered returns the value of DateOrdered.
+func (s *Order) GetDateOrdered() time.Time {
+	return s.DateOrdered
 }
 
 // GetDateRequested returns the value of DateRequested.
@@ -1079,9 +1079,9 @@ func (s *Order) SetStatus(val OrderStatus) {
 	s.Status = val
 }
 
-// SetDateCreated sets the value of DateCreated.
-func (s *Order) SetDateCreated(val time.Time) {
-	s.DateCreated = val
+// SetDateOrdered sets the value of DateOrdered.
+func (s *Order) SetDateOrdered(val time.Time) {
+	s.DateOrdered = val
 }
 
 // SetDateRequested sets the value of DateRequested.
@@ -1319,7 +1319,7 @@ type OrderSummary struct {
 	BranchID      string      `json:"branch_id"`
 	PurchaseOrder string      `json:"purchase_order"`
 	Status        OrderStatus `json:"status"`
-	DateCreated   time.Time   `json:"date_created"`
+	DateOrdered   time.Time   `json:"date_ordered"`
 	DateRequested time.Time   `json:"date_requested"`
 }
 
@@ -1348,9 +1348,9 @@ func (s *OrderSummary) GetStatus() OrderStatus {
 	return s.Status
 }
 
-// GetDateCreated returns the value of DateCreated.
-func (s *OrderSummary) GetDateCreated() time.Time {
-	return s.DateCreated
+// GetDateOrdered returns the value of DateOrdered.
+func (s *OrderSummary) GetDateOrdered() time.Time {
+	return s.DateOrdered
 }
 
 // GetDateRequested returns the value of DateRequested.
@@ -1383,9 +1383,9 @@ func (s *OrderSummary) SetStatus(val OrderStatus) {
 	s.Status = val
 }
 
-// SetDateCreated sets the value of DateCreated.
-func (s *OrderSummary) SetDateCreated(val time.Time) {
-	s.DateCreated = val
+// SetDateOrdered sets the value of DateOrdered.
+func (s *OrderSummary) SetDateOrdered(val time.Time) {
+	s.DateOrdered = val
 }
 
 // SetDateRequested sets the value of DateRequested.
@@ -1773,21 +1773,21 @@ func (s *QuoteItem) SetTotalPrice(val float64) {
 type QuoteStatus string
 
 const (
-	QuoteStatusUnspecified     QuoteStatus = "unspecified"
-	QuoteStatusPendingApproval QuoteStatus = "pending_approval"
-	QuoteStatusApproved        QuoteStatus = "approved"
-	QuoteStatusCancelled       QuoteStatus = "cancelled"
-	QuoteStatusExpired         QuoteStatus = "expired"
+	QuoteStatusUnspecified QuoteStatus = "unspecified"
+	QuoteStatusPending     QuoteStatus = "pending"
+	QuoteStatusProcessed   QuoteStatus = "processed"
+	QuoteStatusCancelled   QuoteStatus = "cancelled"
+	QuoteStatusClosed      QuoteStatus = "closed"
 )
 
 // AllValues returns all QuoteStatus values.
 func (QuoteStatus) AllValues() []QuoteStatus {
 	return []QuoteStatus{
 		QuoteStatusUnspecified,
-		QuoteStatusPendingApproval,
-		QuoteStatusApproved,
+		QuoteStatusPending,
+		QuoteStatusProcessed,
 		QuoteStatusCancelled,
-		QuoteStatusExpired,
+		QuoteStatusClosed,
 	}
 }
 
@@ -1796,13 +1796,13 @@ func (s QuoteStatus) MarshalText() ([]byte, error) {
 	switch s {
 	case QuoteStatusUnspecified:
 		return []byte(s), nil
-	case QuoteStatusPendingApproval:
+	case QuoteStatusPending:
 		return []byte(s), nil
-	case QuoteStatusApproved:
+	case QuoteStatusProcessed:
 		return []byte(s), nil
 	case QuoteStatusCancelled:
 		return []byte(s), nil
-	case QuoteStatusExpired:
+	case QuoteStatusClosed:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -1815,17 +1815,17 @@ func (s *QuoteStatus) UnmarshalText(data []byte) error {
 	case QuoteStatusUnspecified:
 		*s = QuoteStatusUnspecified
 		return nil
-	case QuoteStatusPendingApproval:
-		*s = QuoteStatusPendingApproval
+	case QuoteStatusPending:
+		*s = QuoteStatusPending
 		return nil
-	case QuoteStatusApproved:
-		*s = QuoteStatusApproved
+	case QuoteStatusProcessed:
+		*s = QuoteStatusProcessed
 		return nil
 	case QuoteStatusCancelled:
 		*s = QuoteStatusCancelled
 		return nil
-	case QuoteStatusExpired:
-		*s = QuoteStatusExpired
+	case QuoteStatusClosed:
+		*s = QuoteStatusClosed
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)

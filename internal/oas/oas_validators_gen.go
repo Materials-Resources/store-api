@@ -751,13 +751,13 @@ func (s QuoteStatus) Validate() error {
 	switch s {
 	case "unspecified":
 		return nil
-	case "pending_approval":
+	case "pending":
 		return nil
-	case "approved":
+	case "processed":
 		return nil
 	case "cancelled":
 		return nil
-	case "expired":
+	case "closed":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)

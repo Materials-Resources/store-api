@@ -76,7 +76,7 @@ func (s *Order) GetOrder(ctx context.Context, orderId string) (*domain.Order, er
 		BranchId:        pbRes.Msg.GetOrder().GetBranchId(),
 		PurchaseOrder:   pbRes.Msg.GetOrder().GetPurchaseOrder(),
 		Status:          convertOrderStatus(pbRes.Msg.GetOrder().GetStatus()),
-		DateCreated:     pbRes.Msg.GetOrder().GetDateCreated().AsTime(),
+		DateOrdered:     pbRes.Msg.GetOrder().GetDateOrdered().AsTime(),
 		DateRequested:   pbRes.Msg.GetOrder().GetDateRequested().AsTime(),
 		Taker:           pbRes.Msg.GetOrder().GetTaker(),
 		ShippingAddress: domain.Address{},
@@ -141,7 +141,7 @@ func (s *Order) ListOrders(ctx context.Context, page, pageSize int32, branchId s
 			BranchId:      pbOrder.GetBranchId(),
 			PurchaseOrder: pbOrder.GetPurchaseOrder(),
 			Status:        convertOrderStatus(pbOrder.GetStatus()),
-			DateCreated:   pbOrder.GetDateCreated().AsTime(),
+			DateOrdered:   pbOrder.GetDateOrdered().AsTime(),
 			DateRequested: pbOrder.GetDateRequested().AsTime(),
 		})
 	}
@@ -220,14 +220,14 @@ func convertOrderStatus(status orderv1.OrderStatus) domain.OrderStatus {
 
 func convertQuoteStatus(status orderv1.QuoteStatus) domain.QuoteStatus {
 	switch status {
-	case orderv1.QuoteStatus_QUOTE_STATUS_APPROVED:
-		return domain.QuoteStatusApproved
+	case orderv1.QuoteStatus_QUOTE_STATUS_PROCESSED:
+		return domain.QuoteStatusProcessed
 	case orderv1.QuoteStatus_QUOTE_STATUS_CANCELLED:
 		return domain.QuoteStatusCancelled
 	case orderv1.QuoteStatus_QUOTE_STATUS_PENDING_APPROVAL:
-		return domain.QuoteStatusPendingApproval
-	case orderv1.QuoteStatus_QUOTE_STATUS_EXPIRED:
-		return domain.QuoteStatusExpired
+		return domain.QuoteStatusPending
+	case orderv1.QuoteStatus_QUOTE_STATUS_CLOSED:
+		return domain.QuoteStatusClosed
 	case orderv1.QuoteStatus_QUOTE_STATUS_UNSPECIFIED:
 		return domain.QuoteStatusUnspecified
 	default:

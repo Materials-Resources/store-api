@@ -2490,8 +2490,8 @@ func (s *Order) encodeFields(e *jx.Encoder) {
 		s.Status.Encode(e)
 	}
 	{
-		e.FieldStart("date_created")
-		json.EncodeDateTime(e, s.DateCreated)
+		e.FieldStart("date_ordered")
+		json.EncodeDateTime(e, s.DateOrdered)
 	}
 	{
 		e.FieldStart("date_requested")
@@ -2547,7 +2547,7 @@ var jsonFieldsNameOfOrder = [14]string{
 	2:  "branch_id",
 	3:  "purchase_order",
 	4:  "status",
-	5:  "date_created",
+	5:  "date_ordered",
 	6:  "date_requested",
 	7:  "taker",
 	8:  "delivery_instructions",
@@ -2625,17 +2625,17 @@ func (s *Order) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"status\"")
 			}
-		case "date_created":
+		case "date_ordered":
 			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
-				s.DateCreated = v
+				s.DateOrdered = v
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"date_created\"")
+				return errors.Wrap(err, "decode field \"date_ordered\"")
 			}
 		case "date_requested":
 			requiredBitSet[0] |= 1 << 6
@@ -3147,8 +3147,8 @@ func (s *OrderSummary) encodeFields(e *jx.Encoder) {
 		s.Status.Encode(e)
 	}
 	{
-		e.FieldStart("date_created")
-		json.EncodeDateTime(e, s.DateCreated)
+		e.FieldStart("date_ordered")
+		json.EncodeDateTime(e, s.DateOrdered)
 	}
 	{
 		e.FieldStart("date_requested")
@@ -3162,7 +3162,7 @@ var jsonFieldsNameOfOrderSummary = [7]string{
 	2: "branch_id",
 	3: "purchase_order",
 	4: "status",
-	5: "date_created",
+	5: "date_ordered",
 	6: "date_requested",
 }
 
@@ -3233,17 +3233,17 @@ func (s *OrderSummary) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"status\"")
 			}
-		case "date_created":
+		case "date_ordered":
 			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
-				s.DateCreated = v
+				s.DateOrdered = v
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"date_created\"")
+				return errors.Wrap(err, "decode field \"date_ordered\"")
 			}
 		case "date_requested":
 			requiredBitSet[0] |= 1 << 6
@@ -4355,14 +4355,14 @@ func (s *QuoteStatus) Decode(d *jx.Decoder) error {
 	switch QuoteStatus(v) {
 	case QuoteStatusUnspecified:
 		*s = QuoteStatusUnspecified
-	case QuoteStatusPendingApproval:
-		*s = QuoteStatusPendingApproval
-	case QuoteStatusApproved:
-		*s = QuoteStatusApproved
+	case QuoteStatusPending:
+		*s = QuoteStatusPending
+	case QuoteStatusProcessed:
+		*s = QuoteStatusProcessed
 	case QuoteStatusCancelled:
 		*s = QuoteStatusCancelled
-	case QuoteStatusExpired:
-		*s = QuoteStatusExpired
+	case QuoteStatusClosed:
+		*s = QuoteStatusClosed
 	default:
 		*s = QuoteStatus(v)
 	}

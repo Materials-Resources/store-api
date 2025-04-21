@@ -17,7 +17,7 @@ type OrderSummary struct {
 	BranchId      string
 	PurchaseOrder string
 	Status        OrderStatus
-	DateCreated   time.Time
+	DateOrdered   time.Time
 	DateRequested time.Time
 }
 type Order struct {
@@ -26,7 +26,7 @@ type Order struct {
 	BranchId      string
 	PurchaseOrder string
 	Status        OrderStatus
-	DateCreated   time.Time
+	DateOrdered   time.Time
 	DateRequested time.Time
 
 	Items           []*OrderItem

@@ -243,7 +243,7 @@ func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (o
 			ContactID:     order.ContactId,
 			PurchaseOrder: order.PurchaseOrder,
 			Status:        mapOrderStatus(order.Status),
-			DateCreated:   order.DateCreated,
+			DateOrdered:   order.DateOrdered,
 			DateRequested: order.DateRequested,
 		})
 	}
@@ -357,7 +357,7 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 		BranchID:      order.BranchId,
 		PurchaseOrder: order.PurchaseOrder,
 		Status:        mapOrderStatus(order.Status),
-		DateCreated:   order.DateCreated,
+		DateOrdered:   order.DateOrdered,
 		DateRequested: order.DateRequested,
 		Taker:         oas.NewOptString(order.Taker),
 		ShippingAddress: oas.Address{
@@ -453,32 +453,15 @@ func mapOrderStatus(status domain.OrderStatus) oas.OrderStatus {
 
 func mapQuoteStatus(status domain.QuoteStatus) oas.QuoteStatus {
 	switch status {
-	case domain.QuoteStatusApproved:
-		return oas.QuoteStatusApproved
+	case domain.QuoteStatusProcessed:
+		return oas.QuoteStatusProcessed
 	case domain.QuoteStatusCancelled:
 		return oas.QuoteStatusCancelled
-	case domain.QuoteStatusPendingApproval:
-		return oas.QuoteStatusPendingApproval
-	case domain.QuoteStatusExpired:
-		return oas.QuoteStatusExpired
+	case domain.QuoteStatusPending:
+		return oas.QuoteStatusPending
+	case domain.QuoteStatusClosed:
+		return oas.QuoteStatusClosed
 	case domain.QuoteStatusUnspecified:
-		return oas.QuoteStatusUnspecified
-	default:
-		return oas.QuoteStatusUnspecified
-	}
-}
-
-func convertQuoteStatus(status orderv1.QuoteStatus) oas.QuoteStatus {
-	switch status {
-	case orderv1.QuoteStatus_QUOTE_STATUS_APPROVED:
-		return oas.QuoteStatusApproved
-	case orderv1.QuoteStatus_QUOTE_STATUS_CANCELLED:
-		return oas.QuoteStatusCancelled
-	case orderv1.QuoteStatus_QUOTE_STATUS_PENDING_APPROVAL:
-		return oas.QuoteStatusPendingApproval
-	case orderv1.QuoteStatus_QUOTE_STATUS_EXPIRED:
-		return oas.QuoteStatusExpired
-	case orderv1.QuoteStatus_QUOTE_STATUS_UNSPECIFIED:
 		return oas.QuoteStatusUnspecified
 	default:
 		return oas.QuoteStatusUnspecified

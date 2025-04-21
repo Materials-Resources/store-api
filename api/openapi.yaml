@@ -750,7 +750,7 @@ components:
         - branch_id
         - purchase_order
         - status
-        - date_created
+        - date_ordered
         - date_requested
         - delivery_instructions
         - shipping_address
@@ -770,7 +770,7 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/OrderStatus'
-        date_created:
+        date_ordered:
           type: string
           format: date-time
         date_requested:
@@ -848,7 +848,7 @@ components:
         - branch_id
         - purchase_order
         - status
-        - date_created
+        - date_ordered
         - date_requested
       type: object
       properties:
@@ -862,7 +862,7 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/OrderStatus'
-        date_created:
+        date_ordered:
           type: string
           format: date-time
         date_requested:
@@ -895,10 +895,10 @@ components:
       type: string
       enum:
         - unspecified
-        - pending_approval
-        - approved
+        - pending
+        - processed
         - cancelled
-        - expired
+        - closed
     QuoteSummary:
       required:
         - id

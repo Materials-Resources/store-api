@@ -3,10 +3,10 @@ package domain
 import "time"
 
 const (
-	QuoteStatusApproved QuoteStatus = iota
-	QuoteStatusPendingApproval
+	QuoteStatusProcessed QuoteStatus = iota
+	QuoteStatusPending
 	QuoteStatusCancelled
-	QuoteStatusExpired
+	QuoteStatusClosed
 	QuoteStatusUnspecified
 )
 
