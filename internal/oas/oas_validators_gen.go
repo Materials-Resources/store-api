@@ -43,7 +43,7 @@ func (s *ContactUsReq) Validate() error {
 			MaxLengthSet: false,
 			Email:        false,
 			Hostname:     false,
-			Regex:        regexMap["/^[+]?[(]?[0-9]{3}[)]?[-\\s.]?[0-9]{3}[-\\s.]?[0-9]{4,6}$/"],
+			Regex:        regexMap["^[+]?[(]?[0-9]{3}[)]?[-\\s.]?[0-9]{3}[-\\s.]?[0-9]{4,6}$"],
 		}).Validate(string(s.Telephone)); err != nil {
 			return errors.Wrap(err, "string")
 		}
