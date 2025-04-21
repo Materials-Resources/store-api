@@ -479,10 +479,8 @@ func (s *ContactUsReq) encodeFields(e *jx.Encoder) {
 		e.Str(s.Message)
 	}
 	{
-		if s.Telephone.Set {
-			e.FieldStart("telephone")
-			s.Telephone.Encode(e)
-		}
+		e.FieldStart("telephone")
+		e.Str(s.Telephone)
 	}
 }
 
@@ -552,9 +550,11 @@ func (s *ContactUsReq) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"message\"")
 			}
 		case "telephone":
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
-				s.Telephone.Reset()
-				if err := s.Telephone.Decode(d); err != nil {
+				v, err := d.Str()
+				s.Telephone = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -571,7 +571,7 @@ func (s *ContactUsReq) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00001111,
+		0b00011111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

@@ -220,7 +220,7 @@ type ContactUsReq struct {
 	Email        string `json:"email"`
 	Message      string `json:"message"`
 	// Phone number in various formats (e.g., 123-456-7890, (123) 456-7890, 123.456.7890).
-	Telephone OptString `json:"telephone"`
+	Telephone string `json:"telephone"`
 }
 
 // GetName returns the value of Name.
@@ -244,7 +244,7 @@ func (s *ContactUsReq) GetMessage() string {
 }
 
 // GetTelephone returns the value of Telephone.
-func (s *ContactUsReq) GetTelephone() OptString {
+func (s *ContactUsReq) GetTelephone() string {
 	return s.Telephone
 }
 
@@ -269,7 +269,7 @@ func (s *ContactUsReq) SetMessage(val string) {
 }
 
 // SetTelephone sets the value of Telephone.
-func (s *ContactUsReq) SetTelephone(val OptString) {
+func (s *ContactUsReq) SetTelephone(val string) {
 	s.Telephone = val
 }
 
