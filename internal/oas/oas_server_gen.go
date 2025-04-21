@@ -13,7 +13,7 @@ type Handler interface {
 	// Send details regarding a contact inquiry.
 	//
 	// POST /contact
-	ContactUs(ctx context.Context, req *ContactUsReq) (ContactUsRes, error)
+	ContactUs(ctx context.Context, req *ContactUsReq) error
 	// CreateQuote implements createQuote operation.
 	//
 	// Create a new quote. The `customer_id` and `contact_id` are extracted from the provided

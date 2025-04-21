@@ -214,8 +214,6 @@ func (s *Branch) SetName(val string) {
 // ContactUsOK is response for ContactUs operation.
 type ContactUsOK struct{}
 
-func (*ContactUsOK) contactUsRes() {}
-
 type ContactUsReq struct {
 	Name         string `json:"name"`
 	Organization string `json:"organization"`
@@ -469,52 +467,6 @@ func (s *ErrorStatusCode) SetStatusCode(val int) {
 // SetResponse sets the value of Response.
 func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
-}
-
-// Form validation errors.
-// Ref: #/components/schemas/FormValidationError
-type FormValidationError struct {
-	// List of validation errors.
-	Errors []FormValidationErrorErrorsItem `json:"errors"`
-}
-
-// GetErrors returns the value of Errors.
-func (s *FormValidationError) GetErrors() []FormValidationErrorErrorsItem {
-	return s.Errors
-}
-
-// SetErrors sets the value of Errors.
-func (s *FormValidationError) SetErrors(val []FormValidationErrorErrorsItem) {
-	s.Errors = val
-}
-
-func (*FormValidationError) contactUsRes() {}
-
-type FormValidationErrorErrorsItem struct {
-	// The field where the validation error occurred.
-	Field OptString `json:"field"`
-	// A descriptive error message.
-	Message OptString `json:"message"`
-}
-
-// GetField returns the value of Field.
-func (s *FormValidationErrorErrorsItem) GetField() OptString {
-	return s.Field
-}
-
-// GetMessage returns the value of Message.
-func (s *FormValidationErrorErrorsItem) GetMessage() OptString {
-	return s.Message
-}
-
-// SetField sets the value of Field.
-func (s *FormValidationErrorErrorsItem) SetField(val OptString) {
-	s.Field = val
-}
-
-// SetMessage sets the value of Message.
-func (s *FormValidationErrorErrorsItem) SetMessage(val OptString) {
-	s.Message = val
 }
 
 type GetActiveBranchOK struct {

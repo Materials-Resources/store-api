@@ -80,7 +80,7 @@ func (h Handler) GetPackingListReport(ctx context.Context, params oas.GetPacking
 	return &oas.GetPackingListReportOK{Data: data}, nil
 }
 
-func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) (oas.ContactUsRes, error) {
+func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) error {
 	d := map[string]any{
 		"Organization": req.GetOrganization(),
 		"Name":         req.GetName(),
@@ -90,9 +90,9 @@ func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) (oas.Cont
 	}
 	err := h.mailer.Send("contact_request.tmpl", d)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return &oas.ContactUsOK{}, nil
+	return nil
 }
 
 func (h Handler) GetInvoiceReport(ctx context.Context, params oas.GetInvoiceReportParams) (oas.GetInvoiceReportRes,

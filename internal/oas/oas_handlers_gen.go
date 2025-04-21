@@ -120,7 +120,7 @@ func (s *Server) handleContactUsRequest(args [0]string, argsEscaped bool, w http
 		}
 	}()
 
-	var response ContactUsRes
+	var response *ContactUsOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -135,7 +135,7 @@ func (s *Server) handleContactUsRequest(args [0]string, argsEscaped bool, w http
 		type (
 			Request  = *ContactUsReq
 			Params   = struct{}
-			Response = ContactUsRes
+			Response = *ContactUsOK
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -146,12 +146,12 @@ func (s *Server) handleContactUsRequest(args [0]string, argsEscaped bool, w http
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ContactUs(ctx, request)
+				err = s.h.ContactUs(ctx, request)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.ContactUs(ctx, request)
+		err = s.h.ContactUs(ctx, request)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {

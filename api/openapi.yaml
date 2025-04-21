@@ -617,13 +617,6 @@ paths:
 
         "200":
           description: "OK"
-        '422':
-          description: "Validation Error"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FormValidationError"
-
         default:
           description: "General Error"
           content:

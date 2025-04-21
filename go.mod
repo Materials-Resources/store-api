@@ -14,6 +14,7 @@ require (
 	github.com/knadh/koanf/v2 v2.1.2
 	github.com/ogen-go/ogen v1.10.1
 	github.com/rs/zerolog v1.34.0
+	github.com/stretchr/testify v1.10.0
 	github.com/urfave/cli/v3 v3.1.1
 	github.com/zitadel/oidc/v3 v3.36.1
 	github.com/zitadel/zitadel-go/v3 v3.4.3
@@ -32,6 +33,7 @@ require (
 require (
 	github.com/MicahParks/jwkset v0.8.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.11.5 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/fatih/color v1.18.0 // indirect
@@ -51,6 +53,7 @@ require (
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/muhlemmer/gu v0.3.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/zitadel/logging v0.6.1 // indirect
