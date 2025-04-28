@@ -402,6 +402,7 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 			UnitPrice:         item.UnitPrice,
 			TotalPrice:        item.TotalPrice,
 			Disposition:       oas.NewOptOrderItemDisposition(mapOrderItemDisposition(item.Disposition)),
+			Releases:          make([]oas.OrderItemRelease, 0),
 		}
 
 		for _, release := range item.Releases {
