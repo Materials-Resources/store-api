@@ -9,6 +9,7 @@ import (
 	"github.com/materials-resources/store-api/internal/oas"
 	"github.com/materials-resources/store-api/internal/service"
 	"github.com/materials-resources/store-api/internal/session"
+	"github.com/materials-resources/store-api/internal/zitadel"
 	"github.com/urfave/cli/v3"
 	"log"
 	"net/http"
@@ -33,10 +34,18 @@ func main() {
 				log.Fatal(err)
 			}
 			a, err := app.New(*cfg)
-			sm := session.NewManager(a)
 			if err != nil {
 				log.Fatal(err)
 			}
+
+			// Initialize Zitadel client
+			zitadelClient, err := zitadel.NewZitadelClient(a)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			// Initialize session manager with Zitadel client
+			sm := session.NewManager(a, zitadelClient)
 
 			h := NewHandler(a, service.NewService(a), sm, mailer.New(a))
 

@@ -28,7 +28,7 @@ func (s SecurityHandler) HandleBearerAuth(ctx context.Context, operationName oas
 		AccessToken: t.GetToken(),
 	}
 
-	claims, err := s.sessionManager.ParseJwt(t.GetToken())
+	claims, err := s.sessionManager.ParseJwt(ctx, t.GetToken())
 	if err != nil {
 		return nil, err
 	}

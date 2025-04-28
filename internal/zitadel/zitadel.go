@@ -7,12 +7,15 @@ import (
 	"github.com/zitadel/zitadel-go/v3/pkg/client"
 	managementClient "github.com/zitadel/zitadel-go/v3/pkg/client/management"
 	"github.com/zitadel/zitadel-go/v3/pkg/client/middleware"
+	userClient "github.com/zitadel/zitadel-go/v3/pkg/client/user/v2"
 	"github.com/zitadel/zitadel-go/v3/pkg/client/zitadel"
 	"github.com/zitadel/zitadel-go/v3/pkg/client/zitadel/management"
+	"github.com/zitadel/zitadel-go/v3/pkg/client/zitadel/user/v2"
 )
 
 type Client struct {
 	management *managementClient.Client
+	user       *userClient.Client
 }
 
 func NewZitadelClient(a *app.App) (*Client, error) {
@@ -26,8 +29,12 @@ func NewZitadelClient(a *app.App) (*Client, error) {
 		return nil, err
 	}
 
+	userCl, err := userClient.NewClient(ctx, a.Config.Zitadel.Issuer, a.Config.Zitadel.ApiUrl, []string{
+		oidc.ScopeOpenID, client.ScopeZitadelAPI(),
+	}, zitadel.WithJWTProfileTokenSource(middleware.JWTProfileFromPath(ctx, a.Config.Zitadel.JwtPath)), zitadel.WithOrgID(a.Config.Zitadel.OrgId))
 	return &Client{
 		management: cli,
+		user:       userCl,
 	}, nil
 
 }
@@ -41,4 +48,18 @@ func (c *Client) ChangeUserBranchId(ctx context.Context, userId, branchId string
 	})
 
 	return err
+}
+
+// IsUserActive checks if a user is active in Zitadel
+func (c *Client) IsUserActive(ctx context.Context, userId string) (bool, error) {
+	resp, err := c.user.GetUserByID(ctx, &user.GetUserByIDRequest{
+		UserId: userId,
+	})
+	if err != nil {
+		return false, err
+	}
+
+	// Check if user state is active (1)
+	// Zitadel user states: 0=unspecified, 1=active, 2=inactive
+	return resp.User.State == user.UserState_USER_STATE_ACTIVE, nil
 }

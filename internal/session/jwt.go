@@ -1,7 +1,9 @@
 package session
 
 import (
+	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"log"
@@ -9,14 +11,13 @@ import (
 
 type JWTClaims struct {
 	Metadata struct {
-		UserID    string
 		ContactID string `json:"contact_id"`
 		BranchID  string `json:"branch_id"`
 	} `json:"urn:zitadel:iam:user:metadata"`
 	jwt.RegisteredClaims
 }
 
-func (m *Manager) ParseJwt(tokenString string) (*JWTClaims, error) {
+func (m *Manager) ParseJwt(ctx context.Context, tokenString string) (*JWTClaims, error) {
 	claims := &JWTClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, m.keyFunc)
 	if err != nil {
@@ -28,8 +29,18 @@ func (m *Manager) ParseJwt(tokenString string) (*JWTClaims, error) {
 
 	// Decode metadata fields
 	if err := decodeBase64Metadata(claims); err != nil {
-
 		return nil, fmt.Errorf("decoding metadata: %w", err)
+	}
+
+	// Verify user is active in Zitadel
+	if claims.Subject != "" {
+		isActive, err := m.zitadelClient.IsUserActive(ctx, claims.Subject)
+		if err != nil {
+			return nil, fmt.Errorf("checking user active status: %w", err)
+		}
+		if !isActive {
+			return nil, errors.New("user is not active")
+		}
 	}
 
 	return claims, nil
