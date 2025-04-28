@@ -797,6 +797,19 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InvoiceSummary'
+    OrderItemDisposition:
+      type: string
+      enum:
+        - unspecified
+        - backorder
+        - cancel
+        - direct_ship
+        - future
+        - hold
+        - multistage_process
+        - production_order
+        - special_order
+        - transfer
     OrderItem:
       required:
         - product_sn
@@ -810,6 +823,7 @@ components:
         - unit_price
         - total_price
         - back_ordered_quantity
+        - releases
       type: object
       properties:
         product_sn:
@@ -837,10 +851,35 @@ components:
         total_price:
           x-go-type: float64
           type: number
-
         back_ordered_quantity:
           x-go-type: float64
           type: number
+        disposition:
+          $ref: '#/components/schemas/OrderItemDisposition'
+        releases:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemRelease'
+    OrderItemRelease:
+      required:
+        - date_released
+        - released_quantity
+        - shipped_quantity
+        - canceled_quantity
+      type: object
+      properties:
+        date_released:
+          type: string
+          format: date-time
+        released_quantity:
+          type: number
+          x-go-type: float64
+        shipped_quantity:
+          type: number
+          x-go-type: float64
+        canceled_quantity:
+          type: number
+          x-go-type: float64
     OrderSummary:
       required:
         - id

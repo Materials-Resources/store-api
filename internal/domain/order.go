@@ -35,6 +35,21 @@ type Order struct {
 	Taker string
 }
 
+type OrderItemDisposition int
+
+const (
+	OrderItemDispositionUnspecified OrderItemDisposition = iota
+	OrderItemDispositionBackOrder
+	OrderItemDispositionCancel
+	OrderItemDispositionDirectShip
+	OrderItemDispositionFuture
+	OrderItemDispositionHold
+	OrderItemDispositionMultistageProcess
+	OrderItemDispositionProductionOrder
+	OrderItemDispositionSpecialOrder
+	OrderItemDispositionTransfer
+)
+
 type OrderItem struct {
 	ProductId         string
 	ProductSn         string
@@ -46,4 +61,14 @@ type OrderItem struct {
 	UnitType          UnitOfMeasurement
 	UnitPrice         float64
 	TotalPrice        float64
+
+	Disposition OrderItemDisposition
+	Releases    []*OrderItemRelease
+}
+
+type OrderItemRelease struct {
+	DateReleased     time.Time
+	ReleasedQuantity float64
+	ShippedQuantity  float64
+	CanceledQuantity float64
 }

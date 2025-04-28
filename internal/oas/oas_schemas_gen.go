@@ -874,6 +874,52 @@ func (o OptInt) Or(d int) int {
 	return d
 }
 
+// NewOptOrderItemDisposition returns new OptOrderItemDisposition with value set to v.
+func NewOptOrderItemDisposition(v OrderItemDisposition) OptOrderItemDisposition {
+	return OptOrderItemDisposition{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptOrderItemDisposition is optional OrderItemDisposition.
+type OptOrderItemDisposition struct {
+	Value OrderItemDisposition
+	Set   bool
+}
+
+// IsSet returns true if OptOrderItemDisposition was set.
+func (o OptOrderItemDisposition) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptOrderItemDisposition) Reset() {
+	var v OrderItemDisposition
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptOrderItemDisposition) SetTo(v OrderItemDisposition) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptOrderItemDisposition) Get() (v OrderItemDisposition, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptOrderItemDisposition) Or(d OrderItemDisposition) OrderItemDisposition {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptSearchProductsReqFilters returns new OptSearchProductsReqFilters with value set to v.
 func NewOptSearchProductsReqFilters(v SearchProductsReqFilters) OptSearchProductsReqFilters {
 	return OptSearchProductsReqFilters{
@@ -1126,17 +1172,19 @@ func (s *Order) SetInvoices(val []InvoiceSummary) {
 
 // Ref: #/components/schemas/OrderItem
 type OrderItem struct {
-	ProductSn           string  `json:"product_sn"`
-	ProductName         string  `json:"product_name"`
-	ProductID           string  `json:"product_id"`
-	CustomerProductSn   string  `json:"customer_product_sn"`
-	OrderedQuantity     float64 `json:"ordered_quantity"`
-	ShippedQuantity     float64 `json:"shipped_quantity"`
-	RemainingQuantity   float64 `json:"remaining_quantity"`
-	UnitType            string  `json:"unit_type"`
-	UnitPrice           float64 `json:"unit_price"`
-	TotalPrice          float64 `json:"total_price"`
-	BackOrderedQuantity float64 `json:"back_ordered_quantity"`
+	ProductSn           string                  `json:"product_sn"`
+	ProductName         string                  `json:"product_name"`
+	ProductID           string                  `json:"product_id"`
+	CustomerProductSn   string                  `json:"customer_product_sn"`
+	OrderedQuantity     float64                 `json:"ordered_quantity"`
+	ShippedQuantity     float64                 `json:"shipped_quantity"`
+	RemainingQuantity   float64                 `json:"remaining_quantity"`
+	UnitType            string                  `json:"unit_type"`
+	UnitPrice           float64                 `json:"unit_price"`
+	TotalPrice          float64                 `json:"total_price"`
+	BackOrderedQuantity float64                 `json:"back_ordered_quantity"`
+	Disposition         OptOrderItemDisposition `json:"disposition"`
+	Releases            []OrderItemRelease      `json:"releases"`
 }
 
 // GetProductSn returns the value of ProductSn.
@@ -1194,6 +1242,16 @@ func (s *OrderItem) GetBackOrderedQuantity() float64 {
 	return s.BackOrderedQuantity
 }
 
+// GetDisposition returns the value of Disposition.
+func (s *OrderItem) GetDisposition() OptOrderItemDisposition {
+	return s.Disposition
+}
+
+// GetReleases returns the value of Releases.
+func (s *OrderItem) GetReleases() []OrderItemRelease {
+	return s.Releases
+}
+
 // SetProductSn sets the value of ProductSn.
 func (s *OrderItem) SetProductSn(val string) {
 	s.ProductSn = val
@@ -1247,6 +1305,162 @@ func (s *OrderItem) SetTotalPrice(val float64) {
 // SetBackOrderedQuantity sets the value of BackOrderedQuantity.
 func (s *OrderItem) SetBackOrderedQuantity(val float64) {
 	s.BackOrderedQuantity = val
+}
+
+// SetDisposition sets the value of Disposition.
+func (s *OrderItem) SetDisposition(val OptOrderItemDisposition) {
+	s.Disposition = val
+}
+
+// SetReleases sets the value of Releases.
+func (s *OrderItem) SetReleases(val []OrderItemRelease) {
+	s.Releases = val
+}
+
+// Ref: #/components/schemas/OrderItemDisposition
+type OrderItemDisposition string
+
+const (
+	OrderItemDispositionUnspecified       OrderItemDisposition = "unspecified"
+	OrderItemDispositionBackorder         OrderItemDisposition = "backorder"
+	OrderItemDispositionCancel            OrderItemDisposition = "cancel"
+	OrderItemDispositionDirectShip        OrderItemDisposition = "direct_ship"
+	OrderItemDispositionFuture            OrderItemDisposition = "future"
+	OrderItemDispositionHold              OrderItemDisposition = "hold"
+	OrderItemDispositionMultistageProcess OrderItemDisposition = "multistage_process"
+	OrderItemDispositionProductionOrder   OrderItemDisposition = "production_order"
+	OrderItemDispositionSpecialOrder      OrderItemDisposition = "special_order"
+	OrderItemDispositionTransfer          OrderItemDisposition = "transfer"
+)
+
+// AllValues returns all OrderItemDisposition values.
+func (OrderItemDisposition) AllValues() []OrderItemDisposition {
+	return []OrderItemDisposition{
+		OrderItemDispositionUnspecified,
+		OrderItemDispositionBackorder,
+		OrderItemDispositionCancel,
+		OrderItemDispositionDirectShip,
+		OrderItemDispositionFuture,
+		OrderItemDispositionHold,
+		OrderItemDispositionMultistageProcess,
+		OrderItemDispositionProductionOrder,
+		OrderItemDispositionSpecialOrder,
+		OrderItemDispositionTransfer,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s OrderItemDisposition) MarshalText() ([]byte, error) {
+	switch s {
+	case OrderItemDispositionUnspecified:
+		return []byte(s), nil
+	case OrderItemDispositionBackorder:
+		return []byte(s), nil
+	case OrderItemDispositionCancel:
+		return []byte(s), nil
+	case OrderItemDispositionDirectShip:
+		return []byte(s), nil
+	case OrderItemDispositionFuture:
+		return []byte(s), nil
+	case OrderItemDispositionHold:
+		return []byte(s), nil
+	case OrderItemDispositionMultistageProcess:
+		return []byte(s), nil
+	case OrderItemDispositionProductionOrder:
+		return []byte(s), nil
+	case OrderItemDispositionSpecialOrder:
+		return []byte(s), nil
+	case OrderItemDispositionTransfer:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *OrderItemDisposition) UnmarshalText(data []byte) error {
+	switch OrderItemDisposition(data) {
+	case OrderItemDispositionUnspecified:
+		*s = OrderItemDispositionUnspecified
+		return nil
+	case OrderItemDispositionBackorder:
+		*s = OrderItemDispositionBackorder
+		return nil
+	case OrderItemDispositionCancel:
+		*s = OrderItemDispositionCancel
+		return nil
+	case OrderItemDispositionDirectShip:
+		*s = OrderItemDispositionDirectShip
+		return nil
+	case OrderItemDispositionFuture:
+		*s = OrderItemDispositionFuture
+		return nil
+	case OrderItemDispositionHold:
+		*s = OrderItemDispositionHold
+		return nil
+	case OrderItemDispositionMultistageProcess:
+		*s = OrderItemDispositionMultistageProcess
+		return nil
+	case OrderItemDispositionProductionOrder:
+		*s = OrderItemDispositionProductionOrder
+		return nil
+	case OrderItemDispositionSpecialOrder:
+		*s = OrderItemDispositionSpecialOrder
+		return nil
+	case OrderItemDispositionTransfer:
+		*s = OrderItemDispositionTransfer
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// Ref: #/components/schemas/OrderItemRelease
+type OrderItemRelease struct {
+	DateReleased     time.Time `json:"date_released"`
+	ReleasedQuantity float64   `json:"released_quantity"`
+	ShippedQuantity  float64   `json:"shipped_quantity"`
+	CanceledQuantity float64   `json:"canceled_quantity"`
+}
+
+// GetDateReleased returns the value of DateReleased.
+func (s *OrderItemRelease) GetDateReleased() time.Time {
+	return s.DateReleased
+}
+
+// GetReleasedQuantity returns the value of ReleasedQuantity.
+func (s *OrderItemRelease) GetReleasedQuantity() float64 {
+	return s.ReleasedQuantity
+}
+
+// GetShippedQuantity returns the value of ShippedQuantity.
+func (s *OrderItemRelease) GetShippedQuantity() float64 {
+	return s.ShippedQuantity
+}
+
+// GetCanceledQuantity returns the value of CanceledQuantity.
+func (s *OrderItemRelease) GetCanceledQuantity() float64 {
+	return s.CanceledQuantity
+}
+
+// SetDateReleased sets the value of DateReleased.
+func (s *OrderItemRelease) SetDateReleased(val time.Time) {
+	s.DateReleased = val
+}
+
+// SetReleasedQuantity sets the value of ReleasedQuantity.
+func (s *OrderItemRelease) SetReleasedQuantity(val float64) {
+	s.ReleasedQuantity = val
+}
+
+// SetShippedQuantity sets the value of ShippedQuantity.
+func (s *OrderItemRelease) SetShippedQuantity(val float64) {
+	s.ShippedQuantity = val
+}
+
+// SetCanceledQuantity sets the value of CanceledQuantity.
+func (s *OrderItemRelease) SetCanceledQuantity(val float64) {
+	s.CanceledQuantity = val
 }
 
 // Ref: #/components/schemas/OrderStatus

@@ -110,6 +110,19 @@ func (s *Order) GetOrder(ctx context.Context, orderId string) (*domain.Order, er
 			},
 			UnitPrice:  itemPb.GetUnitPrice(),
 			TotalPrice: itemPb.GetTotalPrice(),
+
+			Releases:    []*domain.OrderItemRelease{},
+			Disposition: convertOrderItemDisposition(itemPb.GetDisposition()),
+		}
+
+		for _, releasePb := range itemPb.GetReleases() {
+			release := &domain.OrderItemRelease{
+				DateReleased:     releasePb.GetDateReleased().AsTime(),
+				ReleasedQuantity: releasePb.GetReleasedQuantity(),
+				ShippedQuantity:  releasePb.GetShippedQuantity(),
+				CanceledQuantity: releasePb.GetCanceledQuantity(),
+			}
+			item.Releases = append(item.Releases, release)
 		}
 
 		order.Items = append(order.Items, item)
@@ -232,5 +245,30 @@ func convertQuoteStatus(status orderv1.QuoteStatus) domain.QuoteStatus {
 		return domain.QuoteStatusUnspecified
 	default:
 		return domain.QuoteStatusUnspecified
+	}
+}
+
+func convertOrderItemDisposition(disposition orderv1.OrderItemDisposition) domain.OrderItemDisposition {
+	switch disposition {
+	case orderv1.OrderItemDisposition_BACKORDER:
+		return domain.OrderItemDispositionBackOrder
+	case orderv1.OrderItemDisposition_CANCEL:
+		return domain.OrderItemDispositionCancel
+	case orderv1.OrderItemDisposition_DIRECT_SHIP:
+		return domain.OrderItemDispositionDirectShip
+	case orderv1.OrderItemDisposition_FUTURE:
+		return domain.OrderItemDispositionFuture
+	case orderv1.OrderItemDisposition_HOLD:
+		return domain.OrderItemDispositionHold
+	case orderv1.OrderItemDisposition_MULTISTAGE_PROCESS:
+		return domain.OrderItemDispositionMultistageProcess
+	case orderv1.OrderItemDisposition_PRODUCTION_ORDER:
+		return domain.OrderItemDispositionProductionOrder
+	case orderv1.OrderItemDisposition_SPECIAL_ORDER:
+		return domain.OrderItemDispositionSpecialOrder
+	case orderv1.OrderItemDisposition_TRANSFER:
+		return domain.OrderItemDispositionTransfer
+	default:
+		return domain.OrderItemDispositionUnspecified
 	}
 }

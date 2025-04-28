@@ -390,7 +390,7 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 	}
 
 	for _, item := range order.Items {
-		oapiOrder.Items = append(oapiOrder.Items, oas.OrderItem{
+		oapiItem := oas.OrderItem{
 			ProductID:         item.ProductId,
 			ProductSn:         item.ProductSn,
 			ProductName:       item.ProductName,
@@ -401,7 +401,19 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 			UnitType:          item.UnitType.Id,
 			UnitPrice:         item.UnitPrice,
 			TotalPrice:        item.TotalPrice,
-		})
+			Disposition:       oas.NewOptOrderItemDisposition(mapOrderItemDisposition(item.Disposition)),
+		}
+
+		for _, release := range item.Releases {
+			oapiItem.Releases = append(oapiItem.Releases, oas.OrderItemRelease{
+				DateReleased:     release.DateReleased,
+				ReleasedQuantity: release.ReleasedQuantity,
+				CanceledQuantity: release.CanceledQuantity,
+				ShippedQuantity:  release.ShippedQuantity,
+			})
+		}
+
+		oapiOrder.Items = append(oapiOrder.Items, oapiItem)
 	}
 
 	response := oas.GetOrderOK{
@@ -465,5 +477,30 @@ func mapQuoteStatus(status domain.QuoteStatus) oas.QuoteStatus {
 		return oas.QuoteStatusUnspecified
 	default:
 		return oas.QuoteStatusUnspecified
+	}
+}
+
+func mapOrderItemDisposition(disposition domain.OrderItemDisposition) oas.OrderItemDisposition {
+	switch disposition {
+	case domain.OrderItemDispositionBackOrder:
+		return oas.OrderItemDispositionBackorder
+	case domain.OrderItemDispositionCancel:
+		return oas.OrderItemDispositionCancel
+	case domain.OrderItemDispositionDirectShip:
+		return oas.OrderItemDispositionDirectShip
+	case domain.OrderItemDispositionFuture:
+		return oas.OrderItemDispositionFuture
+	case domain.OrderItemDispositionHold:
+		return oas.OrderItemDispositionHold
+	case domain.OrderItemDispositionMultistageProcess:
+		return oas.OrderItemDispositionMultistageProcess
+	case domain.OrderItemDispositionProductionOrder:
+		return oas.OrderItemDispositionProductionOrder
+	case domain.OrderItemDispositionSpecialOrder:
+		return oas.OrderItemDispositionSpecialOrder
+	case domain.OrderItemDispositionTransfer:
+		return oas.OrderItemDispositionTransfer
+	default:
+		return oas.OrderItemDispositionUnspecified
 	}
 }

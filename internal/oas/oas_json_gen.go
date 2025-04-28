@@ -2391,6 +2391,39 @@ func (s *OptInt) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes OrderItemDisposition as json.
+func (o OptOrderItemDisposition) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes OrderItemDisposition from json.
+func (o *OptOrderItemDisposition) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptOrderItemDisposition to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptOrderItemDisposition) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptOrderItemDisposition) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes SearchProductsReqFilters as json.
 func (o OptSearchProductsReqFilters) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -2857,9 +2890,23 @@ func (s *OrderItem) encodeFields(e *jx.Encoder) {
 		e.FieldStart("back_ordered_quantity")
 		e.Float64(s.BackOrderedQuantity)
 	}
+	{
+		if s.Disposition.Set {
+			e.FieldStart("disposition")
+			s.Disposition.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("releases")
+		e.ArrStart()
+		for _, elem := range s.Releases {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
 }
 
-var jsonFieldsNameOfOrderItem = [11]string{
+var jsonFieldsNameOfOrderItem = [13]string{
 	0:  "product_sn",
 	1:  "product_name",
 	2:  "product_id",
@@ -2871,6 +2918,8 @@ var jsonFieldsNameOfOrderItem = [11]string{
 	8:  "unit_price",
 	9:  "total_price",
 	10: "back_ordered_quantity",
+	11: "disposition",
+	12: "releases",
 }
 
 // Decode decodes OrderItem from json.
@@ -3014,6 +3063,34 @@ func (s *OrderItem) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"back_ordered_quantity\"")
 			}
+		case "disposition":
+			if err := func() error {
+				s.Disposition.Reset()
+				if err := s.Disposition.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disposition\"")
+			}
+		case "releases":
+			requiredBitSet[1] |= 1 << 4
+			if err := func() error {
+				s.Releases = make([]OrderItemRelease, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem OrderItemRelease
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Releases = append(s.Releases, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"releases\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -3025,7 +3102,7 @@ func (s *OrderItem) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
 		0b11111111,
-		0b00000111,
+		0b00010111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -3067,6 +3144,209 @@ func (s *OrderItem) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OrderItem) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes OrderItemDisposition as json.
+func (s OrderItemDisposition) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes OrderItemDisposition from json.
+func (s *OrderItemDisposition) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OrderItemDisposition to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch OrderItemDisposition(v) {
+	case OrderItemDispositionUnspecified:
+		*s = OrderItemDispositionUnspecified
+	case OrderItemDispositionBackorder:
+		*s = OrderItemDispositionBackorder
+	case OrderItemDispositionCancel:
+		*s = OrderItemDispositionCancel
+	case OrderItemDispositionDirectShip:
+		*s = OrderItemDispositionDirectShip
+	case OrderItemDispositionFuture:
+		*s = OrderItemDispositionFuture
+	case OrderItemDispositionHold:
+		*s = OrderItemDispositionHold
+	case OrderItemDispositionMultistageProcess:
+		*s = OrderItemDispositionMultistageProcess
+	case OrderItemDispositionProductionOrder:
+		*s = OrderItemDispositionProductionOrder
+	case OrderItemDispositionSpecialOrder:
+		*s = OrderItemDispositionSpecialOrder
+	case OrderItemDispositionTransfer:
+		*s = OrderItemDispositionTransfer
+	default:
+		*s = OrderItemDisposition(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OrderItemDisposition) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OrderItemDisposition) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OrderItemRelease) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OrderItemRelease) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("date_released")
+		json.EncodeDateTime(e, s.DateReleased)
+	}
+	{
+		e.FieldStart("released_quantity")
+		e.Float64(s.ReleasedQuantity)
+	}
+	{
+		e.FieldStart("shipped_quantity")
+		e.Float64(s.ShippedQuantity)
+	}
+	{
+		e.FieldStart("canceled_quantity")
+		e.Float64(s.CanceledQuantity)
+	}
+}
+
+var jsonFieldsNameOfOrderItemRelease = [4]string{
+	0: "date_released",
+	1: "released_quantity",
+	2: "shipped_quantity",
+	3: "canceled_quantity",
+}
+
+// Decode decodes OrderItemRelease from json.
+func (s *OrderItemRelease) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OrderItemRelease to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "date_released":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := json.DecodeDateTime(d)
+				s.DateReleased = v
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"date_released\"")
+			}
+		case "released_quantity":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Float64()
+				s.ReleasedQuantity = float64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"released_quantity\"")
+			}
+		case "shipped_quantity":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Float64()
+				s.ShippedQuantity = float64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"shipped_quantity\"")
+			}
+		case "canceled_quantity":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Float64()
+				s.CanceledQuantity = float64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"canceled_quantity\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OrderItemRelease")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00001111,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfOrderItemRelease) {
+					name = jsonFieldsNameOfOrderItemRelease[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OrderItemRelease) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OrderItemRelease) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
