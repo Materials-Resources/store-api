@@ -287,6 +287,10 @@ paths:
           required: true
           schema:
             type: integer
+        - name: reference_id
+          in: query
+          schema:
+            type: string
       responses:
         '200':
           description: "List of quote summaries for account"

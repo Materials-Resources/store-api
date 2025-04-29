@@ -161,11 +161,14 @@ func (s *Order) ListOrders(ctx context.Context, page, pageSize int32, branchId s
 	return orders, pbRes.Msg.GetTotalRecords(), nil
 }
 
-func (s *Order) ListQuotes(ctx context.Context, page, pageSize int32, branchId string) ([]*domain.QuoteSummary, int32, error) {
+func (s *Order) ListQuotes(ctx context.Context, page, pageSize int32, branchId string, referenceId string) ([]*domain.QuoteSummary, int32, error) {
 	pbReq := orderv1.ListQuotesRequest_builder{
 		Page:     proto.Int32(page),
 		PageSize: proto.Int32(pageSize),
 		BranchId: proto.String(branchId),
+		Filters: orderv1.QuoteFilters_builder{
+			PurchaseOrder: proto.String(referenceId),
+		}.Build(),
 	}.Build()
 
 	pbRes, err := s.Client.ListQuotes(ctx, connect.NewRequest(pbReq))

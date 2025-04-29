@@ -659,8 +659,9 @@ func decodeListOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (
 
 // ListQuotesParams is parameters of listQuotes operation.
 type ListQuotesParams struct {
-	Page     int
-	PageSize int
+	Page        int
+	PageSize    int
+	ReferenceID OptString
 }
 
 func unpackListQuotesParams(packed middleware.Parameters) (params ListQuotesParams) {
@@ -677,6 +678,15 @@ func unpackListQuotesParams(packed middleware.Parameters) (params ListQuotesPara
 			In:   "query",
 		}
 		params.PageSize = packed[key].(int)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "reference_id",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.ReferenceID = v.(OptString)
+		}
 	}
 	return params
 }
@@ -751,6 +761,47 @@ func decodeListQuotesParams(args [0]string, argsEscaped bool, r *http.Request) (
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "page_size",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: reference_id.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "reference_id",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotReferenceIDVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotReferenceIDVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.ReferenceID.SetTo(paramsDotReferenceIDVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "reference_id",
 			In:   "query",
 			Err:  err,
 		}

@@ -2356,6 +2356,41 @@ func (s *ListQuotesOK) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes bool as json.
+func (o OptBool) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Bool(bool(o.Value))
+}
+
+// Decode decodes bool from json.
+func (o *OptBool) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptBool to nil")
+	}
+	o.Set = true
+	v, err := d.Bool()
+	if err != nil {
+		return err
+	}
+	o.Value = bool(v)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptBool) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptBool) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes int as json.
 func (o OptInt) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -3862,9 +3897,15 @@ func (s *Product) encodeFields(e *jx.Encoder) {
 			s.ImageURL.Encode(e)
 		}
 	}
+	{
+		if s.IsActive.Set {
+			e.FieldStart("is_active")
+			s.IsActive.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfProduct = [8]string{
+var jsonFieldsNameOfProduct = [9]string{
 	0: "id",
 	1: "sn",
 	2: "name",
@@ -3873,6 +3914,7 @@ var jsonFieldsNameOfProduct = [8]string{
 	5: "product_group_name",
 	6: "sales_unit_of_measurement",
 	7: "image_url",
+	8: "is_active",
 }
 
 // Decode decodes Product from json.
@@ -3880,7 +3922,7 @@ func (s *Product) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode Product to nil")
 	}
-	var requiredBitSet [1]uint8
+	var requiredBitSet [2]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
@@ -3976,6 +4018,16 @@ func (s *Product) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"image_url\"")
 			}
+		case "is_active":
+			if err := func() error {
+				s.IsActive.Reset()
+				if err := s.IsActive.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_active\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -3985,8 +4037,9 @@ func (s *Product) Decode(d *jx.Decoder) error {
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
-	for i, mask := range [1]uint8{
+	for i, mask := range [2]uint8{
 		0b01111111,
+		0b00000000,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

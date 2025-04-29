@@ -3774,11 +3774,172 @@ func (b0 CreateOrderResponse_builder) Build() *CreateOrderResponse {
 	return m0
 }
 
+type QuoteFilters struct {
+	state                        protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_PurchaseOrder     *string                `protobuf:"bytes,1,opt,name=purchase_order,json=purchaseOrder"`
+	xxx_hidden_Status            QuoteStatus            `protobuf:"varint,2,opt,name=status,enum=order.v1.QuoteStatus"`
+	xxx_hidden_DateCreatedAfter  *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=date_created_after,json=dateCreatedAfter"`
+	xxx_hidden_DateCreatedBefore *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=date_created_before,json=dateCreatedBefore"`
+	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
+	XXX_presence                 [1]uint32
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
+}
+
+func (x *QuoteFilters) Reset() {
+	*x = QuoteFilters{}
+	mi := &file_order_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QuoteFilters) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QuoteFilters) ProtoMessage() {}
+
+func (x *QuoteFilters) ProtoReflect() protoreflect.Message {
+	mi := &file_order_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *QuoteFilters) GetPurchaseOrder() string {
+	if x != nil {
+		if x.xxx_hidden_PurchaseOrder != nil {
+			return *x.xxx_hidden_PurchaseOrder
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *QuoteFilters) GetStatus() QuoteStatus {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 1) {
+			return x.xxx_hidden_Status
+		}
+	}
+	return QuoteStatus_QUOTE_STATUS_UNSPECIFIED
+}
+
+func (x *QuoteFilters) GetDateCreatedAfter() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_DateCreatedAfter
+	}
+	return nil
+}
+
+func (x *QuoteFilters) GetDateCreatedBefore() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_DateCreatedBefore
+	}
+	return nil
+}
+
+func (x *QuoteFilters) SetPurchaseOrder(v string) {
+	x.xxx_hidden_PurchaseOrder = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+}
+
+func (x *QuoteFilters) SetStatus(v QuoteStatus) {
+	x.xxx_hidden_Status = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+}
+
+func (x *QuoteFilters) SetDateCreatedAfter(v *timestamppb.Timestamp) {
+	x.xxx_hidden_DateCreatedAfter = v
+}
+
+func (x *QuoteFilters) SetDateCreatedBefore(v *timestamppb.Timestamp) {
+	x.xxx_hidden_DateCreatedBefore = v
+}
+
+func (x *QuoteFilters) HasPurchaseOrder() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *QuoteFilters) HasStatus() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *QuoteFilters) HasDateCreatedAfter() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DateCreatedAfter != nil
+}
+
+func (x *QuoteFilters) HasDateCreatedBefore() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DateCreatedBefore != nil
+}
+
+func (x *QuoteFilters) ClearPurchaseOrder() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_PurchaseOrder = nil
+}
+
+func (x *QuoteFilters) ClearStatus() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Status = QuoteStatus_QUOTE_STATUS_UNSPECIFIED
+}
+
+func (x *QuoteFilters) ClearDateCreatedAfter() {
+	x.xxx_hidden_DateCreatedAfter = nil
+}
+
+func (x *QuoteFilters) ClearDateCreatedBefore() {
+	x.xxx_hidden_DateCreatedBefore = nil
+}
+
+type QuoteFilters_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	PurchaseOrder     *string
+	Status            *QuoteStatus
+	DateCreatedAfter  *timestamppb.Timestamp
+	DateCreatedBefore *timestamppb.Timestamp
+}
+
+func (b0 QuoteFilters_builder) Build() *QuoteFilters {
+	m0 := &QuoteFilters{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.PurchaseOrder != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_PurchaseOrder = b.PurchaseOrder
+	}
+	if b.Status != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_Status = *b.Status
+	}
+	x.xxx_hidden_DateCreatedAfter = b.DateCreatedAfter
+	x.xxx_hidden_DateCreatedBefore = b.DateCreatedBefore
+	return m0
+}
+
 type ListQuotesRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_BranchId    *string                `protobuf:"bytes,1,opt,name=branch_id,json=branchId"`
 	xxx_hidden_PageSize    int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize"`
 	xxx_hidden_Page        int32                  `protobuf:"varint,3,opt,name=page"`
+	xxx_hidden_Filters     *QuoteFilters          `protobuf:"bytes,4,opt,name=filters"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -3787,7 +3948,7 @@ type ListQuotesRequest struct {
 
 func (x *ListQuotesRequest) Reset() {
 	*x = ListQuotesRequest{}
-	mi := &file_order_proto_msgTypes[18]
+	mi := &file_order_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3799,7 +3960,7 @@ func (x *ListQuotesRequest) String() string {
 func (*ListQuotesRequest) ProtoMessage() {}
 
 func (x *ListQuotesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[18]
+	mi := &file_order_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3834,19 +3995,30 @@ func (x *ListQuotesRequest) GetPage() int32 {
 	return 0
 }
 
+func (x *ListQuotesRequest) GetFilters() *QuoteFilters {
+	if x != nil {
+		return x.xxx_hidden_Filters
+	}
+	return nil
+}
+
 func (x *ListQuotesRequest) SetBranchId(v string) {
 	x.xxx_hidden_BranchId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
 func (x *ListQuotesRequest) SetPageSize(v int32) {
 	x.xxx_hidden_PageSize = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
 }
 
 func (x *ListQuotesRequest) SetPage(v int32) {
 	x.xxx_hidden_Page = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+}
+
+func (x *ListQuotesRequest) SetFilters(v *QuoteFilters) {
+	x.xxx_hidden_Filters = v
 }
 
 func (x *ListQuotesRequest) HasBranchId() bool {
@@ -3870,6 +4042,13 @@ func (x *ListQuotesRequest) HasPage() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
+func (x *ListQuotesRequest) HasFilters() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Filters != nil
+}
+
 func (x *ListQuotesRequest) ClearBranchId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_BranchId = nil
@@ -3885,14 +4064,17 @@ func (x *ListQuotesRequest) ClearPage() {
 	x.xxx_hidden_Page = 0
 }
 
+func (x *ListQuotesRequest) ClearFilters() {
+	x.xxx_hidden_Filters = nil
+}
+
 type ListQuotesRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	BranchId *string
-	// Results to display on a page
 	PageSize *int32
-	// Currently selected page
-	Page *int32
+	Page     *int32
+	Filters  *QuoteFilters
 }
 
 func (b0 ListQuotesRequest_builder) Build() *ListQuotesRequest {
@@ -3900,17 +4082,18 @@ func (b0 ListQuotesRequest_builder) Build() *ListQuotesRequest {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.BranchId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
 		x.xxx_hidden_BranchId = b.BranchId
 	}
 	if b.PageSize != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
 		x.xxx_hidden_PageSize = *b.PageSize
 	}
 	if b.Page != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
 		x.xxx_hidden_Page = *b.Page
 	}
+	x.xxx_hidden_Filters = b.Filters
 	return m0
 }
 
@@ -3926,7 +4109,7 @@ type ListQuotesResponse struct {
 
 func (x *ListQuotesResponse) Reset() {
 	*x = ListQuotesResponse{}
-	mi := &file_order_proto_msgTypes[19]
+	mi := &file_order_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3938,7 +4121,7 @@ func (x *ListQuotesResponse) String() string {
 func (*ListQuotesResponse) ProtoMessage() {}
 
 func (x *ListQuotesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[19]
+	mi := &file_order_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4016,7 +4199,7 @@ type GetQuoteRequest struct {
 
 func (x *GetQuoteRequest) Reset() {
 	*x = GetQuoteRequest{}
-	mi := &file_order_proto_msgTypes[20]
+	mi := &file_order_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4028,7 +4211,7 @@ func (x *GetQuoteRequest) String() string {
 func (*GetQuoteRequest) ProtoMessage() {}
 
 func (x *GetQuoteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[20]
+	mi := &file_order_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4092,7 +4275,7 @@ type GetQuoteResponse struct {
 
 func (x *GetQuoteResponse) Reset() {
 	*x = GetQuoteResponse{}
-	mi := &file_order_proto_msgTypes[21]
+	mi := &file_order_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4104,7 +4287,7 @@ func (x *GetQuoteResponse) String() string {
 func (*GetQuoteResponse) ProtoMessage() {}
 
 func (x *GetQuoteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[21]
+	mi := &file_order_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4166,7 +4349,7 @@ type CreateQuoteRequest struct {
 
 func (x *CreateQuoteRequest) Reset() {
 	*x = CreateQuoteRequest{}
-	mi := &file_order_proto_msgTypes[22]
+	mi := &file_order_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4178,7 +4361,7 @@ func (x *CreateQuoteRequest) String() string {
 func (*CreateQuoteRequest) ProtoMessage() {}
 
 func (x *CreateQuoteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[22]
+	mi := &file_order_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4350,7 +4533,7 @@ type CreateQuoteResponse struct {
 
 func (x *CreateQuoteResponse) Reset() {
 	*x = CreateQuoteResponse{}
-	mi := &file_order_proto_msgTypes[23]
+	mi := &file_order_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4362,7 +4545,7 @@ func (x *CreateQuoteResponse) String() string {
 func (*CreateQuoteResponse) ProtoMessage() {}
 
 func (x *CreateQuoteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[23]
+	mi := &file_order_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4429,7 +4612,7 @@ type ListShipmentsByOrderRequest struct {
 
 func (x *ListShipmentsByOrderRequest) Reset() {
 	*x = ListShipmentsByOrderRequest{}
-	mi := &file_order_proto_msgTypes[24]
+	mi := &file_order_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4441,7 +4624,7 @@ func (x *ListShipmentsByOrderRequest) String() string {
 func (*ListShipmentsByOrderRequest) ProtoMessage() {}
 
 func (x *ListShipmentsByOrderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[24]
+	mi := &file_order_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4505,7 +4688,7 @@ type ListShipmentsByOrderResponse struct {
 
 func (x *ListShipmentsByOrderResponse) Reset() {
 	*x = ListShipmentsByOrderResponse{}
-	mi := &file_order_proto_msgTypes[25]
+	mi := &file_order_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4517,7 +4700,7 @@ func (x *ListShipmentsByOrderResponse) String() string {
 func (*ListShipmentsByOrderResponse) ProtoMessage() {}
 
 func (x *ListShipmentsByOrderResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[25]
+	mi := &file_order_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4566,7 +4749,7 @@ type GetShipmentRequest struct {
 
 func (x *GetShipmentRequest) Reset() {
 	*x = GetShipmentRequest{}
-	mi := &file_order_proto_msgTypes[26]
+	mi := &file_order_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4578,7 +4761,7 @@ func (x *GetShipmentRequest) String() string {
 func (*GetShipmentRequest) ProtoMessage() {}
 
 func (x *GetShipmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[26]
+	mi := &file_order_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4642,7 +4825,7 @@ type GetShipmentResponse struct {
 
 func (x *GetShipmentResponse) Reset() {
 	*x = GetShipmentResponse{}
-	mi := &file_order_proto_msgTypes[27]
+	mi := &file_order_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4654,7 +4837,7 @@ func (x *GetShipmentResponse) String() string {
 func (*GetShipmentResponse) ProtoMessage() {}
 
 func (x *GetShipmentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[27]
+	mi := &file_order_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4712,7 +4895,7 @@ type GetPackingListRequest struct {
 
 func (x *GetPackingListRequest) Reset() {
 	*x = GetPackingListRequest{}
-	mi := &file_order_proto_msgTypes[28]
+	mi := &file_order_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4724,7 +4907,7 @@ func (x *GetPackingListRequest) String() string {
 func (*GetPackingListRequest) ProtoMessage() {}
 
 func (x *GetPackingListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[28]
+	mi := &file_order_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4788,7 +4971,7 @@ type GetPackingListResponse struct {
 
 func (x *GetPackingListResponse) Reset() {
 	*x = GetPackingListResponse{}
-	mi := &file_order_proto_msgTypes[29]
+	mi := &file_order_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4800,7 +4983,7 @@ func (x *GetPackingListResponse) String() string {
 func (*GetPackingListResponse) ProtoMessage() {}
 
 func (x *GetPackingListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[29]
+	mi := &file_order_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4858,7 +5041,7 @@ type ListPackingListsByOrderRequest struct {
 
 func (x *ListPackingListsByOrderRequest) Reset() {
 	*x = ListPackingListsByOrderRequest{}
-	mi := &file_order_proto_msgTypes[30]
+	mi := &file_order_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4870,7 +5053,7 @@ func (x *ListPackingListsByOrderRequest) String() string {
 func (*ListPackingListsByOrderRequest) ProtoMessage() {}
 
 func (x *ListPackingListsByOrderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[30]
+	mi := &file_order_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4934,7 +5117,7 @@ type ListPackingListsByOrderResponse struct {
 
 func (x *ListPackingListsByOrderResponse) Reset() {
 	*x = ListPackingListsByOrderResponse{}
-	mi := &file_order_proto_msgTypes[31]
+	mi := &file_order_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4946,7 +5129,7 @@ func (x *ListPackingListsByOrderResponse) String() string {
 func (*ListPackingListsByOrderResponse) ProtoMessage() {}
 
 func (x *ListPackingListsByOrderResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[31]
+	mi := &file_order_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5003,7 +5186,7 @@ type Quote_Item struct {
 
 func (x *Quote_Item) Reset() {
 	*x = Quote_Item{}
-	mi := &file_order_proto_msgTypes[32]
+	mi := &file_order_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5015,7 +5198,7 @@ func (x *Quote_Item) String() string {
 func (*Quote_Item) ProtoMessage() {}
 
 func (x *Quote_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[32]
+	mi := &file_order_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5340,7 +5523,7 @@ type Order_Item struct {
 
 func (x *Order_Item) Reset() {
 	*x = Order_Item{}
-	mi := &file_order_proto_msgTypes[33]
+	mi := &file_order_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5352,7 +5535,7 @@ func (x *Order_Item) String() string {
 func (*Order_Item) ProtoMessage() {}
 
 func (x *Order_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[33]
+	mi := &file_order_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5772,7 +5955,7 @@ type Order_ItemRelease struct {
 
 func (x *Order_ItemRelease) Reset() {
 	*x = Order_ItemRelease{}
-	mi := &file_order_proto_msgTypes[34]
+	mi := &file_order_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5784,7 +5967,7 @@ func (x *Order_ItemRelease) String() string {
 func (*Order_ItemRelease) ProtoMessage() {}
 
 func (x *Order_ItemRelease) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[34]
+	mi := &file_order_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5937,7 +6120,7 @@ type PackingList_Item struct {
 
 func (x *PackingList_Item) Reset() {
 	*x = PackingList_Item{}
-	mi := &file_order_proto_msgTypes[35]
+	mi := &file_order_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5949,7 +6132,7 @@ func (x *PackingList_Item) String() string {
 func (*PackingList_Item) ProtoMessage() {}
 
 func (x *PackingList_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[35]
+	mi := &file_order_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6255,7 +6438,7 @@ type CreateQuoteRequest_Item struct {
 
 func (x *CreateQuoteRequest_Item) Reset() {
 	*x = CreateQuoteRequest_Item{}
-	mi := &file_order_proto_msgTypes[36]
+	mi := &file_order_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6267,7 +6450,7 @@ func (x *CreateQuoteRequest_Item) String() string {
 func (*CreateQuoteRequest_Item) ProtoMessage() {}
 
 func (x *CreateQuoteRequest_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_order_proto_msgTypes[36]
+	mi := &file_order_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6698,13 +6881,32 @@ var file_order_proto_rawDesc = string([]byte{
 	0x2e, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x52, 0x05, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x22, 0x14, 0x0a,
 	0x12, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75,
 	0x65, 0x73, 0x74, 0x22, 0x15, 0x0a, 0x13, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x64,
-	0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x61, 0x0a, 0x11, 0x4c, 0x69,
-	0x73, 0x74, 0x51, 0x75, 0x6f, 0x74, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
-	0x1b, 0x0a, 0x09, 0x62, 0x72, 0x61, 0x6e, 0x63, 0x68, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x08, 0x62, 0x72, 0x61, 0x6e, 0x63, 0x68, 0x49, 0x64, 0x12, 0x1b, 0x0a, 0x09,
-	0x70, 0x61, 0x67, 0x65, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52,
-	0x08, 0x70, 0x61, 0x67, 0x65, 0x53, 0x69, 0x7a, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x61, 0x67,
-	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x70, 0x61, 0x67, 0x65, 0x22, 0x69, 0x0a,
+	0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xfa, 0x01, 0x0a, 0x0c, 0x51,
+	0x75, 0x6f, 0x74, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x73, 0x12, 0x25, 0x0a, 0x0e, 0x70,
+	0x75, 0x72, 0x63, 0x68, 0x61, 0x73, 0x65, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0d, 0x70, 0x75, 0x72, 0x63, 0x68, 0x61, 0x73, 0x65, 0x4f, 0x72, 0x64,
+	0x65, 0x72, 0x12, 0x2d, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x15, 0x2e, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x6f, 0x74, 0x65, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x12, 0x48, 0x0a, 0x12, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x64, 0x5f, 0x61, 0x66, 0x74, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
+	0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x10, 0x64, 0x61, 0x74, 0x65, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x66, 0x74, 0x65, 0x72, 0x12, 0x4a, 0x0a, 0x13, 0x64,
+	0x61, 0x74, 0x65, 0x5f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x62, 0x65, 0x66, 0x6f,
+	0x72, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
+	0x74, 0x61, 0x6d, 0x70, 0x52, 0x11, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x64, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x22, 0x93, 0x01, 0x0a, 0x11, 0x4c, 0x69, 0x73, 0x74,
+	0x51, 0x75, 0x6f, 0x74, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1b, 0x0a,
+	0x09, 0x62, 0x72, 0x61, 0x6e, 0x63, 0x68, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x62, 0x72, 0x61, 0x6e, 0x63, 0x68, 0x49, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x70, 0x61,
+	0x67, 0x65, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x70,
+	0x61, 0x67, 0x65, 0x53, 0x69, 0x7a, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x61, 0x67, 0x65, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x70, 0x61, 0x67, 0x65, 0x12, 0x30, 0x0a, 0x07, 0x66,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x6f,
+	0x72, 0x64, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x6f, 0x74, 0x65, 0x46, 0x69, 0x6c,
+	0x74, 0x65, 0x72, 0x73, 0x52, 0x07, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x73, 0x22, 0x69, 0x0a,
 	0x12, 0x4c, 0x69, 0x73, 0x74, 0x51, 0x75, 0x6f, 0x74, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
 	0x6e, 0x73, 0x65, 0x12, 0x2e, 0x0a, 0x06, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x73, 0x18, 0x01, 0x20,
 	0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x51,
@@ -6861,7 +7063,7 @@ var file_order_proto_rawDesc = string([]byte{
 })
 
 var file_order_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_order_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
+var file_order_proto_msgTypes = make([]protoimpl.MessageInfo, 38)
 var file_order_proto_goTypes = []any{
 	(OrderStatus)(0),                        // 0: order.v1.OrderStatus
 	(QuoteStatus)(0),                        // 1: order.v1.QuoteStatus
@@ -6884,98 +7086,103 @@ var file_order_proto_goTypes = []any{
 	(*GetOrderResponse)(nil),                // 18: order.v1.GetOrderResponse
 	(*CreateOrderRequest)(nil),              // 19: order.v1.CreateOrderRequest
 	(*CreateOrderResponse)(nil),             // 20: order.v1.CreateOrderResponse
-	(*ListQuotesRequest)(nil),               // 21: order.v1.ListQuotesRequest
-	(*ListQuotesResponse)(nil),              // 22: order.v1.ListQuotesResponse
-	(*GetQuoteRequest)(nil),                 // 23: order.v1.GetQuoteRequest
-	(*GetQuoteResponse)(nil),                // 24: order.v1.GetQuoteResponse
-	(*CreateQuoteRequest)(nil),              // 25: order.v1.CreateQuoteRequest
-	(*CreateQuoteResponse)(nil),             // 26: order.v1.CreateQuoteResponse
-	(*ListShipmentsByOrderRequest)(nil),     // 27: order.v1.ListShipmentsByOrderRequest
-	(*ListShipmentsByOrderResponse)(nil),    // 28: order.v1.ListShipmentsByOrderResponse
-	(*GetShipmentRequest)(nil),              // 29: order.v1.GetShipmentRequest
-	(*GetShipmentResponse)(nil),             // 30: order.v1.GetShipmentResponse
-	(*GetPackingListRequest)(nil),           // 31: order.v1.GetPackingListRequest
-	(*GetPackingListResponse)(nil),          // 32: order.v1.GetPackingListResponse
-	(*ListPackingListsByOrderRequest)(nil),  // 33: order.v1.ListPackingListsByOrderRequest
-	(*ListPackingListsByOrderResponse)(nil), // 34: order.v1.ListPackingListsByOrderResponse
-	(*Quote_Item)(nil),                      // 35: order.v1.Quote.Item
-	(*Order_Item)(nil),                      // 36: order.v1.Order.Item
-	(*Order_ItemRelease)(nil),               // 37: order.v1.Order.Item.release
-	(*PackingList_Item)(nil),                // 38: order.v1.PackingList.Item
-	(*CreateQuoteRequest_Item)(nil),         // 39: order.v1.CreateQuoteRequest.Item
-	(*timestamppb.Timestamp)(nil),           // 40: google.protobuf.Timestamp
+	(*QuoteFilters)(nil),                    // 21: order.v1.QuoteFilters
+	(*ListQuotesRequest)(nil),               // 22: order.v1.ListQuotesRequest
+	(*ListQuotesResponse)(nil),              // 23: order.v1.ListQuotesResponse
+	(*GetQuoteRequest)(nil),                 // 24: order.v1.GetQuoteRequest
+	(*GetQuoteResponse)(nil),                // 25: order.v1.GetQuoteResponse
+	(*CreateQuoteRequest)(nil),              // 26: order.v1.CreateQuoteRequest
+	(*CreateQuoteResponse)(nil),             // 27: order.v1.CreateQuoteResponse
+	(*ListShipmentsByOrderRequest)(nil),     // 28: order.v1.ListShipmentsByOrderRequest
+	(*ListShipmentsByOrderResponse)(nil),    // 29: order.v1.ListShipmentsByOrderResponse
+	(*GetShipmentRequest)(nil),              // 30: order.v1.GetShipmentRequest
+	(*GetShipmentResponse)(nil),             // 31: order.v1.GetShipmentResponse
+	(*GetPackingListRequest)(nil),           // 32: order.v1.GetPackingListRequest
+	(*GetPackingListResponse)(nil),          // 33: order.v1.GetPackingListResponse
+	(*ListPackingListsByOrderRequest)(nil),  // 34: order.v1.ListPackingListsByOrderRequest
+	(*ListPackingListsByOrderResponse)(nil), // 35: order.v1.ListPackingListsByOrderResponse
+	(*Quote_Item)(nil),                      // 36: order.v1.Quote.Item
+	(*Order_Item)(nil),                      // 37: order.v1.Order.Item
+	(*Order_ItemRelease)(nil),               // 38: order.v1.Order.Item.release
+	(*PackingList_Item)(nil),                // 39: order.v1.PackingList.Item
+	(*CreateQuoteRequest_Item)(nil),         // 40: order.v1.CreateQuoteRequest.Item
+	(*timestamppb.Timestamp)(nil),           // 41: google.protobuf.Timestamp
 }
 var file_order_proto_depIdxs = []int32{
 	5,  // 0: order.v1.QuoteSummary.contact:type_name -> order.v1.Contact
 	6,  // 1: order.v1.QuoteSummary.branch:type_name -> order.v1.Branch
 	1,  // 2: order.v1.QuoteSummary.status:type_name -> order.v1.QuoteStatus
-	40, // 3: order.v1.QuoteSummary.date_created:type_name -> google.protobuf.Timestamp
-	40, // 4: order.v1.QuoteSummary.date_expires:type_name -> google.protobuf.Timestamp
+	41, // 3: order.v1.QuoteSummary.date_created:type_name -> google.protobuf.Timestamp
+	41, // 4: order.v1.QuoteSummary.date_expires:type_name -> google.protobuf.Timestamp
 	5,  // 5: order.v1.Quote.contact:type_name -> order.v1.Contact
 	6,  // 6: order.v1.Quote.branch:type_name -> order.v1.Branch
 	1,  // 7: order.v1.Quote.status:type_name -> order.v1.QuoteStatus
-	40, // 8: order.v1.Quote.date_created:type_name -> google.protobuf.Timestamp
-	40, // 9: order.v1.Quote.date_expires:type_name -> google.protobuf.Timestamp
-	40, // 10: order.v1.Quote.date_requested:type_name -> google.protobuf.Timestamp
-	35, // 11: order.v1.Quote.items:type_name -> order.v1.Quote.Item
+	41, // 8: order.v1.Quote.date_created:type_name -> google.protobuf.Timestamp
+	41, // 9: order.v1.Quote.date_expires:type_name -> google.protobuf.Timestamp
+	41, // 10: order.v1.Quote.date_requested:type_name -> google.protobuf.Timestamp
+	36, // 11: order.v1.Quote.items:type_name -> order.v1.Quote.Item
 	0,  // 12: order.v1.OrderSummary.status:type_name -> order.v1.OrderStatus
-	40, // 13: order.v1.OrderSummary.date_ordered:type_name -> google.protobuf.Timestamp
-	40, // 14: order.v1.OrderSummary.date_requested:type_name -> google.protobuf.Timestamp
+	41, // 13: order.v1.OrderSummary.date_ordered:type_name -> google.protobuf.Timestamp
+	41, // 14: order.v1.OrderSummary.date_requested:type_name -> google.protobuf.Timestamp
 	0,  // 15: order.v1.Order.status:type_name -> order.v1.OrderStatus
-	40, // 16: order.v1.Order.date_ordered:type_name -> google.protobuf.Timestamp
-	40, // 17: order.v1.Order.date_requested:type_name -> google.protobuf.Timestamp
-	36, // 18: order.v1.Order.order_items:type_name -> order.v1.Order.Item
+	41, // 16: order.v1.Order.date_ordered:type_name -> google.protobuf.Timestamp
+	41, // 17: order.v1.Order.date_requested:type_name -> google.protobuf.Timestamp
+	37, // 18: order.v1.Order.order_items:type_name -> order.v1.Order.Item
 	12, // 19: order.v1.Order.shipping_address:type_name -> order.v1.Address
 	12, // 20: order.v1.Shipment.shipping_address:type_name -> order.v1.Address
 	5,  // 21: order.v1.Shipment.contact:type_name -> order.v1.Contact
 	4,  // 22: order.v1.Shipment.customer:type_name -> order.v1.Customer
-	40, // 23: order.v1.PackingListSummary.date_invoiced:type_name -> google.protobuf.Timestamp
-	40, // 24: order.v1.PackingList.date_invoiced:type_name -> google.protobuf.Timestamp
-	40, // 25: order.v1.PackingList.date_ordered:type_name -> google.protobuf.Timestamp
+	41, // 23: order.v1.PackingListSummary.date_invoiced:type_name -> google.protobuf.Timestamp
+	41, // 24: order.v1.PackingList.date_invoiced:type_name -> google.protobuf.Timestamp
+	41, // 25: order.v1.PackingList.date_ordered:type_name -> google.protobuf.Timestamp
 	12, // 26: order.v1.PackingList.billing_address:type_name -> order.v1.Address
 	12, // 27: order.v1.PackingList.shipping_address:type_name -> order.v1.Address
-	40, // 28: order.v1.PackingList.terms_due_date:type_name -> google.protobuf.Timestamp
-	40, // 29: order.v1.PackingList.terms_discount_due_date:type_name -> google.protobuf.Timestamp
-	38, // 30: order.v1.PackingList.items:type_name -> order.v1.PackingList.Item
+	41, // 28: order.v1.PackingList.terms_due_date:type_name -> google.protobuf.Timestamp
+	41, // 29: order.v1.PackingList.terms_discount_due_date:type_name -> google.protobuf.Timestamp
+	39, // 30: order.v1.PackingList.items:type_name -> order.v1.PackingList.Item
 	9,  // 31: order.v1.ListOrdersResponse.orders:type_name -> order.v1.OrderSummary
 	10, // 32: order.v1.GetOrderResponse.order:type_name -> order.v1.Order
-	7,  // 33: order.v1.ListQuotesResponse.quotes:type_name -> order.v1.QuoteSummary
-	8,  // 34: order.v1.GetQuoteResponse.quote:type_name -> order.v1.Quote
-	39, // 35: order.v1.CreateQuoteRequest.items:type_name -> order.v1.CreateQuoteRequest.Item
-	40, // 36: order.v1.CreateQuoteRequest.requested_date:type_name -> google.protobuf.Timestamp
-	11, // 37: order.v1.ListShipmentsByOrderResponse.shipments:type_name -> order.v1.Shipment
-	11, // 38: order.v1.GetShipmentResponse.shipment:type_name -> order.v1.Shipment
-	14, // 39: order.v1.GetPackingListResponse.packing_list:type_name -> order.v1.PackingList
-	13, // 40: order.v1.ListPackingListsByOrderResponse.packing_lists:type_name -> order.v1.PackingListSummary
-	2,  // 41: order.v1.Order.Item.disposition:type_name -> order.v1.OrderItemDisposition
-	37, // 42: order.v1.Order.Item.releases:type_name -> order.v1.Order.Item.release
-	40, // 43: order.v1.Order.Item.release.date_released:type_name -> google.protobuf.Timestamp
-	3,  // 44: order.v1.PackingList.Item.unit_of_measurement:type_name -> order.v1.UnitOfMeasurement
-	15, // 45: order.v1.OrderService.ListOrders:input_type -> order.v1.ListOrdersRequest
-	17, // 46: order.v1.OrderService.GetOrder:input_type -> order.v1.GetOrderRequest
-	19, // 47: order.v1.OrderService.CreateOrder:input_type -> order.v1.CreateOrderRequest
-	21, // 48: order.v1.OrderService.ListQuotes:input_type -> order.v1.ListQuotesRequest
-	23, // 49: order.v1.OrderService.GetQuote:input_type -> order.v1.GetQuoteRequest
-	25, // 50: order.v1.OrderService.CreateQuote:input_type -> order.v1.CreateQuoteRequest
-	27, // 51: order.v1.OrderService.ListShipmentsByOrder:input_type -> order.v1.ListShipmentsByOrderRequest
-	29, // 52: order.v1.OrderService.GetShipment:input_type -> order.v1.GetShipmentRequest
-	31, // 53: order.v1.OrderService.GetPackingList:input_type -> order.v1.GetPackingListRequest
-	33, // 54: order.v1.OrderService.ListPackingListsByOrder:input_type -> order.v1.ListPackingListsByOrderRequest
-	16, // 55: order.v1.OrderService.ListOrders:output_type -> order.v1.ListOrdersResponse
-	18, // 56: order.v1.OrderService.GetOrder:output_type -> order.v1.GetOrderResponse
-	20, // 57: order.v1.OrderService.CreateOrder:output_type -> order.v1.CreateOrderResponse
-	22, // 58: order.v1.OrderService.ListQuotes:output_type -> order.v1.ListQuotesResponse
-	24, // 59: order.v1.OrderService.GetQuote:output_type -> order.v1.GetQuoteResponse
-	26, // 60: order.v1.OrderService.CreateQuote:output_type -> order.v1.CreateQuoteResponse
-	28, // 61: order.v1.OrderService.ListShipmentsByOrder:output_type -> order.v1.ListShipmentsByOrderResponse
-	30, // 62: order.v1.OrderService.GetShipment:output_type -> order.v1.GetShipmentResponse
-	32, // 63: order.v1.OrderService.GetPackingList:output_type -> order.v1.GetPackingListResponse
-	34, // 64: order.v1.OrderService.ListPackingListsByOrder:output_type -> order.v1.ListPackingListsByOrderResponse
-	55, // [55:65] is the sub-list for method output_type
-	45, // [45:55] is the sub-list for method input_type
-	45, // [45:45] is the sub-list for extension type_name
-	45, // [45:45] is the sub-list for extension extendee
-	0,  // [0:45] is the sub-list for field type_name
+	1,  // 33: order.v1.QuoteFilters.status:type_name -> order.v1.QuoteStatus
+	41, // 34: order.v1.QuoteFilters.date_created_after:type_name -> google.protobuf.Timestamp
+	41, // 35: order.v1.QuoteFilters.date_created_before:type_name -> google.protobuf.Timestamp
+	21, // 36: order.v1.ListQuotesRequest.filters:type_name -> order.v1.QuoteFilters
+	7,  // 37: order.v1.ListQuotesResponse.quotes:type_name -> order.v1.QuoteSummary
+	8,  // 38: order.v1.GetQuoteResponse.quote:type_name -> order.v1.Quote
+	40, // 39: order.v1.CreateQuoteRequest.items:type_name -> order.v1.CreateQuoteRequest.Item
+	41, // 40: order.v1.CreateQuoteRequest.requested_date:type_name -> google.protobuf.Timestamp
+	11, // 41: order.v1.ListShipmentsByOrderResponse.shipments:type_name -> order.v1.Shipment
+	11, // 42: order.v1.GetShipmentResponse.shipment:type_name -> order.v1.Shipment
+	14, // 43: order.v1.GetPackingListResponse.packing_list:type_name -> order.v1.PackingList
+	13, // 44: order.v1.ListPackingListsByOrderResponse.packing_lists:type_name -> order.v1.PackingListSummary
+	2,  // 45: order.v1.Order.Item.disposition:type_name -> order.v1.OrderItemDisposition
+	38, // 46: order.v1.Order.Item.releases:type_name -> order.v1.Order.Item.release
+	41, // 47: order.v1.Order.Item.release.date_released:type_name -> google.protobuf.Timestamp
+	3,  // 48: order.v1.PackingList.Item.unit_of_measurement:type_name -> order.v1.UnitOfMeasurement
+	15, // 49: order.v1.OrderService.ListOrders:input_type -> order.v1.ListOrdersRequest
+	17, // 50: order.v1.OrderService.GetOrder:input_type -> order.v1.GetOrderRequest
+	19, // 51: order.v1.OrderService.CreateOrder:input_type -> order.v1.CreateOrderRequest
+	22, // 52: order.v1.OrderService.ListQuotes:input_type -> order.v1.ListQuotesRequest
+	24, // 53: order.v1.OrderService.GetQuote:input_type -> order.v1.GetQuoteRequest
+	26, // 54: order.v1.OrderService.CreateQuote:input_type -> order.v1.CreateQuoteRequest
+	28, // 55: order.v1.OrderService.ListShipmentsByOrder:input_type -> order.v1.ListShipmentsByOrderRequest
+	30, // 56: order.v1.OrderService.GetShipment:input_type -> order.v1.GetShipmentRequest
+	32, // 57: order.v1.OrderService.GetPackingList:input_type -> order.v1.GetPackingListRequest
+	34, // 58: order.v1.OrderService.ListPackingListsByOrder:input_type -> order.v1.ListPackingListsByOrderRequest
+	16, // 59: order.v1.OrderService.ListOrders:output_type -> order.v1.ListOrdersResponse
+	18, // 60: order.v1.OrderService.GetOrder:output_type -> order.v1.GetOrderResponse
+	20, // 61: order.v1.OrderService.CreateOrder:output_type -> order.v1.CreateOrderResponse
+	23, // 62: order.v1.OrderService.ListQuotes:output_type -> order.v1.ListQuotesResponse
+	25, // 63: order.v1.OrderService.GetQuote:output_type -> order.v1.GetQuoteResponse
+	27, // 64: order.v1.OrderService.CreateQuote:output_type -> order.v1.CreateQuoteResponse
+	29, // 65: order.v1.OrderService.ListShipmentsByOrder:output_type -> order.v1.ListShipmentsByOrderResponse
+	31, // 66: order.v1.OrderService.GetShipment:output_type -> order.v1.GetShipmentResponse
+	33, // 67: order.v1.OrderService.GetPackingList:output_type -> order.v1.GetPackingListResponse
+	35, // 68: order.v1.OrderService.ListPackingListsByOrder:output_type -> order.v1.ListPackingListsByOrderResponse
+	59, // [59:69] is the sub-list for method output_type
+	49, // [49:59] is the sub-list for method input_type
+	49, // [49:49] is the sub-list for extension type_name
+	49, // [49:49] is the sub-list for extension extendee
+	0,  // [0:49] is the sub-list for field type_name
 }
 
 func init() { file_order_proto_init() }
@@ -6989,7 +7196,7 @@ func file_order_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_order_proto_rawDesc), len(file_order_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   37,
+			NumMessages:   38,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

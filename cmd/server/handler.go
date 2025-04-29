@@ -256,7 +256,8 @@ func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (o
 		return nil, err
 	}
 
-	quotes, total, err := h.service.Order.ListQuotes(ctx, int32(params.Page), int32(params.PageSize), userSession.Profile.BranchID)
+	quotes, total, err := h.service.Order.ListQuotes(ctx, int32(params.Page), int32(params.PageSize),
+		userSession.Profile.BranchID, params.ReferenceID.Or(""))
 	if err != nil {
 		return nil, err
 	}

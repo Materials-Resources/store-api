@@ -2409,6 +2409,10 @@ func (s *Server) handleListQuotesRequest(args [0]string, argsEscaped bool, w htt
 					Name: "page_size",
 					In:   "query",
 				}: params.PageSize,
+				{
+					Name: "reference_id",
+					In:   "query",
+				}: params.ReferenceID,
 			},
 			Raw: r,
 		}
