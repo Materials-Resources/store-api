@@ -127,6 +127,16 @@ paths:
           required: true
           schema:
             type: integer
+        - name: purchase_order
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: order_id
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: "List of orders for account"

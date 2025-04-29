@@ -2210,6 +2210,14 @@ func (s *Server) handleListOrdersRequest(args [0]string, argsEscaped bool, w htt
 					Name: "page_size",
 					In:   "query",
 				}: params.PageSize,
+				{
+					Name: "purchase_order",
+					In:   "query",
+				}: params.PurchaseOrder,
+				{
+					Name: "order_id",
+					In:   "query",
+				}: params.OrderID,
 			},
 			Raw: r,
 		}

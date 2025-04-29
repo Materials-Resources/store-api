@@ -72,3 +72,8 @@ type OrderItemRelease struct {
 	ShippedQuantity  float64
 	CanceledQuantity float64
 }
+
+type OrderFilters struct {
+	OrderId       string
+	PurchaseOrder string
+}

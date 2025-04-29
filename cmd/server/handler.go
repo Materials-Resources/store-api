@@ -225,8 +225,13 @@ func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (o
 		return nil, err
 	}
 
+	filters := &domain.OrderFilters{
+		OrderId:       params.OrderID.Or(""),
+		PurchaseOrder: params.PurchaseOrder.Or(""),
+	}
+
 	orders, total, err := h.service.Order.ListOrders(ctx, int32(params.Page), int32(params.PageSize),
-		userSession.Profile.BranchID)
+		userSession.Profile.BranchID, filters)
 
 	if err != nil {
 		return nil, err

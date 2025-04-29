@@ -558,8 +558,10 @@ func decodeListInvoicesParams(args [0]string, argsEscaped bool, r *http.Request)
 
 // ListOrdersParams is parameters of listOrders operation.
 type ListOrdersParams struct {
-	Page     int
-	PageSize int
+	Page          int
+	PageSize      int
+	PurchaseOrder OptString
+	OrderID       OptString
 }
 
 func unpackListOrdersParams(packed middleware.Parameters) (params ListOrdersParams) {
@@ -576,6 +578,24 @@ func unpackListOrdersParams(packed middleware.Parameters) (params ListOrdersPara
 			In:   "query",
 		}
 		params.PageSize = packed[key].(int)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "purchase_order",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.PurchaseOrder = v.(OptString)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "order_id",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.OrderID = v.(OptString)
+		}
 	}
 	return params
 }
@@ -650,6 +670,88 @@ func decodeListOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "page_size",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: purchase_order.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "purchase_order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotPurchaseOrderVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotPurchaseOrderVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.PurchaseOrder.SetTo(paramsDotPurchaseOrderVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "purchase_order",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: order_id.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "order_id",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotOrderIDVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotOrderIDVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.OrderID.SetTo(paramsDotOrderIDVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "order_id",
 			In:   "query",
 			Err:  err,
 		}

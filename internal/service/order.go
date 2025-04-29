@@ -131,12 +131,17 @@ func (s *Order) GetOrder(ctx context.Context, orderId string) (*domain.Order, er
 	return order, nil
 }
 
-func (s *Order) ListOrders(ctx context.Context, page, pageSize int32, branchId string) ([]*domain.OrderSummary, int32,
+func (s *Order) ListOrders(ctx context.Context, page, pageSize int32, branchId string,
+	filters *domain.OrderFilters) ([]*domain.OrderSummary, int32,
 	error) {
 	pbReq := orderv1.ListOrdersRequest_builder{
 		Page:     proto.Int32(page),
 		PageSize: proto.Int32(pageSize),
 		BranchId: proto.String(branchId),
+		Filters: orderv1.OrderFilters_builder{
+			PurchaseOrder: proto.String(filters.PurchaseOrder),
+			OrderId:       proto.String(filters.OrderId),
+		}.Build(),
 	}.Build()
 
 	pbRes, err := s.Client.ListOrders(ctx, connect.NewRequest(pbReq))
