@@ -49,6 +49,7 @@ func (s *CatalogService) GetProduct(ctx context.Context, params oas.GetProductPa
 			Id:               pbRes.Msg.GetProduct().GetSalesUnitOfMeasurement().GetId(),
 			ConversionFactor: pbRes.Msg.GetProduct().GetSalesUnitOfMeasurement().GetConversionFactor(),
 		},
+		IsActive: pbRes.Msg.GetProduct().GetIsActive(),
 	}
 
 	return &product, nil

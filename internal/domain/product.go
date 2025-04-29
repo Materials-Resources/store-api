@@ -8,4 +8,5 @@ type Product struct {
 	ProductGroupId         string
 	ProductGroupName       string
 	SalesUnitOfMeasurement UnitOfMeasurement
+	IsActive               bool
 }
