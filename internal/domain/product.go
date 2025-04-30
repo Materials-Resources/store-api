@@ -9,4 +9,5 @@ type Product struct {
 	ProductGroupName       string
 	SalesUnitOfMeasurement UnitOfMeasurement
 	IsActive               bool
+	HasStock               bool
 }

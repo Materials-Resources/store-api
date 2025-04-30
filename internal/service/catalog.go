@@ -50,6 +50,7 @@ func (s *CatalogService) GetProduct(ctx context.Context, params oas.GetProductPa
 			ConversionFactor: pbRes.Msg.GetProduct().GetSalesUnitOfMeasurement().GetConversionFactor(),
 		},
 		IsActive: pbRes.Msg.GetProduct().GetIsActive(),
+		HasStock: pbRes.Msg.GetProduct().GetHasStock(),
 	}
 
 	return &product, nil

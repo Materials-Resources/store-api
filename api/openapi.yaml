@@ -1045,6 +1045,8 @@ components:
         - product_group_id
         - product_group_name
         - sales_unit_of_measurement
+        - is_active
+        - has_stock
       type: object
       properties:
         id:
@@ -1066,6 +1068,9 @@ components:
         is_active:
           type: boolean
           description: Indicates if the product is active
+        has_stock:
+          type: boolean
+          description: Indicated if the product has stock
     ProductSearchResult:
       allOf:
         - $ref: '#/components/schemas/Product'
