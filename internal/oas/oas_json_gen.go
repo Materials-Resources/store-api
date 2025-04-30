@@ -1749,6 +1749,54 @@ func (s *GetRecentPurchasesOK) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes InvoiceAdjustmentType as json.
+func (s InvoiceAdjustmentType) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes InvoiceAdjustmentType from json.
+func (s *InvoiceAdjustmentType) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode InvoiceAdjustmentType to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch InvoiceAdjustmentType(v) {
+	case InvoiceAdjustmentTypeUnspecified:
+		*s = InvoiceAdjustmentTypeUnspecified
+	case InvoiceAdjustmentTypeDebitMemo:
+		*s = InvoiceAdjustmentTypeDebitMemo
+	case InvoiceAdjustmentTypeCreditMemo:
+		*s = InvoiceAdjustmentTypeCreditMemo
+	case InvoiceAdjustmentTypeBadDebtWriteOff:
+		*s = InvoiceAdjustmentTypeBadDebtWriteOff
+	case InvoiceAdjustmentTypeBadDebtRecovery:
+		*s = InvoiceAdjustmentTypeBadDebtRecovery
+	case InvoiceAdjustmentTypeInvoice:
+		*s = InvoiceAdjustmentTypeInvoice
+	default:
+		*s = InvoiceAdjustmentType(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s InvoiceAdjustmentType) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *InvoiceAdjustmentType) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *InvoiceSummary) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -1778,14 +1826,19 @@ func (s *InvoiceSummary) encodeFields(e *jx.Encoder) {
 		e.FieldStart("total_amount")
 		e.Float64(s.TotalAmount)
 	}
+	{
+		e.FieldStart("adjustment_type")
+		s.AdjustmentType.Encode(e)
+	}
 }
 
-var jsonFieldsNameOfInvoiceSummary = [5]string{
+var jsonFieldsNameOfInvoiceSummary = [6]string{
 	0: "id",
 	1: "order_id",
 	2: "date_invoiced",
 	3: "paid_amount",
 	4: "total_amount",
+	5: "adjustment_type",
 }
 
 // Decode decodes InvoiceSummary from json.
@@ -1857,6 +1910,16 @@ func (s *InvoiceSummary) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"total_amount\"")
 			}
+		case "adjustment_type":
+			requiredBitSet[0] |= 1 << 5
+			if err := func() error {
+				if err := s.AdjustmentType.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"adjustment_type\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -1867,7 +1930,7 @@ func (s *InvoiceSummary) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00011111,
+		0b00111111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

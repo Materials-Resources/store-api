@@ -652,13 +652,84 @@ type GetRecentPurchasesUnauthorized struct{}
 
 func (*GetRecentPurchasesUnauthorized) getRecentPurchasesRes() {}
 
+// Ref: #/components/schemas/InvoiceAdjustmentType
+type InvoiceAdjustmentType string
+
+const (
+	InvoiceAdjustmentTypeUnspecified     InvoiceAdjustmentType = "unspecified"
+	InvoiceAdjustmentTypeDebitMemo       InvoiceAdjustmentType = "debit_memo"
+	InvoiceAdjustmentTypeCreditMemo      InvoiceAdjustmentType = "credit_memo"
+	InvoiceAdjustmentTypeBadDebtWriteOff InvoiceAdjustmentType = "bad_debt_write_off"
+	InvoiceAdjustmentTypeBadDebtRecovery InvoiceAdjustmentType = "bad_debt_recovery"
+	InvoiceAdjustmentTypeInvoice         InvoiceAdjustmentType = "invoice"
+)
+
+// AllValues returns all InvoiceAdjustmentType values.
+func (InvoiceAdjustmentType) AllValues() []InvoiceAdjustmentType {
+	return []InvoiceAdjustmentType{
+		InvoiceAdjustmentTypeUnspecified,
+		InvoiceAdjustmentTypeDebitMemo,
+		InvoiceAdjustmentTypeCreditMemo,
+		InvoiceAdjustmentTypeBadDebtWriteOff,
+		InvoiceAdjustmentTypeBadDebtRecovery,
+		InvoiceAdjustmentTypeInvoice,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s InvoiceAdjustmentType) MarshalText() ([]byte, error) {
+	switch s {
+	case InvoiceAdjustmentTypeUnspecified:
+		return []byte(s), nil
+	case InvoiceAdjustmentTypeDebitMemo:
+		return []byte(s), nil
+	case InvoiceAdjustmentTypeCreditMemo:
+		return []byte(s), nil
+	case InvoiceAdjustmentTypeBadDebtWriteOff:
+		return []byte(s), nil
+	case InvoiceAdjustmentTypeBadDebtRecovery:
+		return []byte(s), nil
+	case InvoiceAdjustmentTypeInvoice:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *InvoiceAdjustmentType) UnmarshalText(data []byte) error {
+	switch InvoiceAdjustmentType(data) {
+	case InvoiceAdjustmentTypeUnspecified:
+		*s = InvoiceAdjustmentTypeUnspecified
+		return nil
+	case InvoiceAdjustmentTypeDebitMemo:
+		*s = InvoiceAdjustmentTypeDebitMemo
+		return nil
+	case InvoiceAdjustmentTypeCreditMemo:
+		*s = InvoiceAdjustmentTypeCreditMemo
+		return nil
+	case InvoiceAdjustmentTypeBadDebtWriteOff:
+		*s = InvoiceAdjustmentTypeBadDebtWriteOff
+		return nil
+	case InvoiceAdjustmentTypeBadDebtRecovery:
+		*s = InvoiceAdjustmentTypeBadDebtRecovery
+		return nil
+	case InvoiceAdjustmentTypeInvoice:
+		*s = InvoiceAdjustmentTypeInvoice
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // Ref: #/components/schemas/InvoiceSummary
 type InvoiceSummary struct {
-	ID           string    `json:"id"`
-	OrderID      string    `json:"order_id"`
-	DateInvoiced time.Time `json:"date_invoiced"`
-	PaidAmount   float64   `json:"paid_amount"`
-	TotalAmount  float64   `json:"total_amount"`
+	ID             string                `json:"id"`
+	OrderID        string                `json:"order_id"`
+	DateInvoiced   time.Time             `json:"date_invoiced"`
+	PaidAmount     float64               `json:"paid_amount"`
+	TotalAmount    float64               `json:"total_amount"`
+	AdjustmentType InvoiceAdjustmentType `json:"adjustment_type"`
 }
 
 // GetID returns the value of ID.
@@ -686,6 +757,11 @@ func (s *InvoiceSummary) GetTotalAmount() float64 {
 	return s.TotalAmount
 }
 
+// GetAdjustmentType returns the value of AdjustmentType.
+func (s *InvoiceSummary) GetAdjustmentType() InvoiceAdjustmentType {
+	return s.AdjustmentType
+}
+
 // SetID sets the value of ID.
 func (s *InvoiceSummary) SetID(val string) {
 	s.ID = val
@@ -709,6 +785,11 @@ func (s *InvoiceSummary) SetPaidAmount(val float64) {
 // SetTotalAmount sets the value of TotalAmount.
 func (s *InvoiceSummary) SetTotalAmount(val float64) {
 	s.TotalAmount = val
+}
+
+// SetAdjustmentType sets the value of AdjustmentType.
+func (s *InvoiceSummary) SetAdjustmentType(val InvoiceAdjustmentType) {
+	s.AdjustmentType = val
 }
 
 type ListCustomerBranchesOK struct {

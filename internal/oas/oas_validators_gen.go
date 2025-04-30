@@ -232,6 +232,25 @@ func (s *GetRecentPurchasesOK) Validate() error {
 	return nil
 }
 
+func (s InvoiceAdjustmentType) Validate() error {
+	switch s {
+	case "unspecified":
+		return nil
+	case "debit_memo":
+		return nil
+	case "credit_memo":
+		return nil
+	case "bad_debt_write_off":
+		return nil
+	case "bad_debt_recovery":
+		return nil
+	case "invoice":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *InvoiceSummary) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -257,6 +276,17 @@ func (s *InvoiceSummary) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "total_amount",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := s.AdjustmentType.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "adjustment_type",
 			Error: err,
 		})
 	}

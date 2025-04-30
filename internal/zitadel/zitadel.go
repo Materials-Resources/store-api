@@ -32,6 +32,9 @@ func NewZitadelClient(a *app.App) (*Client, error) {
 	userCl, err := userClient.NewClient(ctx, a.Config.Zitadel.Issuer, a.Config.Zitadel.ApiUrl, []string{
 		oidc.ScopeOpenID, client.ScopeZitadelAPI(),
 	}, zitadel.WithJWTProfileTokenSource(middleware.JWTProfileFromPath(ctx, a.Config.Zitadel.JwtPath)), zitadel.WithOrgID(a.Config.Zitadel.OrgId))
+	if err != nil {
+		return nil, err
+	}
 	return &Client{
 		management: cli,
 		user:       userCl,

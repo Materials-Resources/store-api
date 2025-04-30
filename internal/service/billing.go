@@ -38,11 +38,12 @@ func (s *BillingService) GetInvoicesByOrder(ctx context.Context, orderId string)
 
 	for _, invoice := range res.Msg.GetInvoices() {
 		invoices = append(invoices, &domain.InvoiceSummary{
-			Id:           invoice.GetId(),
-			OrderId:      invoice.GetOrderId(),
-			DateInvoiced: invoice.GetDateInvoiced().AsTime(),
-			TotalAmount:  invoice.GetTotalAmount(),
-			PaidAmount:   invoice.GetPaidAmount(),
+			Id:             invoice.GetId(),
+			OrderId:        invoice.GetOrderId(),
+			DateInvoiced:   invoice.GetDateInvoiced().AsTime(),
+			TotalAmount:    invoice.GetTotalAmount(),
+			PaidAmount:     invoice.GetPaidAmount(),
+			AdjustmentType: convertInvoiceAdjustmentType(invoice.GetAdjustmentType()),
 		})
 
 	}
@@ -64,12 +65,30 @@ func (s *BillingService) GetInvoicesByBranch(ctx context.Context, branchId strin
 	var invoices []*domain.InvoiceSummary
 	for _, invoice := range pbRes.Msg.GetInvoices() {
 		invoices = append(invoices, &domain.InvoiceSummary{
-			Id:           invoice.GetId(),
-			OrderId:      invoice.GetOrderId(),
-			DateInvoiced: invoice.GetDateInvoiced().AsTime(),
-			TotalAmount:  invoice.GetTotalAmount(),
-			PaidAmount:   invoice.GetPaidAmount(),
+			Id:             invoice.GetId(),
+			OrderId:        invoice.GetOrderId(),
+			DateInvoiced:   invoice.GetDateInvoiced().AsTime(),
+			TotalAmount:    invoice.GetTotalAmount(),
+			PaidAmount:     invoice.GetPaidAmount(),
+			AdjustmentType: convertInvoiceAdjustmentType(invoice.GetAdjustmentType()),
 		})
 	}
 	return invoices, int(pbRes.Msg.GetTotalRecords()), nil
+}
+
+func convertInvoiceAdjustmentType(adjustmentType billingv1.InvoiceAdjustmentType) domain.InvoiceAdjustmentType {
+	switch adjustmentType {
+	case billingv1.InvoiceAdjustmentType_DEBIT_MEMO:
+		return domain.InvoiceAdjustmentTypeDebitMemo
+	case billingv1.InvoiceAdjustmentType_CREDIT_MEMO:
+		return domain.InvoiceAdjustmentTypeCreditMemo
+	case billingv1.InvoiceAdjustmentType_BAD_DEBT_WRITE_OFF:
+		return domain.InvoiceAdjustmentTypeBadDebtWriteOff
+	case billingv1.InvoiceAdjustmentType_BAD_DEBT_RECOVERY:
+		return domain.InvoiceAdjustmentTypeBadDebtRecovery
+	case billingv1.InvoiceAdjustmentType_INVOICE:
+		return domain.InvoiceAdjustmentTypeInvoice
+	default:
+		return domain.InvoiceAdjustmentTypeUnspecified
+	}
 }

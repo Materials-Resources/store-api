@@ -645,6 +645,15 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    InvoiceAdjustmentType:
+      type: string
+      enum:
+        - unspecified
+        - debit_memo
+        - credit_memo
+        - bad_debt_write_off
+        - bad_debt_recovery
+        - invoice
     InvoiceSummary:
       required:
         - id
@@ -652,6 +661,7 @@ components:
         - date_invoiced
         - paid_amount
         - total_amount
+        - adjustment_type
       type: object
       properties:
         id:
@@ -667,7 +677,8 @@ components:
         total_amount:
           type: number
           x-go-type: float64
-
+        adjustment_type:
+          $ref: '#/components/schemas/InvoiceAdjustmentType'
     PackingListSummary:
       required:
         - invoice_id

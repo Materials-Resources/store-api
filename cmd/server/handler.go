@@ -60,11 +60,12 @@ func (h Handler) ListInvoices(ctx context.Context, params oas.ListInvoicesParams
 
 	for _, invoice := range invoices {
 		response.Invoices = append(response.Invoices, oas.InvoiceSummary{
-			ID:           invoice.Id,
-			OrderID:      invoice.OrderId,
-			DateInvoiced: invoice.DateInvoiced,
-			TotalAmount:  invoice.TotalAmount,
-			PaidAmount:   invoice.PaidAmount,
+			ID:             invoice.Id,
+			OrderID:        invoice.OrderId,
+			DateInvoiced:   invoice.DateInvoiced,
+			TotalAmount:    invoice.TotalAmount,
+			PaidAmount:     invoice.PaidAmount,
+			AdjustmentType: mapInvoiceAdjustmentType(invoice.AdjustmentType),
 		})
 	}
 	return response, nil
@@ -356,6 +357,9 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 	}
 
 	invoices, err := h.service.Billing.GetInvoicesByOrder(ctx, params.ID)
+	if err != nil {
+		return nil, err
+	}
 
 	oapiOrder := oas.Order{
 		ID:            order.Id,
@@ -388,10 +392,11 @@ func (h Handler) GetOrder(ctx context.Context, params oas.GetOrderParams) (oas.G
 
 	for _, invoice := range invoices {
 		oapiOrder.Invoices = append(oapiOrder.Invoices, oas.InvoiceSummary{
-			ID:           invoice.Id,
-			DateInvoiced: invoice.DateInvoiced,
-			TotalAmount:  invoice.TotalAmount,
-			PaidAmount:   invoice.PaidAmount,
+			ID:             invoice.Id,
+			DateInvoiced:   invoice.DateInvoiced,
+			TotalAmount:    invoice.TotalAmount,
+			PaidAmount:     invoice.PaidAmount,
+			AdjustmentType: mapInvoiceAdjustmentType(invoice.AdjustmentType),
 		})
 	}
 
@@ -511,5 +516,22 @@ func mapOrderItemDisposition(disposition domain.OrderItemDisposition) oas.OrderI
 		return oas.OrderItemDispositionTransfer
 	default:
 		return oas.OrderItemDispositionUnspecified
+	}
+}
+
+func mapInvoiceAdjustmentType(adjustmentType domain.InvoiceAdjustmentType) oas.InvoiceAdjustmentType {
+	switch adjustmentType {
+	case domain.InvoiceAdjustmentTypeDebitMemo:
+		return oas.InvoiceAdjustmentTypeDebitMemo
+	case domain.InvoiceAdjustmentTypeCreditMemo:
+		return oas.InvoiceAdjustmentTypeCreditMemo
+	case domain.InvoiceAdjustmentTypeBadDebtWriteOff:
+		return oas.InvoiceAdjustmentTypeBadDebtWriteOff
+	case domain.InvoiceAdjustmentTypeBadDebtRecovery:
+		return oas.InvoiceAdjustmentTypeBadDebtRecovery
+	case domain.InvoiceAdjustmentTypeInvoice:
+		return oas.InvoiceAdjustmentTypeInvoice
+	default:
+		return oas.InvoiceAdjustmentTypeUnspecified
 	}
 }

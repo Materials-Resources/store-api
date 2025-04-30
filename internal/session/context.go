@@ -11,7 +11,7 @@ const userContextKey = contextKey("user")
 
 func (m *Manager) GetUserSession(ctx context.Context) (*UserSession, error) {
 	user, ok := ctx.Value(userContextKey).(*UserSession)
-	if ok != true {
+	if !ok {
 		return nil, fmt.Errorf("user not found in context")
 	}
 	return user, nil
