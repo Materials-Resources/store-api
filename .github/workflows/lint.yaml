@@ -1,4 +1,4 @@
-name: "Lint"
+name: "golangci-lint"
 
 on:
   push:
@@ -15,12 +15,12 @@ jobs:
   golangci:
     name: lint
     runs-on: ubuntu-latest
-    env:
-      GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version: stable
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@7
+        uses: golangci/golangci-lint-action@v7
+        with:
+          version: v2.0
