@@ -449,6 +449,8 @@ func (h Handler) GetProduct(ctx context.Context, params oas.GetProductParams) (o
 				ID:               product.SalesUnitOfMeasurement.Id,
 				ConversionFactor: product.SalesUnitOfMeasurement.ConversionFactor,
 			},
+			HasStock: product.HasStock,
+			IsActive: product.IsActive,
 		},
 	}
 
