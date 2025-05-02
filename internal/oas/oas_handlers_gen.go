@@ -2211,13 +2211,13 @@ func (s *Server) handleListOrdersRequest(args [0]string, argsEscaped bool, w htt
 					In:   "query",
 				}: params.PageSize,
 				{
+					Name: "id",
+					In:   "query",
+				}: params.ID,
+				{
 					Name: "purchase_order",
 					In:   "query",
 				}: params.PurchaseOrder,
-				{
-					Name: "order_id",
-					In:   "query",
-				}: params.OrderID,
 			},
 			Raw: r,
 		}
@@ -2418,9 +2418,13 @@ func (s *Server) handleListQuotesRequest(args [0]string, argsEscaped bool, w htt
 					In:   "query",
 				}: params.PageSize,
 				{
-					Name: "reference_id",
+					Name: "id",
 					In:   "query",
-				}: params.ReferenceID,
+				}: params.ID,
+				{
+					Name: "purchase_order",
+					In:   "query",
+				}: params.PurchaseOrder,
 			},
 			Raw: r,
 		}

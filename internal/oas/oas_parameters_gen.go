@@ -560,8 +560,8 @@ func decodeListInvoicesParams(args [0]string, argsEscaped bool, r *http.Request)
 type ListOrdersParams struct {
 	Page          int
 	PageSize      int
+	ID            OptString
 	PurchaseOrder OptString
-	OrderID       OptString
 }
 
 func unpackListOrdersParams(packed middleware.Parameters) (params ListOrdersParams) {
@@ -581,20 +581,20 @@ func unpackListOrdersParams(packed middleware.Parameters) (params ListOrdersPara
 	}
 	{
 		key := middleware.ParameterKey{
+			Name: "id",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.ID = v.(OptString)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
 			Name: "purchase_order",
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
 			params.PurchaseOrder = v.(OptString)
-		}
-	}
-	{
-		key := middleware.ParameterKey{
-			Name: "order_id",
-			In:   "query",
-		}
-		if v, ok := packed[key]; ok {
-			params.OrderID = v.(OptString)
 		}
 	}
 	return params
@@ -674,6 +674,47 @@ func decodeListOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (
 			Err:  err,
 		}
 	}
+	// Decode query: id.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "id",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotIDVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotIDVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.ID.SetTo(paramsDotIDVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "id",
+			In:   "query",
+			Err:  err,
+		}
+	}
 	// Decode query: purchase_order.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
@@ -715,55 +756,15 @@ func decodeListOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (
 			Err:  err,
 		}
 	}
-	// Decode query: order_id.
-	if err := func() error {
-		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "order_id",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.HasParam(cfg); err == nil {
-			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotOrderIDVal string
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
-						return err
-					}
-
-					c, err := conv.ToString(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotOrderIDVal = c
-					return nil
-				}(); err != nil {
-					return err
-				}
-				params.OrderID.SetTo(paramsDotOrderIDVal)
-				return nil
-			}); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "order_id",
-			In:   "query",
-			Err:  err,
-		}
-	}
 	return params, nil
 }
 
 // ListQuotesParams is parameters of listQuotes operation.
 type ListQuotesParams struct {
-	Page        int
-	PageSize    int
-	ReferenceID OptString
+	Page          int
+	PageSize      int
+	ID            OptString
+	PurchaseOrder OptString
 }
 
 func unpackListQuotesParams(packed middleware.Parameters) (params ListQuotesParams) {
@@ -783,11 +784,20 @@ func unpackListQuotesParams(packed middleware.Parameters) (params ListQuotesPara
 	}
 	{
 		key := middleware.ParameterKey{
-			Name: "reference_id",
+			Name: "id",
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.ReferenceID = v.(OptString)
+			params.ID = v.(OptString)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "purchase_order",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.PurchaseOrder = v.(OptString)
 		}
 	}
 	return params
@@ -867,17 +877,17 @@ func decodeListQuotesParams(args [0]string, argsEscaped bool, r *http.Request) (
 			Err:  err,
 		}
 	}
-	// Decode query: reference_id.
+	// Decode query: id.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "reference_id",
+			Name:    "id",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotReferenceIDVal string
+				var paramsDotIDVal string
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
@@ -889,12 +899,12 @@ func decodeListQuotesParams(args [0]string, argsEscaped bool, r *http.Request) (
 						return err
 					}
 
-					paramsDotReferenceIDVal = c
+					paramsDotIDVal = c
 					return nil
 				}(); err != nil {
 					return err
 				}
-				params.ReferenceID.SetTo(paramsDotReferenceIDVal)
+				params.ID.SetTo(paramsDotIDVal)
 				return nil
 			}); err != nil {
 				return err
@@ -903,7 +913,48 @@ func decodeListQuotesParams(args [0]string, argsEscaped bool, r *http.Request) (
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "reference_id",
+			Name: "id",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: purchase_order.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "purchase_order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotPurchaseOrderVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotPurchaseOrderVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.PurchaseOrder.SetTo(paramsDotPurchaseOrderVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "purchase_order",
 			In:   "query",
 			Err:  err,
 		}

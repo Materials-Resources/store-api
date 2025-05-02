@@ -127,12 +127,12 @@ paths:
           required: true
           schema:
             type: integer
-        - name: purchase_order
+        - name: id
           in: query
           required: false
           schema:
             type: string
-        - name: order_id
+        - name: purchase_order
           in: query
           required: false
           schema:
@@ -297,8 +297,14 @@ paths:
           required: true
           schema:
             type: integer
-        - name: reference_id
+        - name: id
           in: query
+          required: false
+          schema:
+            type: string
+        - name: purchase_order
+          in: query
+          required: false
           schema:
             type: string
       responses:
