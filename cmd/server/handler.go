@@ -227,7 +227,7 @@ func (h Handler) ListOrders(ctx context.Context, params oas.ListOrdersParams) (o
 	}
 
 	filters := &domain.OrderFilters{
-		OrderId:       params.OrderID.Or(""),
+		Id:            params.ID.Or(""),
 		PurchaseOrder: params.PurchaseOrder.Or(""),
 	}
 
@@ -262,8 +262,13 @@ func (h Handler) ListQuotes(ctx context.Context, params oas.ListQuotesParams) (o
 		return nil, err
 	}
 
+	filters := &domain.QuoteFilters{
+		Id:            params.ID.Or(""),
+		PurchaseOrder: params.PurchaseOrder.Or(""),
+	}
+
 	quotes, total, err := h.service.Order.ListQuotes(ctx, int32(params.Page), int32(params.PageSize),
-		userSession.Profile.BranchID, params.ReferenceID.Or(""))
+		userSession.Profile.BranchID, filters)
 	if err != nil {
 		return nil, err
 	}

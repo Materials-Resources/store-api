@@ -12,6 +12,10 @@ const (
 
 type QuoteStatus int
 
+type QuoteFilters struct {
+	Id            string
+	PurchaseOrder string
+}
 type QuoteSummary struct {
 	Id            string
 	BranchId      string

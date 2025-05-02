@@ -74,6 +74,6 @@ type OrderItemRelease struct {
 }
 
 type OrderFilters struct {
-	OrderId       string
+	Id            string
 	PurchaseOrder string
 }
