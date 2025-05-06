@@ -26,6 +26,27 @@ func NewBillingService(a *app.App) *BillingService {
 	}
 }
 
+func (s *BillingService) GetInvoice(ctx context.Context, id string) (*domain.Invoice, error) {
+	pbReq := billingv1.GetInvoiceRequest_builder{Id: proto.String(id)}
+
+	pbRes, err := s.client.GetInvoice(ctx, connect.NewRequest(pbReq.Build()))
+	if err != nil {
+		return nil, err
+	}
+
+	invoice := &domain.Invoice{
+		Id:         pbRes.Msg.GetInvoice().GetId(),
+		OrderId:    pbRes.Msg.GetInvoice().GetOrderId(),
+		CustomerId: pbRes.Msg.GetInvoice().GetCustomerId(),
+		BranchId:   pbRes.Msg.GetInvoice().GetBranchId(),
+		Totals: domain.InvoiceTotals{
+			AmountPaid: pbRes.Msg.GetInvoice().GetTotals().GetAmountPaid(),
+			AmountDue:  pbRes.Msg.GetInvoice().GetTotals().GetAmountDue(),
+		},
+	}
+
+	return invoice, nil
+}
 func (s *BillingService) GetInvoicesByOrder(ctx context.Context, orderId string) ([]*domain.InvoiceSummary, error) {
 	req := billingv1.GetInvoicesByOrderRequest_builder{OrderId: proto.String(orderId)}
 

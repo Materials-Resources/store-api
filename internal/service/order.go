@@ -224,6 +224,27 @@ func (s *Order) ListPackingListsByOrder(ctx context.Context, orderId string) ([]
 
 }
 
+func (s *Order) GetPackingList(ctx context.Context, invoiceId string) (*domain.PackingList, error) {
+	pbReq := orderv1.GetPackingListRequest_builder{
+		InvoiceId: proto.String(invoiceId),
+	}.Build()
+
+	pbRes, err := s.Client.GetPackingList(ctx, connect.NewRequest(pbReq))
+	if err != nil {
+		return nil, err
+	}
+
+	packingList := &domain.PackingList{
+		InvoiceId:    pbRes.Msg.GetPackingList().GetInvoiceId(),
+		OrderId:      pbRes.Msg.GetPackingList().GetOrderId(),
+		BranchId:     pbRes.Msg.GetPackingList().GetBranchId(),
+		CustomerId:   pbRes.Msg.GetPackingList().GetCustomerId(),
+		DateInvoiced: pbRes.Msg.GetPackingList().GetDateInvoiced().AsTime(),
+	}
+
+	return packingList, nil
+}
+
 func convertOrderStatus(status orderv1.OrderStatus) domain.OrderStatus {
 	switch status {
 	case orderv1.OrderStatus_ORDER_STATUS_COMPLETED:

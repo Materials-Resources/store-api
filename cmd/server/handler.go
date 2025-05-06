@@ -73,6 +73,20 @@ func (h Handler) ListInvoices(ctx context.Context, params oas.ListInvoicesParams
 }
 
 func (h Handler) GetPackingListReport(ctx context.Context, params oas.GetPackingListReportParams) (oas.GetPackingListReportRes, error) {
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// get the packing list for authorization
+	packingList, err := h.service.Order.GetPackingList(ctx, params.ID)
+	if err != nil {
+		return nil, err
+	}
+	// validate user session has access to packing list
+	if packingList.BranchId != userSession.Profile.BranchID {
+		return nil, fmt.Errorf("user is not authorized to access this branch")
+	}
+
 	data, err := h.service.Report.GetPackingList(ctx, params.ID)
 	if err != nil {
 		return nil, err
@@ -98,10 +112,25 @@ func (h Handler) ContactUs(ctx context.Context, req *oas.ContactUsReq) error {
 
 func (h Handler) GetInvoiceReport(ctx context.Context, params oas.GetInvoiceReportParams) (oas.GetInvoiceReportRes,
 	error) {
+	userSession, err := h.sessionManager.GetUserSession(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// get the invoice for authorization
+	invoice, err := h.service.Billing.GetInvoice(ctx, params.ID)
+	if err != nil {
+		return nil, err
+	}
+	// validate that the user has access to this invoice
+	if userSession.Profile.BranchID != invoice.BranchId {
+		return nil, fmt.Errorf("user is not authorized to access this branch")
+	}
+
 	data, err := h.service.Report.GetInvoice(ctx, params.ID)
 	if err != nil {
 		return nil, err
 	}
+
 	return &oas.GetInvoiceReportOK{
 		Data: data,
 	}, nil
