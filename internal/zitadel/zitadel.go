@@ -47,7 +47,6 @@ func (c *Client) ChangeUserBranchId(ctx context.Context, userId, branchId string
 	userResp, err := c.user.GetUserByID(ctx, &user.GetUserByIDRequest{
 		UserId: userId,
 	})
-	fmt.Println(err)
 	if err != nil {
 		return err
 	}
