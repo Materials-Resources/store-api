@@ -23,7 +23,7 @@ func NewZitadelClient(a *app.App) (*Client, error) {
 
 	cli, err := managementClient.NewClient(ctx, a.Config.Zitadel.Issuer, a.Config.Zitadel.ApiUrl, []string{
 		oidc.ScopeOpenID, client.ScopeZitadelAPI(),
-	}, zitadel.WithJWTProfileTokenSource(middleware.JWTProfileFromPath(ctx, a.Config.Zitadel.JwtPath)), zitadel.WithOrgID(a.Config.Zitadel.OrgId))
+	}, zitadel.WithJWTProfileTokenSource(middleware.JWTProfileFromPath(ctx, a.Config.Zitadel.JwtPath)))
 
 	if err != nil {
 		return nil, err
@@ -43,8 +43,16 @@ func NewZitadelClient(a *app.App) (*Client, error) {
 }
 
 func (c *Client) ChangeUserBranchId(ctx context.Context, userId, branchId string) error {
+	// Get user details
+	userResp, err := c.user.GetUserByID(ctx, &user.GetUserByIDRequest{
+		UserId: userId,
+	})
+	fmt.Println(err)
+	if err != nil {
+		return err
+	}
 
-	_, err := c.management.SetUserMetadata(ctx, &management.SetUserMetadataRequest{
+	_, err = c.management.SetUserMetadata(middleware.SetOrgID(ctx, userResp.GetDetails().GetResourceOwner()), &management.SetUserMetadataRequest{
 		Id:    userId,
 		Key:   "branch_id",
 		Value: []byte(branchId),
