@@ -1,0 +1,13 @@
+{{define "subject"}}New Quote Request {{.Id}}{{end}}
+{{define "plainBody"}}
+    A new quote request has been created. Please check Prophet 21 for the newly created quote.
+
+    Id: {{.Id}}
+{{end}}
+{{define "htmlBody"}}
+   <p>A new quote request has been created. Please check Prophet 21 for the newly created quote.</p>
+   <p>
+       <strong>Id:</strong> <span>{{.Id}}</span><br>
+   </p>
+{{end}}
+

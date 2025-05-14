@@ -365,6 +365,16 @@ func (h Handler) CreateQuote(ctx context.Context, req *oas.CreateQuoteReq) (oas.
 		return nil, err
 	}
 
+	// send an email notifying a new quote has been created
+	d := map[string]any{
+		"Id": pbRes.Msg.GetId(),
+	}
+	err = h.mailer.Send("quote_request.tmpl", d)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &oas.CreateQuoteCreated{
 		QuoteID: pbRes.Msg.GetId(),
 	}, nil
