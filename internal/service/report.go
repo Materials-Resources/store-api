@@ -8,7 +8,7 @@ import (
 	"connectrpc.com/connect"
 	reportv1 "github.com/materials-resources/microservices-proto/pkg/report"
 	"github.com/materials-resources/microservices-proto/pkg/report/reportconnect"
-	"github.com/materials-resources/store-api/app"
+	"github.com/materials-resources/store-api/pkg/app"
 	"google.golang.org/protobuf/proto"
 )
 

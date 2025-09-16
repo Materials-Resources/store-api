@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/materials-resources/store-api/app"
-	"github.com/materials-resources/store-api/config"
+	"github.com/materials-resources/store-api/pkg/app"
+	"github.com/materials-resources/store-api/pkg/config"
 	"github.com/materials-resources/store-api/internal/mailer"
 	"github.com/materials-resources/store-api/internal/oas"
 	"github.com/materials-resources/store-api/internal/service"

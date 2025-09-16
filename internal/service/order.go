@@ -7,7 +7,7 @@ import (
 	"connectrpc.com/connect"
 	orderv1 "github.com/materials-resources/microservices-proto/pkg/order"
 	"github.com/materials-resources/microservices-proto/pkg/order/orderconnect"
-	"github.com/materials-resources/store-api/app"
+	"github.com/materials-resources/store-api/pkg/app"
 	"github.com/materials-resources/store-api/internal/domain"
 	"google.golang.org/protobuf/proto"
 )

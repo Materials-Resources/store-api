@@ -3,7 +3,7 @@ package mailer
 import (
 	"bytes"
 	"embed"
-	"github.com/materials-resources/store-api/app"
+	"github.com/materials-resources/store-api/pkg/app"
 	mail "gopkg.in/gomail.v2"
 	"html/template"
 	"time"

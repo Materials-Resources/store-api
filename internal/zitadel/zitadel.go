@@ -2,7 +2,7 @@ package zitadel
 
 import (
 	"context"
-	"github.com/materials-resources/store-api/app"
+	"github.com/materials-resources/store-api/pkg/app"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"github.com/zitadel/zitadel-go/v3/pkg/client"
 	managementClient "github.com/zitadel/zitadel-go/v3/pkg/client/management"

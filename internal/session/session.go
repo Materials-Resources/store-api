@@ -3,7 +3,7 @@ package session
 import (
 	"github.com/MicahParks/keyfunc/v3"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/materials-resources/store-api/app"
+	"github.com/materials-resources/store-api/pkg/app"
 	"github.com/materials-resources/store-api/internal/zitadel"
 	"log"
 )

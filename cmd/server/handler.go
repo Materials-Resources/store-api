@@ -7,7 +7,7 @@ import (
 	"connectrpc.com/connect"
 	customerv1 "github.com/materials-resources/microservices-proto/pkg/customer"
 	orderv1 "github.com/materials-resources/microservices-proto/pkg/order"
-	"github.com/materials-resources/store-api/app"
+	"github.com/materials-resources/store-api/pkg/app"
 	"github.com/materials-resources/store-api/internal/domain"
 	"github.com/materials-resources/store-api/internal/mailer"
 	"github.com/materials-resources/store-api/internal/oas"

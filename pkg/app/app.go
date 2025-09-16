@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/materials-resources/store-api/config"
+	"github.com/materials-resources/store-api/pkg/config"
 	"github.com/rs/zerolog"
 )
 

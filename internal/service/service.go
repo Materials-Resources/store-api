@@ -3,7 +3,7 @@ package service
 import (
 	"connectrpc.com/connect"
 	"connectrpc.com/otelconnect"
-	"github.com/materials-resources/store-api/app"
+	"github.com/materials-resources/store-api/pkg/app"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
