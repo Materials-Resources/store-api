@@ -1,14 +1,15 @@
 package service
 
 import (
-	"connectrpc.com/connect"
 	"context"
+	"net/http"
+
+	"connectrpc.com/connect"
+	orderv1 "github.com/materials-resources/microservices-proto/pkg/order"
+	"github.com/materials-resources/microservices-proto/pkg/order/orderconnect"
 	"github.com/materials-resources/store-api/app"
 	"github.com/materials-resources/store-api/internal/domain"
-	orderv1 "github.com/materials-resources/store-api/internal/proto/order"
-	"github.com/materials-resources/store-api/internal/proto/order/orderconnect"
 	"google.golang.org/protobuf/proto"
-	"net/http"
 )
 
 type Order struct {

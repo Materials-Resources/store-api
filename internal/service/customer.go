@@ -1,14 +1,15 @@
 package service
 
 import (
-	"connectrpc.com/connect"
 	"context"
+	"net/http"
+
+	"connectrpc.com/connect"
+	customerv1 "github.com/materials-resources/microservices-proto/pkg/customer"
+	"github.com/materials-resources/microservices-proto/pkg/customer/customerconnect"
 	"github.com/materials-resources/store-api/app"
 	"github.com/materials-resources/store-api/internal/domain"
-	customerv1 "github.com/materials-resources/store-api/internal/proto/customer"
-	"github.com/materials-resources/store-api/internal/proto/customer/customerconnect"
 	"google.golang.org/protobuf/proto"
-	"net/http"
 )
 
 type CustomerService struct {

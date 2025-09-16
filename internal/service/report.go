@@ -1,14 +1,15 @@
 package service
 
 import (
-	"connectrpc.com/connect"
 	"context"
-	"github.com/materials-resources/store-api/app"
-	reportv1 "github.com/materials-resources/store-api/internal/proto/report"
-	"github.com/materials-resources/store-api/internal/proto/report/reportconnect"
-	"google.golang.org/protobuf/proto"
 	"io"
 	"net/http"
+
+	"connectrpc.com/connect"
+	reportv1 "github.com/materials-resources/microservices-proto/pkg/report"
+	"github.com/materials-resources/microservices-proto/pkg/report/reportconnect"
+	"github.com/materials-resources/store-api/app"
+	"google.golang.org/protobuf/proto"
 )
 
 type ReportService struct {

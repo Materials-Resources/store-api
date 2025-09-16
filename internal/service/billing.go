@@ -1,14 +1,15 @@
 package service
 
 import (
-	"connectrpc.com/connect"
 	"context"
+	"net/http"
+
+	"connectrpc.com/connect"
+	billingv1 "github.com/materials-resources/microservices-proto/pkg/billing"
+	"github.com/materials-resources/microservices-proto/pkg/billing/billingconnect"
 	"github.com/materials-resources/store-api/app"
 	"github.com/materials-resources/store-api/internal/domain"
-	billingv1 "github.com/materials-resources/store-api/internal/proto/billing"
-	"github.com/materials-resources/store-api/internal/proto/billing/billingconnect"
 	"google.golang.org/protobuf/proto"
-	"net/http"
 )
 
 type BillingService struct {
