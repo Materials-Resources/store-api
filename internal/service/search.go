@@ -7,8 +7,8 @@ import (
 	"connectrpc.com/connect"
 	searchv1 "github.com/materials-resources/microservices-proto/pkg/search"
 	"github.com/materials-resources/microservices-proto/pkg/search/searchconnect"
-	"github.com/materials-resources/store-api/pkg/app"
 	"github.com/materials-resources/store-api/internal/oas"
+	"github.com/materials-resources/store-api/pkg/app"
 	"google.golang.org/protobuf/proto"
 )
 

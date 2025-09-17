@@ -7,8 +7,8 @@ import (
 	"connectrpc.com/connect"
 	customerv1 "github.com/materials-resources/microservices-proto/pkg/customer"
 	"github.com/materials-resources/microservices-proto/pkg/customer/customerconnect"
-	"github.com/materials-resources/store-api/pkg/app"
 	"github.com/materials-resources/store-api/internal/domain"
+	"github.com/materials-resources/store-api/pkg/app"
 	"google.golang.org/protobuf/proto"
 )
 
