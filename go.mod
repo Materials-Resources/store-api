@@ -1,6 +1,6 @@
 module github.com/materials-resources/store-api
 
-go 1.24.2
+go 1.25.1
 
 require (
 	connectrpc.com/connect v1.18.1
@@ -12,6 +12,7 @@ require (
 	github.com/knadh/koanf/parsers/yaml v1.0.0
 	github.com/knadh/koanf/providers/file v1.2.0
 	github.com/knadh/koanf/v2 v2.2.0
+	github.com/materials-resources/microservices-proto v0.3.0
 	github.com/ogen-go/ogen v1.12.0
 	github.com/rs/zerolog v1.34.0
 	github.com/urfave/cli/v3 v3.3.2
@@ -25,7 +26,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.35.0
 	go.opentelemetry.io/otel/trace v1.35.0
 	go.uber.org/multierr v1.11.0
-	google.golang.org/protobuf v1.36.6
+	google.golang.org/protobuf v1.36.9
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
